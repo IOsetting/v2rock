@@ -1,4 +1,5 @@
 #include "v2rockconfig.h"
+#include "config.h"
 
 V2RockConfig::V2RockConfig(QObject *parent) : QObject(parent), empty(true)
 {
@@ -22,9 +23,6 @@ V2RockConfig::~V2RockConfig()
     bypassDomains.clear();
     nodes.clear();
 }
-
-const char *V2RockConfig::CONFIG_FILE_NAME = "v2rock.conf";
-const char *V2RockConfig::V2RAY_FILE_NAME = "config.json";
 
 bool V2RockConfig::isEmpty() const
 {
@@ -140,7 +138,7 @@ void V2RockConfig::init()
 
 void V2RockConfig::read()
 {
-    QFile file(workDir + "/" + CONFIG_FILE_NAME);
+    QFile file(workDir + "/" + v2rock_config::main_config);
     if (!file.exists()) {
         return;
     }
@@ -167,9 +165,9 @@ void V2RockConfig::write()
     QJsonObject jsonObj;
     toJson(jsonObj);
     QJsonDocument doc(jsonObj);
-    QFile file(workDir + "/" + CONFIG_FILE_NAME);
+    QFile file(workDir + "/" + v2rock_config::main_config);
     if (!file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
-        emit logReceived("Error: file is not writable: " + workDir + "/" + CONFIG_FILE_NAME);
+        emit logReceived("Error: file is not writable: " + workDir + "/" + v2rock_config::main_config);
     }
     file.write(doc.toJson());
     file.close();
@@ -435,7 +433,7 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
 
     v2rayConfig.toJson(json);
     QJsonDocument doc(json);
-    QString *configFilePath = new QString(workDir + "/" + V2RAY_FILE_NAME);
+    QString *configFilePath = new QString(workDir + "/" + v2rock_config::v2ray_config);
     QFile file(*configFilePath);
     if (!file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
         emit logReceived("Error: file not writable: " + *configFilePath);

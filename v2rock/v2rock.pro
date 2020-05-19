@@ -30,6 +30,7 @@ SOURCES += \
     $$PWD/v2rayconfigoutbound.cpp
 
 HEADERS += \
+    $$PWD/config.h \
     $$PWD/maindialog.h \
     $$PWD/settingsdialog.h \
     $$PWD/generaltab.h \

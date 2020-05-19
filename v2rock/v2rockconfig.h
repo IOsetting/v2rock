@@ -22,9 +22,6 @@ public:
     explicit V2RockConfig(QObject *parent = nullptr);
     ~V2RockConfig();
 
-    static const char *CONFIG_FILE_NAME;
-    static const char *V2RAY_FILE_NAME;
-
     bool isEmpty() const;
 
     QString getWorkDir() const;
