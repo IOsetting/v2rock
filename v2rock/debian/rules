@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --parallel
+
+override_dh_auto_install:
+	mkdir -p debian/v2rock/usr/bin
+	mkdir -p debian/v2rock/usr/share/applications
+	mkdir -p debian/v2rock/usr/share/pixmaps
+	cp -a v2rock debian/v2rock/usr/bin/.
+	cp -a app-entry/v2rock.desktop debian/v2rock/usr/share/applications/.
+	cp -a app-entry/v2rock.png debian/v2rock/usr/share/pixmaps/.

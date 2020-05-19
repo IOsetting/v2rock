@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+    <file>images/v2rock.png</file>
+    <file>images/v2rock-on.png</file>
+    <file>images/v2rock-on-active.png</file>
+    <file>images/v2rock-off.png</file>
+</qresource>
+</RCC>

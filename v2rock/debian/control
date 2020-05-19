@@ -1,0 +1,13 @@
+Source: v2rock
+Section: admin
+Priority: optional
+Maintainer: IOsetting <iosetting@outlook.com>
+Build-Depends: debhelper (>= 8.0.0)
+
+Package: v2rock
+Architecture: amd64 i386
+Depends: ${shlibs:Depends}
+Conflicts:
+Replaces:
+Provides: v2rock
+Description: GUI for v2ray

@@ -1,0 +1,153 @@
+# Define stages that can be used by jobs
+# - Jobs of the same stage are run in parallel.
+# - Jobs of the next stage are run after the jobs from the previous stage complete successfully.
+# - If no stages are defined in .gitlab-ci.yml, then the build, test and deploy are allowed to be used as job’s stage by default.
+# - If a job does not specify a stage, the job is assigned the test stage.
+stages:
+  - build
+
+# Anchor:
+# - & sets up the name of the anchor,
+# - << means “merge the given hash into the current one”
+# - * means "includes the named anchor under current one"
+.template_changelog_dev: &template_changelog_dev
+  - export CI_T_DATE=`LANG=C date -R`
+  - cd v2rock
+  - touch ./debian/changelog
+  - echo "v2rock (99.9.${CI_PIPELINE_ID}-1) precise; urgency=low"   > ./debian/changelog
+  - echo ""                                                         >> ./debian/changelog
+  - echo "  * Development build from master branch"                 >> ./debian/changelog
+  - echo ""                                                         >> ./debian/changelog
+  - echo " -- IOsetting <iosetting@outlook.com>  ${CI_T_DATE}"     >> ./debian/changelog
+  - cd ..
+
+# Stage "ubuntu"
+build-ubuntu-2004-64:
+  stage: build
+  script:
+    - cd v2rock
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - ubuntu-2004-64
+
+  only:
+    - tags
+
+# Stage "ubuntu-dev"
+build-ubuntu-2004-64-dev:
+  stage: build
+  before_script:
+    - *template_changelog_dev
+  script:
+    - cd v2rock
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - ubuntu-2004-64
+
+  only:
+    - master
+
+# Stage "ubuntu"
+build-ubuntu-1804-64:  
+  stage: build
+  script:
+    - cd v2rock
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - ubuntu-1804-64
+    
+  only:
+    - tags
+
+# Stage "ubuntu-dev"
+build-ubuntu-1804-64-dev:
+  stage: build
+  before_script:
+    - *template_changelog_dev
+  script:
+    - cd v2rock
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - ubuntu-1804-64
+    
+  only:
+    - master
+
+# Stage "ubuntu"
+build-ubuntu-1604-64:  
+  stage: build
+  before_script:
+    - echo "QMAKE_CXXFLAGS += -std=c++0x" >> ./v2rock/v2rock.pro
+  script:
+    - cd v2rock
+    - debuild clean
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - ubuntu-1604-64
+
+  only:
+    - tags
+
+# Stage "ubuntu-dev"
+build-ubuntu-1604-64-dev:
+  stage: build
+  before_script:
+    - *template_changelog_dev
+    - echo "QMAKE_CXXFLAGS += -std=c++0x" >> ./v2rock/v2rock.pro
+  script:
+    - cd v2rock
+    - debuild clean
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - ubuntu-1604-64
+
+  only:
+    - master

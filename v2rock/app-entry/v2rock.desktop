@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=V2rock
+Comment=GUI for v2ray
+Exec=/usr/bin/v2rock
+Icon=/usr/share/pixmaps/v2rock.png
+Terminal=false
+Categories=Network;Application;
