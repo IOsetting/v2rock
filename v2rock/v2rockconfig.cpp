@@ -1,7 +1,8 @@
 #include "v2rockconfig.h"
 #include "config.h"
 
-V2RockConfig::V2RockConfig(QObject *parent) : QObject(parent), empty(true)
+V2RockConfig::V2RockConfig(QObject *parent) :
+    QObject(parent), empty(true), socksConfig(0), httpConfig(0)
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     if (path.isEmpty())
@@ -59,14 +60,77 @@ void V2RockConfig::setSubscribeUrl(const QString &value)
     subscribeUrl = value;
 }
 
-int V2RockConfig::getLocalSocks5Port() const
+V2RayConfigInbound *V2RockConfig::getSocksConfig() const
 {
-    return localSocks5Port;
+    return socksConfig;
 }
 
-void V2RockConfig::setLocalSocks5Port(int value)
+void V2RockConfig::setSocksConfig(V2RayConfigInbound *value)
 {
-    localSocks5Port = value;
+    socksConfig = value;
+}
+
+void V2RockConfig::initSocksConfig(const QString &listen, const int port)
+{
+    socksConfig = new V2RayConfigInbound;
+    socksConfig->setTag("socks-inbound");
+    socksConfig->setProtocol("socks");
+    socksConfig->setPort(port);
+    socksConfig->setListen(listen);
+    InboundSocksConfigurationObject *socksSettings = new InboundSocksConfigurationObject;
+    socksSettings->accounts = 0;
+    socksSettings->auth = "noauth";
+    socksSettings->ip = listen;
+    socksSettings->udp = true;
+    socksSettings->userLevel = 0;
+    socksConfig->setSocksSettings(socksSettings);
+    SniffingObject *sniffing = new SniffingObject;
+    sniffing->enabled = true;
+    sniffing->destOverride.append("http");
+    sniffing->destOverride.append("tls");
+    socksConfig->setSniffing(sniffing);
+}
+
+void V2RockConfig::deleteSocksConfig()
+{
+    delete socksConfig;
+    socksConfig = 0;
+}
+
+V2RayConfigInbound *V2RockConfig::getHttpConfig() const
+{
+    return httpConfig;
+}
+
+void V2RockConfig::setHttpConfig(V2RayConfigInbound *value)
+{
+    httpConfig = value;
+}
+
+void V2RockConfig::initHttpConfig(const QString &listen, const int port)
+{
+    httpConfig = new V2RayConfigInbound;
+    httpConfig->setTag("http-inbound");
+    httpConfig->setProtocol("http");
+    httpConfig->setPort(port);
+    httpConfig->setListen(listen);
+    InboundHTTPConfigurationObject *httpSettings = new InboundHTTPConfigurationObject;
+    httpSettings->accounts = 0;
+    httpSettings->allowTransparent = false;
+    httpSettings->timeout = 60 * 1000;
+    httpSettings->userLevel = 0;
+    httpConfig->setHttpSettings(httpSettings);
+    SniffingObject *sniffing = new SniffingObject;
+    sniffing->enabled = true;
+    sniffing->destOverride.append("http");
+    sniffing->destOverride.append("tls");
+    httpConfig->setSniffing(sniffing);
+}
+
+void V2RockConfig::deleteHttpConfig()
+{
+    delete httpConfig;
+    httpConfig = 0;
 }
 
 QList<QString> V2RockConfig::getBypassIps() const
@@ -113,7 +177,9 @@ void V2RockConfig::init()
 {
     v2executablePath = "/usr/bin/v2ray/v2ray";
     subscribeUrl = "";
-    localSocks5Port = 1080;
+
+    initSocksConfig("127.0.0.1", 1080);
+    initHttpConfig("127.0.0.1", 1081);
 
     nodes.clear();
 
@@ -182,11 +248,29 @@ void V2RockConfig::fromJson(const QJsonObject &json)
     if (json.contains("subscribeUrl") && json["subscribeUrl"].isString()) {
         subscribeUrl = json["subscribeUrl"].toString();
     }
-    if (json.contains("localSocks5Port")) {
-        localSocks5Port = json["localSocks5Port"].toInt();
-    }
+
     if (json.contains("nodeIndex")) {
         nodeIndex = json["nodeIndex"].toInt();
+    }
+
+    // Read httpConfig, delete the old one before reading
+    if (httpConfig) {
+        delete httpConfig;
+        httpConfig = 0;
+    }
+    if (json.contains("httpConfig")) {
+        httpConfig = new V2RayConfigInbound;
+        httpConfig->fromJson(json["httpConfig"].toObject());
+    }
+
+    // Read socksConfig, delete the old one before reading
+    if (socksConfig) {
+        delete socksConfig;
+        socksConfig = 0;
+    }
+    if (json.contains("socksConfig")) {
+        socksConfig = new V2RayConfigInbound;
+        socksConfig->fromJson(json["socksConfig"].toObject());
     }
 
     bypassIps.clear();
@@ -227,7 +311,6 @@ void V2RockConfig::toJson(QJsonObject &json) const
 {
     json["v2executablePath"] = v2executablePath;
     json["subscribeUrl"] = subscribeUrl;
-    json["localSocks5Port"] = localSocks5Port;
     json["nodeIndex"] = nodeIndex;
 
     QJsonArray ipsArray;
@@ -241,6 +324,18 @@ void V2RockConfig::toJson(QJsonObject &json) const
         domainsArray.append(domain);
     }
     json["bypassDomains"] = domainsArray;
+
+    if (socksConfig) {
+        QJsonObject socksConfigObj;
+        socksConfig->toJson(socksConfigObj);
+        json["socksConfig"] = socksConfigObj;
+    }
+
+    if (httpConfig) {
+        QJsonObject httpConfigObj;
+        httpConfig->toJson(httpConfigObj);
+        json["httpConfig"] = httpConfigObj;
+    }
 
     QJsonArray nodesArray;
     foreach (const V2RockNode node, nodes) {
@@ -256,7 +351,6 @@ void V2RockConfig::print(int indentation) const
     const QString indent(indentation * 2, ' ');
     QTextStream(stdout) << indent << "v2executablePath:\t" << v2executablePath << "\n";
     QTextStream(stdout) << indent << "subscribeUrl:\t" << subscribeUrl << "\n";
-    QTextStream(stdout) << indent << "localSocks5Port:\t" << localSocks5Port << "\n";
     QTextStream(stdout) << indent << "nodeIndex:\t" << nodeIndex << "\n";
     QTextStream(stdout) << indent << "Bypass IPs:\n";
     for (const QString &ip : bypassIps) {
@@ -296,25 +390,12 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
 
     // inbounds
     QList<V2RayConfigInbound> inbounds;
-    V2RayConfigInbound v2rayConfigInbound;
-    v2rayConfigInbound.setTag("socks-inbound");
-    v2rayConfigInbound.setListen("127.0.0.1");
-    v2rayConfigInbound.setPort(localSocks5Port);
-    v2rayConfigInbound.setProtocol("socks");
-    InboundSocksConfigurationObject settings;
-    settings.auth = "noauth";
-    settings.ip = "127.0.0.1";
-    settings.udp = true;
-    settings.accounts = 0;
-    v2rayConfigInbound.setSocksSettings(&settings);
-    SniffingObject sniffing;
-    sniffing.enabled = true;
-    QStringList ovlist;
-    ovlist.append("http");
-    ovlist.append("tls");
-    sniffing.destOverride = ovlist;
-    v2rayConfigInbound.setSniffing(&sniffing);
-    inbounds.append(v2rayConfigInbound);
+    if (socksConfig) {
+        inbounds.append(*socksConfig);
+    }
+    if (httpConfig) {
+        inbounds.append(*httpConfig);
+    }
     v2rayConfig.setInbounds(inbounds);
 
     // outbounds
@@ -443,6 +524,4 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     emit logReceived("Configs have been saved.");
     return configFilePath;
 }
-
-
 

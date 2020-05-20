@@ -14,7 +14,20 @@ class V2RayConfigInbound
 {
 public:
     V2RayConfigInbound();
+    void fromJson(const QJsonObject &json);
     void toJson(QJsonObject &json) const;
+
+    void fromJson(AccountObject &account, const QJsonObject &json);
+    void toJson(AccountObject *account, QJsonObject &json) const;
+
+    void fromJson(InboundHTTPConfigurationObject &settings, const QJsonObject &json);
+    void toJson(InboundHTTPConfigurationObject *settings, QJsonObject &json) const;
+
+    void fromJson(InboundSocksConfigurationObject &settings, const QJsonObject &json);
+    void toJson(InboundSocksConfigurationObject *settings, QJsonObject &json) const;
+
+    void fromJson(SniffingObject &sniffing, const QJsonObject &json);
+    void toJson(SniffingObject *sniffing, QJsonObject &json) const;
 
     QString getTag() const;
     void setTag(const QString &value);

@@ -33,8 +33,15 @@ public:
     QString getSubscribeUrl() const;
     void setSubscribeUrl(const QString &value);
 
-    int getLocalSocks5Port() const;
-    void setLocalSocks5Port(int value);
+    V2RayConfigInbound *getSocksConfig() const;
+    void setSocksConfig(V2RayConfigInbound *value);
+    void initSocksConfig(const QString &listen, const int port);
+    void deleteSocksConfig();
+
+    V2RayConfigInbound *getHttpConfig() const;
+    void setHttpConfig(V2RayConfigInbound *value);
+    void initHttpConfig(const QString &listen, const int port);
+    void deleteHttpConfig();
 
     QList<QString> getBypassIps() const;
     void setBypassIps(const QList<QString> &value);
@@ -63,7 +70,8 @@ private:
     QString workDir;
     QString v2executablePath;
     QString subscribeUrl;
-    int localSocks5Port;
+    V2RayConfigInbound *socksConfig;
+    V2RayConfigInbound *httpConfig;
     QList<QString> bypassIps;
     QList<QString> bypassDomains;
     QList<V2RockNode> nodes;
