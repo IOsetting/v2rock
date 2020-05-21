@@ -151,3 +151,91 @@ build-ubuntu-1604-64-dev:
 
   only:
     - master
+
+# Stage "debian"
+build-debian-10-64:
+  stage: build
+  script:
+    - cd v2rock
+    - debuild clean
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - debian-10-64
+
+  only:
+    - tags
+
+# Stage "debian-dev"
+build-debian-10-64-dev:
+  stage: build
+  before_script:
+    - *template_changelog_dev
+  script:
+    - cd v2rock
+    - debuild clean
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - debian-10-64
+
+  only:
+    - master
+
+# Stage "debian"
+build-debian-8-64:
+  stage: build
+  script:
+    - cd v2rock
+    - debuild clean
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - debian-8-64
+
+  only:
+    - tags
+
+# Stage "debian-dev"
+build-debian-8-64-dev:
+  stage: build
+  before_script:
+    - *template_changelog_dev
+  script:
+    - cd v2rock
+    - debuild clean
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
+    - cd .. && mkdir build
+    - mv v2rock*.deb build/
+
+  # The files which are to be made available in GitLab
+  artifacts:
+    paths:
+      - build/*
+
+  tags:
+    - debian-8-64
+
+  only:
+    - master
