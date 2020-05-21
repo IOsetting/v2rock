@@ -1,3 +1,11 @@
+v2rock (0.1.1-1) precise; urgency=low
+
+  * New feature: HTTP proxy configuration
+  * Add releases for Debian 8&10
+
+ -- IOsetting <iosetting@outlook.com>  Thu, 21 May 2020 12:26:21 +0800
+
+
 v2rock (0.1.0-1) precise; urgency=low
 
   * Initial ubuntu test release
