@@ -26,6 +26,7 @@ build-ubuntu-2004-64:
   stage: build
   script:
     - cd v2rock
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
@@ -48,6 +49,7 @@ build-ubuntu-2004-64-dev:
     - *template_changelog_dev
   script:
     - cd v2rock
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
@@ -68,6 +70,7 @@ build-ubuntu-1804-64:
   stage: build
   script:
     - cd v2rock
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
@@ -90,6 +93,7 @@ build-ubuntu-1804-64-dev:
     - *template_changelog_dev
   script:
     - cd v2rock
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
@@ -157,7 +161,7 @@ build-debian-10-64:
   stage: build
   script:
     - cd v2rock
-    - debuild clean
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
@@ -180,7 +184,7 @@ build-debian-10-64-dev:
     - *template_changelog_dev
   script:
     - cd v2rock
-    - debuild clean
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
@@ -201,7 +205,7 @@ build-debian-8-64:
   stage: build
   script:
     - cd v2rock
-    - debuild clean
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
@@ -224,7 +228,7 @@ build-debian-8-64-dev:
     - *template_changelog_dev
   script:
     - cd v2rock
-    - debuild clean
+    - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
     - cd .. && mkdir build
     - mv v2rock*.deb build/
