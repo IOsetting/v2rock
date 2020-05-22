@@ -207,18 +207,40 @@ void XinjieConfig::read(const QJsonObject &json)
 void XinjieConfig::write(V2RockNode &node) const
 {
     node.setProtocol("vmess");
-    node.setAddress(address);
-    node.setPort(port);
-    node.setStreamNetwork(net);
-    node.setStreamWsPath(path);
-    node.setStreamWsHeaderHost(host);
-    node.setUserId(id);
-    node.setUserAid(aid);
-    node.setPs(ps);
-    node.setRemark(remark);
-    node.setUserEmail("t@t.tt");
-    node.setUserSecurity("auto");
+    node.setName(remark);
 
+    OutboundVMessConfigurationObject *vMessConfig = new OutboundVMessConfigurationObject();
+    VMessServerObject vMessServerObject;
+    vMessServerObject.address = address;
+    vMessServerObject.port = port;
+    vMessServerObject.users = new QList<struct UserObject>;
+    UserObject userObject;
+    userObject.alterId = aid;
+    userObject.id = id;
+    userObject.level = 0;
+    userObject.security = "auto";
+    vMessServerObject.users->append(userObject);
+    vMessConfig->vnext.append(vMessServerObject);
+    node.setVMessSettings(vMessConfig);
+
+    StreamSettingsObject *streamSettingsObject = new StreamSettingsObject();
+    streamSettingsObject->network = "ws";
+    streamSettingsObject->security = "none";
+    streamSettingsObject->dsSettings = 0;
+    streamSettingsObject->httpSettings = 0;
+    streamSettingsObject->kcpSettings = 0;
+    streamSettingsObject->quicSettings = 0;
+    streamSettingsObject->tcpSettings = 0;
+    streamSettingsObject->tlsSettings = 0;
+    streamSettingsObject->wsSettings = new TransportWebSocketObject();
+    streamSettingsObject->wsSettings->path = path;
+    streamSettingsObject->wsSettings->headers.insert("Host", host);
+    node.setStreamSettings(streamSettingsObject);
+
+    MuxObject *mux = new MuxObject();
+    mux->enabled = true;
+    mux->concurrency = 8;
+    node.setMux(mux);
 }
 
 void XinjieConfig::print(int indentation) const

@@ -1,7 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ByPassIpTab</class>
- <widget class="QWidget" name="ByPassIpTab">
+ <author/>
+ <comment/>
+ <exportmacro/>
+ <class>NodeEditTransportTab</class>
+ <widget name="NodeEditTransportTab" class="QWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,6 +16,6 @@
    <string>Form</string>
   </property>
  </widget>
- <resources/>
+ <pixmapfunction/>
  <connections/>
 </ui>

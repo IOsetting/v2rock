@@ -13,16 +13,16 @@
 #include "v2rockconfig.h"
 
 namespace Ui {
-class GeneralTab;
+class SettingsGeneralTab;
 }
 
-class GeneralTab : public QWidget
+class SettingsGeneralTab : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit GeneralTab(QWidget *parent = 0);
-    ~GeneralTab();
+    explicit SettingsGeneralTab(QWidget *parent = 0);
+    ~SettingsGeneralTab();
     void init(V2RockConfig *v2rockConfig);
     QString getSubscribeUrl() const;
     QString getV2executablePath() const;
@@ -36,7 +36,7 @@ public:
     int getHttpPort() const;
 
 private:
-    Ui::GeneralTab *ui;
+    Ui::SettingsGeneralTab *ui;
     QLineEdit *subscribeUrlEdit;
     QLineEdit *v2executablePathEdit;
 

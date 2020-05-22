@@ -9,21 +9,21 @@
 #include "v2rockconfig.h"
 
 namespace Ui {
-class ByPassIpTab;
+class SettingsBypassIpTab;
 }
 
-class ByPassIpTab : public QWidget
+class SettingsBypassIpTab : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ByPassIpTab(QWidget *parent = 0);
-    ~ByPassIpTab();
+    explicit SettingsBypassIpTab(QWidget *parent = 0);
+    ~SettingsBypassIpTab();
     void init(V2RockConfig *v2rockConfig);
     QList<QString> getBypassIps() const;
 
 private:
-    Ui::ByPassIpTab *ui;
+    Ui::SettingsBypassIpTab *ui;
     QPlainTextEdit *bypassIpsEdit;
 };
 

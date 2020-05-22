@@ -209,9 +209,10 @@ struct OutboundBlackholeConfigurationObject
 };
 
 struct OutboundDNSConfigurationObject {
+    // "tcp" | "udp"
     QString network;
-    QString address;
-    int port;
+    QString *address;
+    int *port;
 };
 
 struct OutboundFreedomConfigurationObject {

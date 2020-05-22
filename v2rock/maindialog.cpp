@@ -44,16 +44,20 @@ MainDialog::MainDialog(QWidget *parent) :
     tree = new QTreeWidget;
     tree->setColumnCount(5);
     QStringList columnNames;
-    columnNames << tr("ID") << tr("Name") << tr("Host") << tr("Port") << "";
+    columnNames << tr("ID") << "" << tr("Protocol") << tr("Name") << tr("Host") << tr("Port");
     tree->setHeaderLabels(columnNames);
     // Remove left white spaces
     tree->setRootIsDecorated(false);
     tree->setColumnWidth(0, 30);
-    tree->setColumnWidth(1, 210);
-    tree->setColumnWidth(2, 190);
-    tree->setColumnWidth(3, 50);
-    tree->setColumnWidth(4, 20);
+    tree->hideColumn(0);
+    tree->setColumnWidth(1, 20);
+    tree->setColumnWidth(2, 50);
+    tree->setColumnWidth(3, 210);
+    tree->setColumnWidth(4, 190);
+    tree->setColumnWidth(5, 50);
     connect(tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(treeItemDoubleClicked(QTreeWidgetItem*,int)));
+    tree->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(tree, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu(const QPoint &)));
 
     logEdit = new QPlainTextEdit();
     logEdit->setMaximumBlockCount(3000);
@@ -63,15 +67,27 @@ MainDialog::MainDialog(QWidget *parent) :
     vLayout->addLayout(hLayout);
     vLayout->addWidget(logEdit, 1);
 
-    icons = new QList<QIcon>;
-    icons->append(QIcon(":/images/v2rock.png"));
-    icons->append(QIcon(":/images/v2rock-on.png"));
-    icons->append(QIcon(":/images/v2rock-on-active.png"));
-    icons->append(QIcon(":/images/v2rock-off.png"));
+    // Dialogs
+    dialogSettings = new SettingsDialog(this);
+    dialogSettings->setModal(true);
+    dialogNodeEdit = new NodeEditDialog(this);
+    dialogNodeEdit->setModal(true);
 
-    this->createActions();
-    this->createTrayIcon();
-    setWindowIcon(icons->at(0));
+    // Actions
+    delAction = new QAction(tr("&Delete"), this);
+    connect(delAction, SIGNAL(triggered()), this, SLOT(actDelHandler()));
+
+    editAction = new QAction(tr("&Edit"), this);
+    connect(editAction, SIGNAL(triggered()), this, SLOT(actEditHandler()));
+
+    addAction = new QAction(tr("&New"), this);
+    connect(addAction, SIGNAL(triggered()), this, SLOT(actAddHandler()));
+
+    restoreAction = new QAction(tr("&Restore"), this);
+    connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+
+    quitAction = new QAction(tr("&Quit"), this);
+    connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 
     networkAccessManager = new QNetworkAccessManager();
     connect(networkAccessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(networkAccessManagerFinished(QNetworkReply*)));
@@ -88,6 +104,16 @@ MainDialog::MainDialog(QWidget *parent) :
         this->v2rockConfig->write();
     }
     this->reloadTreeList();
+
+    // Icons
+    icons = new QList<QIcon>;
+    icons->append(QIcon(":/images/v2rock.png"));
+    icons->append(QIcon(":/images/v2rock-on.png"));
+    icons->append(QIcon(":/images/v2rock-on-active.png"));
+    icons->append(QIcon(":/images/v2rock-off.png"));
+
+    this->createTrayIcon();
+    setWindowIcon(icons->at(0));
 
     this->updateBtnStatus(true);
     trayIcon->show();
@@ -148,9 +174,9 @@ void MainDialog::selectTreeItem()
             QTreeWidgetItem *item = tree->topLevelItem(i);
             if (selected == i) {
                 this->v2rockConfig->setNodeIndex(selected);
-                item->setText(4, "√");
+                item->setText(1, "√");
             } else {
-                item->setText(4, "");
+                item->setText(1, "");
             }
         }
     }
@@ -164,23 +190,46 @@ void MainDialog::reloadTreeList()
     {
         for (int i = 0; i < nodes.length(); i++)
         {
-            this->addTreeItem(QString::number(i), nodes[i].getPs(), nodes[i].getAddress(), nodes[i].getPort());
+            QString address;
+            int port;
+            if (nodes[i].getProtocol() == "vmess") {
+                address = nodes[i].getVMessSettings()->vnext.at(0).address;
+                port = nodes[i].getVMessSettings()->vnext.at(0).port;
+            } else if (nodes[i].getProtocol() == "socks") {
+                address = nodes[i].getSocksSettings()->servers.at(0).address;
+                port = nodes[i].getSocksSettings()->servers.at(0).port;
+            } else if (nodes[i].getProtocol() == "shadowsocks") {
+                address = nodes[i].getShadowSocksSettings()->servers.at(0).address;
+                port = nodes[i].getShadowSocksSettings()->servers.at(0).port;
+            } else if (nodes[i].getProtocol() == "http") {
+                address = nodes[i].getHTTPSettings()->servers.at(0).address;
+                port = nodes[i].getHTTPSettings()->servers.at(0).port;
+            } else if (nodes[i].getProtocol() == "dns") {
+                if (nodes[i].getDNSSettings()->address) {
+                    address = *(nodes[i].getDNSSettings()->address);
+                }
+                if (nodes[i].getDNSSettings()->port) {
+                    port = *(nodes[i].getDNSSettings()->port);
+                }
+            }
+            this->addTreeItem(QString::number(i), nodes[i].getName(), nodes[i].getProtocol(), address, port);
         }
         this->selectTreeItem();
     }
 }
 
-void MainDialog::addTreeItem(const QString id, const QString name, const QString host, int port)
+void MainDialog::addTreeItem(const QString id, const QString name, const QString protocol, const QString host, int port)
 {
     QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
     treeItem->setText(0, id);
-    treeItem->setText(1, name);
-    treeItem->setText(2, host);
-    treeItem->setText(3, QString::number(port));
-    treeItem->setText(4, "");
+    treeItem->setText(1, "");
+    treeItem->setText(2, protocol);
+    treeItem->setText(3, name);
+    treeItem->setText(4, host);
+    treeItem->setText(5, QString::number(port));
 }
 
-void MainDialog::treeItemDoubleClicked(QTreeWidgetItem *item, int column)
+void MainDialog::treeItemDoubleClicked(QTreeWidgetItem *item, int __attribute__ ((unused)) column)
 {
     int selected = item->text(0).toInt();
     this->v2rockConfig->setNodeIndex(selected);
@@ -200,7 +249,7 @@ void MainDialog::updateBtnStatus(bool stopped)
     }
 }
 
-void MainDialog::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void MainDialog::processFinished(int __attribute__ ((unused)) exitCode, QProcess::ExitStatus __attribute__ ((unused)) exitStatus)
 {
     this->updateBtnStatus(true);
 }
@@ -233,7 +282,7 @@ void MainDialog::btnTestClickHandler()
     {
         if (pingProcess->state() == QProcess::NotRunning)
         {
-            QString domain = item->text(2);
+            QString domain = item->text(4);
             QString command = "ping";
             QStringList args;
             args << "-w" <<  "3" <<  domain;
@@ -279,12 +328,54 @@ void MainDialog::btnStopClickHandler()
 
 void MainDialog::btnSettingsClickHandler()
 {
-    dialogSettings = new SettingsDialog(this);
-    dialogSettings->setModal(true);
     dialogSettings->setV2rockConfig(this->v2rockConfig);
     if (dialogSettings->exec() == QDialog::Accepted)
     {
         this->v2rockConfig->write();
+    }
+}
+
+void MainDialog::actDelHandler()
+{
+
+}
+
+void MainDialog::actEditHandler()
+{
+    QAction *act = qobject_cast<QAction *>(sender());
+    QVariant variant = act->data();
+    QTreeWidgetItem *item = (QTreeWidgetItem *) variant.value<void *>();
+    qDebug() << item->text(0);
+    if (dialogNodeEdit->exec() == QDialog::Accepted)
+    {
+        qDebug() << "Accepted";
+        this->v2rockConfig->write();
+    }
+}
+
+void MainDialog::actAddHandler()
+{
+
+}
+
+void MainDialog::contextMenu(const QPoint &point)
+{
+    QMenu menu(this);
+    QTreeWidgetItem *item = tree->itemAt(point);
+    if (item) {
+        QVariant variant = qVariantFromValue((void *)item);
+        addAction->setData(variant);
+        editAction->setData(variant);
+        delAction->setData(variant);
+        menu.addAction(addAction);
+        menu.addAction(editAction);
+        menu.addAction(delAction);
+        menu.exec(QCursor::pos());
+    } else {
+        QVariant variant = qVariantFromValue((void *)0);
+        addAction->setData(variant);
+        menu.addAction(addAction);
+        menu.exec(QCursor::pos());
     }
 }
 
@@ -342,15 +433,6 @@ void MainDialog::networkAccessManagerFinished(QNetworkReply *reply)
 void MainDialog::appendLog(const QString &text)
 {
     logEdit->appendPlainText(text);
-}
-
-void MainDialog::createActions()
-{
-    restoreAction = new QAction(tr("&Restore"), this);
-    connect(restoreAction, &QAction::triggered, this, &QWidget::showNormal);
-
-    quitAction = new QAction(tr("&Quit"), this);
-    connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
 }
 
 void MainDialog::createTrayIcon()

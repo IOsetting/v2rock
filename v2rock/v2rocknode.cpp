@@ -1,8 +1,20 @@
 #include "v2rocknode.h"
 
-V2RockNode::V2RockNode()
+V2RockNode::V2RockNode() :
+    blackholeSettings(0), dNSSettings(0), freedomSettings(0), hTTPSettings(0), mTProtoSettings(0),
+    shadowSocksSettings(0), socksSettings(0), vMessSettings(0), streamSettings(0), mux(0)
 {
 
+}
+
+QString V2RockNode::getName() const
+{
+    return name;
+}
+
+void V2RockNode::setName(const QString &value)
+{
+    name = value;
 }
 
 QString V2RockNode::getProtocol() const
@@ -15,186 +27,235 @@ void V2RockNode::setProtocol(const QString &value)
     protocol = value;
 }
 
-QString V2RockNode::getAddress() const
+OutboundBlackholeConfigurationObject *V2RockNode::getBlackholeSettings() const
 {
-    return address;
+    return blackholeSettings;
 }
 
-void V2RockNode::setAddress(const QString &value)
+void V2RockNode::setBlackholeSettings(OutboundBlackholeConfigurationObject *value)
 {
-    address = value;
+    blackholeSettings = value;
 }
 
-int V2RockNode::getPort() const
+OutboundDNSConfigurationObject *V2RockNode::getDNSSettings() const
 {
-    return port;
+    return dNSSettings;
 }
 
-void V2RockNode::setPort(int value)
+void V2RockNode::setDNSSettings(OutboundDNSConfigurationObject *value)
 {
-    port = value;
+    dNSSettings = value;
 }
 
-QString V2RockNode::getUserId() const
+OutboundFreedomConfigurationObject *V2RockNode::getFreedomSettings() const
 {
-    return userId;
+    return freedomSettings;
 }
 
-void V2RockNode::setUserId(const QString &value)
+void V2RockNode::setFreedomSettings(OutboundFreedomConfigurationObject *value)
 {
-    userId = value;
+    freedomSettings = value;
 }
 
-int V2RockNode::getUserAid() const
+OutboundHTTPConfigurationObject *V2RockNode::getHTTPSettings() const
 {
-    return userAid;
+    return hTTPSettings;
 }
 
-void V2RockNode::setUserAid(const int value)
+void V2RockNode::setHTTPSettings(OutboundHTTPConfigurationObject *value)
 {
-    userAid = value;
+    hTTPSettings = value;
 }
 
-QString V2RockNode::getUserEmail() const
+OutboundMTProtoConfigurationObject *V2RockNode::getMTProtoSettings() const
 {
-    return userEmail;
+    return mTProtoSettings;
 }
 
-void V2RockNode::setUserEmail(const QString &value)
+void V2RockNode::setMTProtoSettings(OutboundMTProtoConfigurationObject *mTProtoSettings)
 {
-    userEmail = value;
+    mTProtoSettings = mTProtoSettings;
 }
 
-QString V2RockNode::getUserSecurity() const
+OutboundShadowsocksConfigurationObject *V2RockNode::getShadowSocksSettings() const
 {
-    return userSecurity;
+    return shadowSocksSettings;
 }
 
-void V2RockNode::setUserSecurity(const QString &value)
+void V2RockNode::setShadowSocksSettings(OutboundShadowsocksConfigurationObject *value)
 {
-    userSecurity = value;
+    shadowSocksSettings = value;
 }
 
-QString V2RockNode::getStreamNetwork() const
+OutboundSocksConfigurationObject *V2RockNode::getSocksSettings() const
 {
-    return streamNetwork;
+    return socksSettings;
 }
 
-void V2RockNode::setStreamNetwork(const QString &value)
+void V2RockNode::setSocksSettings(OutboundSocksConfigurationObject *value)
 {
-    streamNetwork = value;
+    socksSettings = value;
 }
 
-QString V2RockNode::getStreamWsPath() const
+OutboundVMessConfigurationObject *V2RockNode::getVMessSettings() const
 {
-    return streamWsPath;
+    return vMessSettings;
 }
 
-void V2RockNode::setStreamWsPath(const QString &value)
+void V2RockNode::setVMessSettings(OutboundVMessConfigurationObject *value)
 {
-    streamWsPath = value;
+    vMessSettings = value;
 }
 
-QString V2RockNode::getStreamWsHeaderHost() const
+StreamSettingsObject *V2RockNode::getStreamSettings() const
 {
-    return streamWsHeaderHost;
+    return streamSettings;
 }
 
-void V2RockNode::setStreamWsHeaderHost(const QString &value)
+void V2RockNode::setStreamSettings(StreamSettingsObject *value)
 {
-    streamWsHeaderHost = value;
+    streamSettings = value;
 }
 
-QString V2RockNode::getRemark() const
+MuxObject *V2RockNode::getMux() const
 {
-    return remark;
+    return mux;
 }
 
-void V2RockNode::setRemark(const QString &value)
+void V2RockNode::setMux(MuxObject *value)
 {
-    remark = value;
-}
-
-QString V2RockNode::getPs() const
-{
-    return ps;
-}
-
-void V2RockNode::setPs(const QString &value)
-{
-    ps = value;
+    mux = value;
 }
 
 void V2RockNode::read(const QJsonObject &json)
 {
+    if (json.contains("name") && json["name"].isString()) {
+        name = json["name"].toString();
+    }
     if (json.contains("protocol") && json["protocol"].isString()) {
         protocol = json["protocol"].toString();
     }
-    if (json.contains("address") && json["address"].isString()) {
-        address = json["address"].toString();
+    if (json.contains("blackholeSettings") && json["blackholeSettings"].isObject()) {
+        blackholeSettings = new OutboundBlackholeConfigurationObject;
+        V2RayConfigOutbound::fromJson(*blackholeSettings, json["blackholeSettings"].toObject());
+    } else {
+        blackholeSettings = 0;
     }
-    if (json.contains("port")) {
-        port = json["port"].toInt();
+    if (json.contains("dNSSettings") && json["dNSSettings"].isObject()) {
+        dNSSettings = new OutboundDNSConfigurationObject;
+        V2RayConfigOutbound::fromJson(*dNSSettings, json["dNSSettings"].toObject());
+    } else {
+        dNSSettings = 0;
     }
-    if (json.contains("userId") && json["userId"].isString()) {
-        userId = json["userId"].toString();
+    if (json.contains("freedomSettings") && json["freedomSettings"].isObject()) {
+        freedomSettings = new OutboundFreedomConfigurationObject;
+        V2RayConfigOutbound::fromJson(*freedomSettings, json["freedomSettings"].toObject());
+    } else {
+        freedomSettings = 0;
     }
-    if (json.contains("userAid")) {
-        userAid = json["userAid"].toInt();
+    if (json.contains("hTTPSettings") && json["hTTPSettings"].isObject()) {
+        hTTPSettings = new OutboundHTTPConfigurationObject;
+        V2RayConfigOutbound::fromJson(*hTTPSettings, json["hTTPSettings"].toObject());
+    } else {
+        hTTPSettings = 0;
     }
-    if (json.contains("userEmail") && json["userEmail"].isString()) {
-        userEmail = json["userEmail"].toString();
+    if (json.contains("mTProtoSettings") && json["mTProtoSettings"].isObject()) {
+        mTProtoSettings = new OutboundMTProtoConfigurationObject;
+        V2RayConfigOutbound::fromJson(*mTProtoSettings, json["mTProtoSettings"].toObject());
+    } else {
+        mTProtoSettings = 0;
     }
-    if (json.contains("userSecurity") && json["userSecurity"].isString()) {
-        userSecurity = json["userSecurity"].toString();
+    if (json.contains("shadowSocksSettings") && json["shadowSocksSettings"].isObject()) {
+        shadowSocksSettings = new OutboundShadowsocksConfigurationObject;
+        V2RayConfigOutbound::fromJson(*shadowSocksSettings, json["shadowSocksSettings"].toObject());
+    } else {
+        shadowSocksSettings = 0;
     }
-    if (json.contains("streamNetwork") && json["streamNetwork"].isString()) {
-        streamNetwork = json["streamNetwork"].toString();
+    if (json.contains("socksSettings") && json["socksSettings"].isObject()) {
+        socksSettings = new OutboundSocksConfigurationObject;
+        V2RayConfigOutbound::fromJson(*socksSettings, json["socksSettings"].toObject());
+    } else {
+        socksSettings = 0;
     }
-    if (json.contains("streamWsPath") && json["streamWsPath"].isString()) {
-        streamWsPath = json["streamWsPath"].toString();
+    if (json.contains("vMessSettings") && json["vMessSettings"].isObject()) {
+        vMessSettings = new OutboundVMessConfigurationObject;
+        V2RayConfigOutbound::fromJson(*vMessSettings, json["vMessSettings"].toObject());
+    } else {
+        vMessSettings = 0;
     }
-    if (json.contains("streamWsHeaderHost") && json["streamWsHeaderHost"].isString()) {
-        streamWsHeaderHost = json["streamWsHeaderHost"].toString();
+    if (json.contains("streamSettings") && json["streamSettings"].isObject()) {
+        streamSettings = new StreamSettingsObject;
+        V2RayConfigOutbound::fromJson(*streamSettings, json["streamSettings"].toObject());
+    } else {
+        streamSettings = 0;
     }
-    if (json.contains("ps") && json["ps"].isString()) {
-        ps = json["ps"].toString();
-    }
-    if (json.contains("remark") && json["remark"].isString()) {
-        remark = json["remark"].toString();
+    if (json.contains("mux") && json["mux"].isObject()) {
+        mux = new MuxObject;
+        V2RayConfigOutbound::fromJson(*mux, json["mux"].toObject());
+    } else {
+        mux = 0;
     }
 }
 
 void V2RockNode::write(QJsonObject &json) const
 {
+    json["name"] = name;
     json["protocol"] = protocol;
-    json["address"] = address;
-    json["port"] = port;
-    json["userId"] = userId;
-    json["userAid"] = userAid;
-    json["userEmail"] = userEmail;
-    json["userSecurity"] = userSecurity;
-    json["streamNetwork"] = streamNetwork;
-    json["streamWsPath"] = streamWsPath;
-    json["streamWsHeaderHost"] = streamWsHeaderHost;
-    json["ps"] = ps;
-    json["remark"] = remark;
+    if (blackholeSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(blackholeSettings, jsonObj);
+        json["blackholeSettings"] = jsonObj;
+    }
+    if (dNSSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(dNSSettings, jsonObj);
+        json["dNSSettings"] = jsonObj;
+    }
+    if (freedomSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(freedomSettings, jsonObj);
+        json["freedomSettings"] = jsonObj;
+    }
+    if (hTTPSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(hTTPSettings, jsonObj);
+        json["hTTPSettings"] = jsonObj;
+    }
+    if (mTProtoSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(mTProtoSettings, jsonObj);
+        json["mTProtoSettings"] = jsonObj;
+    }
+    if (shadowSocksSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(shadowSocksSettings, jsonObj);
+        json["shadowSocksSettings"] = jsonObj;
+    }
+    if (socksSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(socksSettings, jsonObj);
+        json["socksSettings"] = jsonObj;
+    }
+    if (vMessSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(vMessSettings, jsonObj);
+        json["vMessSettings"] = jsonObj;
+    }
+    if (streamSettings) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(streamSettings, jsonObj);
+        json["streamSettings"] = jsonObj;
+    }
+    if (mux) {
+        QJsonObject jsonObj;
+        V2RayConfigOutbound::toJson(mux, jsonObj);
+        json["mux"] = jsonObj;
+    }
 }
 
 void V2RockNode::print(int indentation) const
 {
     const QString indent(indentation * 2, ' ');
     QTextStream(stdout) << indent << "protocol:\t" << protocol << "\n";
-    QTextStream(stdout) << indent << "address:\t" << address << "\n";
-    QTextStream(stdout) << indent << "port:\t" << port << "\n";
-    QTextStream(stdout) << indent << "userId:\t" << userId << "\n";
-    QTextStream(stdout) << indent << "userAid:\t" << userAid << "\n";
-    QTextStream(stdout) << indent << "userEmail:\t" << userEmail << "\n";
-    QTextStream(stdout) << indent << "userSecurity:\t" << userSecurity << "\n";
-    QTextStream(stdout) << indent << "streamNetwork:\t" << streamNetwork << "\n";
-    QTextStream(stdout) << indent << "streamWsPath:\t" << streamWsPath << "\n";
-    QTextStream(stdout) << indent << "streamWsHeaderHost:\t" << streamWsHeaderHost << "\n";
-    QTextStream(stdout) << indent << "ps:\t" << ps << "\n";
-    QTextStream(stdout) << indent << "remark:\t" << remark << "\n";
+    QTextStream(stdout) << indent << "name:\t" << name << "\n";
 }
-

@@ -15,6 +15,60 @@ public:
     V2RayConfigOutbound();
     void toJson(QJsonObject &json) const;
 
+    static void fromJson(OutboundBlackholeConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundBlackholeConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(OutboundDNSConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundDNSConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(OutboundFreedomConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundFreedomConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(OutboundHTTPConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundHTTPConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(OutboundMTProtoConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundMTProtoConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(OutboundShadowsocksConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundShadowsocksConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(OutboundSocksConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundSocksConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(OutboundVMessConfigurationObject &settings, const QJsonObject &json);
+    static void toJson(OutboundVMessConfigurationObject *settings, QJsonObject &json);
+
+    static void fromJson(StreamSettingsObject &settings, const QJsonObject &json);
+    static void toJson(StreamSettingsObject *settings, QJsonObject &json);
+
+    static void fromJson(MuxObject &settings, const QJsonObject &json);
+    static void toJson(MuxObject *settings, QJsonObject &json);
+
+    static void fromJson(SockoptObject &settings, const QJsonObject &json);
+    static void toJson(SockoptObject *settings, QJsonObject &json);
+
+    static void fromJson(TransportTlsObject &settings, const QJsonObject &json);
+    static void toJson(TransportTlsObject *settings, QJsonObject &json);
+
+    static void fromJson(TransportTcpObject &settings, const QJsonObject &json);
+    static void toJson(TransportTcpObject *settings, QJsonObject &json);
+
+    static void fromJson(TransportKcpObject &settings, const QJsonObject &json);
+    static void toJson(TransportKcpObject *settings, QJsonObject &json);
+
+    static void fromJson(TransportWebSocketObject &settings, const QJsonObject &json);
+    static void toJson(TransportWebSocketObject *settings, QJsonObject &json);
+
+    static void fromJson(TransportHTTPObject &settings, const QJsonObject &json);
+    static void toJson(TransportHTTPObject *settings, QJsonObject &json);
+
+    static void fromJson(TransportDomainSocketObject &settings, const QJsonObject &json);
+    static void toJson(TransportDomainSocketObject *settings, QJsonObject &json);
+
+    static void fromJson(TransportQuicObject &settings, const QJsonObject &json);
+    static void toJson(TransportQuicObject *settings, QJsonObject &json);
+
     QString getTag() const;
     void setTag(const QString &value);
 
@@ -33,8 +87,8 @@ public:
     OutboundHTTPConfigurationObject *getHTTPSettings() const;
     void setHTTPSettings(OutboundHTTPConfigurationObject *value);
 
-    OutboundMTProtoConfigurationObject *getTProtoSettings() const;
-    void setTProtoSettings(OutboundMTProtoConfigurationObject *tProtoSettings);
+    OutboundMTProtoConfigurationObject *getMTProtoSettings() const;
+    void setMTProtoSettings(OutboundMTProtoConfigurationObject *mTProtoSettings);
 
     OutboundShadowsocksConfigurationObject *getShadowSocksSettings() const;
     void setShadowSocksSettings(OutboundShadowsocksConfigurationObject *value);

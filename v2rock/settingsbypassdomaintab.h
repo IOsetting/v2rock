@@ -9,21 +9,21 @@
 #include "v2rockconfig.h"
 
 namespace Ui {
-class ByPassDomainTab;
+class SettingsBypassDomainTab;
 }
 
-class ByPassDomainTab : public QWidget
+class SettingsBypassDomainTab : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit ByPassDomainTab(QWidget *parent = 0);
-    ~ByPassDomainTab();
+    explicit SettingsBypassDomainTab(QWidget *parent = 0);
+    ~SettingsBypassDomainTab();
     void init(V2RockConfig *v2rockConfig);
     QList<QString> getBypassDomains() const;
 
 private:
-    Ui::ByPassDomainTab *ui;
+    Ui::SettingsBypassDomainTab *ui;
     QPlainTextEdit *bypassDomainsEdit;
 };
 

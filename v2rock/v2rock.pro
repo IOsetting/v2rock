@@ -16,12 +16,15 @@ SOURCES += \
     $$PWD/main.cpp \
     $$PWD/maindialog.cpp \
     $$PWD/settingsdialog.cpp \
-    $$PWD/generaltab.cpp \
+    $$PWD/settingsgeneraltab.cpp \
+    $$PWD/settingsbypassdomaintab.cpp \
+    $$PWD/settingsbypassiptab.cpp \
     $$PWD/v2rockconfig.cpp \
     $$PWD/v2rocknode.cpp \
-    $$PWD/bypassiptab.cpp \
-    $$PWD/bypassdomaintab.cpp \
     $$PWD/xinjieconfig.cpp \
+    $$PWD/nodeeditdialog.cpp \
+    $$PWD/nodeeditgeneraltab.cpp \
+    $$PWD/nodeedittransporttab.cpp \
     $$PWD/pingprocess.cpp \
     $$PWD/v2rayconfig.cpp \
     $$PWD/v2rayconfigroute.cpp \
@@ -33,12 +36,15 @@ HEADERS += \
     $$PWD/config.h \
     $$PWD/maindialog.h \
     $$PWD/settingsdialog.h \
-    $$PWD/generaltab.h \
+    $$PWD/settingsgeneraltab.h \
+    $$PWD/settingsbypassdomaintab.h \
+    $$PWD/settingsbypassiptab.h \
     $$PWD/v2rockconfig.h \
     $$PWD/v2rocknode.h \
-    $$PWD/bypassiptab.h \
-    $$PWD/bypassdomaintab.h \
     $$PWD/xinjieconfig.h \
+    $$PWD/nodeeditdialog.h \
+    $$PWD/nodeeditgeneraltab.h \
+    $$PWD/nodeedittransporttab.h \
     $$PWD/pingprocess.h \
     $$PWD/v2rayconfig.h \
     $$PWD/v2rayconfigroute.h \
@@ -49,10 +55,14 @@ HEADERS += \
 
 FORMS += \
     $$PWD/maindialog.ui \
+    $$PWD/settingsbypassdomaintab.ui \
+    $$PWD/settingsbypassiptab.ui \
     $$PWD/settingsdialog.ui \
-    $$PWD/generaltab.ui \
-    $$PWD/bypassiptab.ui \
-    $$PWD/bypassdomaintab.ui
+    $$PWD/settingsgeneraltab.ui \
+    $$PWD/nodeeditdialog.ui \
+    $$PWD/nodeeditgeneraltab.ui \
+    $$PWD/nodeedittransporttab.ui
+
 
 RESOURCES += \
     $$PWD/res.qrc

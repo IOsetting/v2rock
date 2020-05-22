@@ -1,9 +1,9 @@
-#include "generaltab.h"
-#include "ui_generaltab.h"
+#include "settingsgeneraltab.h"
+#include "ui_settingsgeneraltab.h"
 
-GeneralTab::GeneralTab(QWidget *parent) :
+SettingsGeneralTab::SettingsGeneralTab(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::GeneralTab)
+    ui(new Ui::SettingsGeneralTab)
 {
     ui->setupUi(this);
     subscribeUrlEdit = new QLineEdit(this);
@@ -56,7 +56,7 @@ GeneralTab::GeneralTab(QWidget *parent) :
     setLayout(mainLayout);
 }
 
-GeneralTab::~GeneralTab()
+SettingsGeneralTab::~SettingsGeneralTab()
 {
     delete ui;
     delete subscribeUrlEdit;
@@ -70,7 +70,7 @@ GeneralTab::~GeneralTab()
     delete socksPortEdit;
 }
 
-void GeneralTab::init(V2RockConfig *v2rockConfig)
+void SettingsGeneralTab::init(V2RockConfig *v2rockConfig)
 {
     this->subscribeUrlEdit->setText(v2rockConfig->getSubscribeUrl());
     this->v2executablePathEdit->setText(v2rockConfig->getV2executablePath());
@@ -97,27 +97,27 @@ void GeneralTab::init(V2RockConfig *v2rockConfig)
 
 }
 
-QString GeneralTab::getSubscribeUrl() const
+QString SettingsGeneralTab::getSubscribeUrl() const
 {
     return subscribeUrlEdit->text();
 }
 
-QString GeneralTab::getV2executablePath() const
+QString SettingsGeneralTab::getV2executablePath() const
 {
     return v2executablePathEdit->text();
 }
 
-bool GeneralTab::isSocksChecked() const
+bool SettingsGeneralTab::isSocksChecked() const
 {
     return socksCheckBox->isChecked();
 }
 
-QString GeneralTab::getSocksListen() const
+QString SettingsGeneralTab::getSocksListen() const
 {
     return socksListenEdit->text();
 }
 
-int GeneralTab::getSocksPort() const
+int SettingsGeneralTab::getSocksPort() const
 {
     QString portText = socksPortEdit->text();
     if (!portText.isEmpty())
@@ -131,17 +131,17 @@ int GeneralTab::getSocksPort() const
     return -1;
 }
 
-bool GeneralTab::isHttpChecked() const
+bool SettingsGeneralTab::isHttpChecked() const
 {
     return httpCheckBox->isChecked();
 }
 
-QString GeneralTab::getHttpListen() const
+QString SettingsGeneralTab::getHttpListen() const
 {
     return httpListenEdit->text();
 }
 
-int GeneralTab::getHttpPort() const
+int SettingsGeneralTab::getHttpPort() const
 {
     QString portText = httpPortEdit->text();
     if (!portText.isEmpty())

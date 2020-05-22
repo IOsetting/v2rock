@@ -7,12 +7,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     tabWidget = new QTabWidget;
-    generalTab = new GeneralTab();
+    generalTab = new SettingsGeneralTab();
     tabWidget->addTab(generalTab, tr("General"));
-    byPassIpTab = new ByPassIpTab();
-    tabWidget->addTab(byPassIpTab, tr("Bypass Ips"));
-    byPassDomainTab = new ByPassDomainTab();
-    tabWidget->addTab(byPassDomainTab, tr("Bypass Domains"));
+    bypassIpTab = new SettingsBypassIpTab();
+    tabWidget->addTab(bypassIpTab, tr("Bypass Ips"));
+    bypassDomainTab = new SettingsBypassDomainTab();
+    tabWidget->addTab(bypassDomainTab, tr("Bypass Domains"));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::accept);
@@ -39,8 +39,8 @@ void SettingsDialog::setV2rockConfig(V2RockConfig *value)
 {
     v2rockConfig = value;
     this->generalTab->init(v2rockConfig);
-    this->byPassIpTab->init(v2rockConfig);
-    this->byPassDomainTab->init(v2rockConfig);
+    this->bypassIpTab->init(v2rockConfig);
+    this->bypassDomainTab->init(v2rockConfig);
 }
 
 void SettingsDialog::accept()
@@ -125,11 +125,11 @@ void SettingsDialog::accept()
     }
 
     /* bypass ips */
-    QList<QString> ips = byPassIpTab->getBypassIps();
+    QList<QString> ips = bypassIpTab->getBypassIps();
     v2rockConfig->setBypassIps(ips);
 
     /* bypass domains */
-    QList<QString> domains = byPassDomainTab->getBypassDomains();
+    QList<QString> domains = bypassDomainTab->getBypassDomains();
     v2rockConfig->setBypassDomains(domains);
 
     QDialog::accept();

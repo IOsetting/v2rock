@@ -67,14 +67,14 @@ void V2RayConfigOutbound::setHTTPSettings(OutboundHTTPConfigurationObject *value
     hTTPSettings = value;
 }
 
-OutboundMTProtoConfigurationObject *V2RayConfigOutbound::getTProtoSettings() const
+OutboundMTProtoConfigurationObject *V2RayConfigOutbound::getMTProtoSettings() const
 {
     return mTProtoSettings;
 }
 
-void V2RayConfigOutbound::setTProtoSettings(OutboundMTProtoConfigurationObject *tProtoSettings)
+void V2RayConfigOutbound::setMTProtoSettings(OutboundMTProtoConfigurationObject *mTProtoSettings)
 {
-    mTProtoSettings = tProtoSettings;
+    mTProtoSettings = mTProtoSettings;
 }
 
 OutboundShadowsocksConfigurationObject *V2RayConfigOutbound::getShadowSocksSettings() const
@@ -135,299 +135,55 @@ void V2RayConfigOutbound::toJson(QJsonObject &json) const
 
     if (protocol == "blackhole" && blackholeSettings) {
         QJsonObject settingsObj;
-        //struct ResponseObject response
-        QJsonObject responseObj;
-        responseObj["type"] = blackholeSettings->response.type;
-        settingsObj["response"] = responseObj;
+        toJson(blackholeSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (protocol == "dns" && dNSSettings) {
         QJsonObject settingsObj;
-        settingsObj["address"] = dNSSettings->address;
-        settingsObj["network"] = dNSSettings->network;
-        settingsObj["port"] = dNSSettings->port;
+        toJson(dNSSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (protocol == "freedom" && freedomSettings) {
         QJsonObject settingsObj;
-        settingsObj["domainStrategy"] = freedomSettings->domainStrategy;
-        if (freedomSettings->redirect) {
-            settingsObj["redirect"] = *(freedomSettings->redirect);
-        }
-        settingsObj["userLevel"] = freedomSettings->userLevel;
+        toJson(freedomSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (protocol == "http" && hTTPSettings) {
         QJsonObject settingsObj;
-        //QList<HTTPServerObject> servers;
-        QJsonArray serversArray;
-        foreach(const HTTPServerObject server, hTTPSettings->servers) {
-            QJsonObject serverObj;
-            serverObj["address"] = server.address;
-            serverObj["port"] = server.port;
-            if (server.users) {
-                QJsonArray usersArray;
-                foreach (const AccountObject user, *(server.users)) {
-                    QJsonObject userObj;
-                    userObj["user"] = user.user;
-                    userObj["pass"] = user.pass;
-                    usersArray.append(userObj);
-                }
-                serverObj["users"] = usersArray;
-            }
-            serversArray.append(serverObj);
-        }
-        settingsObj["servers"] = serversArray;
-
+        toJson(hTTPSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (protocol == "mtproto" && mTProtoSettings) {
         QJsonObject settingsObj;
-        // Empty
+        toJson(mTProtoSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (protocol == "shadowsocks" && shadowSocksSettings) {
         QJsonObject settingsObj;
-        QJsonArray serversArray;
-        foreach(const ShadowsocksServerObject server, shadowSocksSettings->servers) {
-            QJsonObject serverObj;
-            serverObj["email"] = server.email;
-            serverObj["address"] = server.address;
-            serverObj["port"] = server.port;
-            serverObj["method"] = server.method;
-            serverObj["password"] = server.password;
-            serverObj["ota"] = server.ota;
-            serverObj["level"] = server.level;
-            serversArray.append(serverObj);
-        }
-        settingsObj["servers"] = serversArray;
+        toJson(shadowSocksSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (protocol == "socks" && socksSettings) {
         QJsonObject settingsObj;
-        QJsonArray serversArray;
-        foreach(const SocksServerObject server, socksSettings->servers) {
-            QJsonObject serverObj;
-            serverObj["address"] = server.address;
-            serverObj["port"] = server.port;
-            if (server.users) {
-                QJsonArray usersArray;
-                foreach(const AccountUserObject user, *(server.users)) {
-                    QJsonObject userObj;
-                    userObj["user"] = user.user;
-                    userObj["pass"] = user.pass;
-                    userObj["level"] = user.level;
-                    usersArray.append(userObj);
-                }
-                serverObj["users"] = usersArray;
-            }
-            serversArray.append(serverObj);
-        }
-        settingsObj["servers"] = serversArray;
+        toJson(socksSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (protocol == "vmess" && vMessSettings) {
         QJsonObject settingsObj;
-        QJsonArray vnextArray;
-        foreach (const VMessServerObject vnext, vMessSettings->vnext) {
-            QJsonObject vnextObj;
-            vnextObj["address"] = vnext.address;
-            vnextObj["port"] = vnext.port;
-            if (vnext.users) {
-                QJsonArray usersArray;
-                foreach (const UserObject user, *(vnext.users)) {
-                    QJsonObject userObj;
-                    userObj["id"] = user.id;
-                    userObj["alterId"] = user.alterId;
-                    userObj["level"] = user.level;
-                    userObj["security"] = user.security;
-                    usersArray.append(userObj);
-                }
-                vnextObj["users"] = usersArray;
-            }
-            vnextArray.append(vnextObj);
-        }
-        settingsObj["vnext"] = vnextArray;
+        toJson(vMessSettings, settingsObj);
         json["settings"] = settingsObj;
     }
 
     if (streamSettings) {
         QJsonObject streamSettingsObj;
-        streamSettingsObj["network"] = streamSettings->network;
-        streamSettingsObj["security"] = streamSettings->security;
-
-        if (streamSettings->sockopt) {
-            QJsonObject sockoptObj;
-            sockoptObj["mark"] = streamSettings->sockopt->mark;
-            sockoptObj["tcpFastOpen"] = streamSettings->sockopt->tcpFastOpen;
-            sockoptObj["tproxy"] = streamSettings->sockopt->tproxy;
-            streamSettingsObj["sockopt"] = sockoptObj;
-        }
-
-        if (streamSettings->tlsSettings) {
-            QJsonObject settingsObj;
-            settingsObj["serverName"] = streamSettings->tlsSettings->serverName;
-            settingsObj["allowInsecure"] = streamSettings->tlsSettings->allowInsecure;
-            settingsObj["disableSystemRoot"] = streamSettings->tlsSettings->disableSystemRoot;
-            QJsonArray alpnArray;
-            foreach(const QString val, streamSettings->tlsSettings->alpn) {
-                alpnArray.append(val);
-            }
-            settingsObj["alpn"] = alpnArray;
-
-            QJsonArray certArray;
-            foreach(const CertificateObject cert, streamSettings->tlsSettings->certificates) {
-                QJsonObject certObj;
-                certObj["usage"] = cert.usage;
-                certObj["certificateFile"] = cert.certificateFile;
-                certObj["keyFile"] = cert.keyFile;
-                QJsonArray cerArray;
-                foreach(const QString val, cert.certificate) {
-                    cerArray.append(val);
-                }
-                certObj["certificate"] = cerArray;
-
-                QJsonArray keyArray;
-                foreach(const QString val, cert.key) {
-                    keyArray.append(val);
-                }
-                certObj["key"] = keyArray;
-                certArray.append(certObj);
-            }
-            settingsObj["certificates"] = certArray;
-
-            streamSettingsObj["tlsSettings"] = settingsObj;
-        } else {
-            streamSettingsObj["tlsSettings"] = QJsonValue(QJsonValue::Null);
-        }
-
-        if (streamSettings->tcpSettings) {
-            QJsonObject settingsObj;
-            QJsonObject headerObj;
-            HTTPHeaderObject header = streamSettings->tcpSettings->header;
-            headerObj["type"] = header.type;
-
-            // header request
-            QJsonObject requestObj;
-            HTTPRequestObject request = header.request;
-            requestObj["version"] = request.version;
-            requestObj["method"] = request.method;
-            QJsonArray pathArray;
-            foreach(const QString val, request.path) {
-                pathArray.append(val);
-            }
-            requestObj["path"] = pathArray;
-            QJsonObject reqHeaderObj;
-            QMapIterator<QString, QStringList> it(request.headers);
-            while (it.hasNext()) {
-                it.next();
-                QJsonArray reqHeaderValArray;
-                foreach(const QString val, it.value()) {
-                    reqHeaderValArray.append(val);
-                }
-                reqHeaderObj[it.key()] = reqHeaderValArray;
-
-            }
-            requestObj["headers"] = reqHeaderObj;
-            headerObj["request"] = requestObj;
-
-            // header response
-            QJsonObject responseObj;
-            HTTPResponseObject response = header.response;
-            responseObj["version"] = response.version;
-            responseObj["status"] = response.status;
-            responseObj["reason"] = response.reason;
-            QJsonObject resHeaderObj;
-            QMapIterator<QString, QStringList> it2(response.headers);
-            while (it2.hasNext()) {
-                it2.next();
-                QJsonArray resHeaderValArray;
-                foreach(const QString val, it2.value()) {
-                    resHeaderValArray.append(val);
-                }
-                resHeaderObj[it2.key()] = resHeaderValArray;
-
-            }
-            responseObj["headers"] = resHeaderObj;
-            headerObj["response"] = responseObj;
-
-            settingsObj["header"] = headerObj;
-            streamSettingsObj["tcpSettings"] = settingsObj;
-        } else {
-            streamSettingsObj["tcpSettings"] = QJsonValue(QJsonValue::Null);
-        }
-
-        if (streamSettings->kcpSettings) {
-            QJsonObject settingsObj;
-            settingsObj["mtu"] = streamSettings->kcpSettings->mtu;
-            settingsObj["tti"] = streamSettings->kcpSettings->tti;
-            settingsObj["uplinkCapacity"] = streamSettings->kcpSettings->uplinkCapacity;
-            settingsObj["downlinkCapacity"] = streamSettings->kcpSettings->downlinkCapacity;
-            settingsObj["congestion"] = streamSettings->kcpSettings->congestion;
-            settingsObj["readBufferSize"] = streamSettings->kcpSettings->readBufferSize;
-            settingsObj["writeBufferSize"] = streamSettings->kcpSettings->writeBufferSize;
-            QJsonObject headerObj;
-            headerObj["type"] = streamSettings->kcpSettings->header.type;
-            settingsObj["header"] = headerObj;
-            streamSettingsObj["kcpSettings"] = settingsObj;
-        } else {
-            streamSettingsObj["kcpSettings"] = QJsonValue(QJsonValue::Null);
-        }
-
-        if (streamSettings->wsSettings) {
-            QJsonObject settingsObj;
-            settingsObj["path"] = streamSettings->wsSettings->path;
-            QJsonObject headersObj;
-            QMapIterator<QString, QString> it(streamSettings->wsSettings->headers);
-            while (it.hasNext()) {
-                it.next();
-                headersObj[it.key()] = it.value();
-            }
-            settingsObj["headers"] = headersObj;
-            streamSettingsObj["wsSettings"] = settingsObj;
-        } else {
-            streamSettingsObj["wsSettings"] = QJsonValue(QJsonValue::Null);
-        }
-
-        if (streamSettings->httpSettings) {
-            QJsonObject settingsObj;
-            settingsObj["path"] = streamSettings->httpSettings->path;
-            QJsonArray hostArray;
-            foreach (const QString path, streamSettings->httpSettings->host) {
-                hostArray.append(path);
-            }
-            settingsObj["host"] = hostArray;
-            streamSettingsObj["httpSettings"] = settingsObj;
-        } else {
-            streamSettingsObj["httpSettings"] = QJsonValue(QJsonValue::Null);
-        }
-
-        if (streamSettings->dsSettings) {
-            QJsonObject settingsObj;
-            settingsObj["path"] = streamSettings->dsSettings->path;
-            streamSettingsObj["dsSettings"] = settingsObj;
-        } else {
-            streamSettingsObj["dsSettings"] = QJsonValue(QJsonValue::Null);
-        }
-
-        if (streamSettings->quicSettings) {
-            QJsonObject settingsObj;
-            settingsObj["security"] = streamSettings->quicSettings->security;
-            settingsObj["key"] = streamSettings->quicSettings->key;
-            QJsonObject headerObj;
-            headerObj["type"] = streamSettings->quicSettings->header.type;
-            settingsObj["header"] = headerObj;
-            streamSettingsObj["quicSettings"] = settingsObj;
-        } else {
-            streamSettingsObj["quicSettings"] = QJsonValue(QJsonValue::Null);
-        }
+        toJson(streamSettings, streamSettingsObj);
         json["streamSettings"] = streamSettingsObj;
 
     } else {
@@ -436,10 +192,846 @@ void V2RayConfigOutbound::toJson(QJsonObject &json) const
 
     if (mux) {
         QJsonObject muxObj;
-        muxObj["enabled"] = mux->enabled;
-        muxObj["concurrency"] = mux->concurrency;
+        toJson(mux, muxObj);
         json["mux"] = muxObj;
     } else {
         json["mux"] = QJsonValue(QJsonValue::Null);
     }
+}
+
+void V2RayConfigOutbound::fromJson(OutboundBlackholeConfigurationObject &settings, const QJsonObject &json)
+{
+    if (json.contains("response") && json["response"].isObject()) {
+        QJsonObject responseObj = json["response"].toObject();
+        if (responseObj.contains("type") && responseObj["type"].isString()) {
+            settings.response.type = responseObj["type"].toString();
+        } else {
+            settings.response.type = "none";
+        }
+    } else {
+        // Set it to default value, if the beneath json doesn't exist
+        settings.response.type = "none";
+    }
+}
+
+void V2RayConfigOutbound::toJson(OutboundBlackholeConfigurationObject *settings, QJsonObject &json)
+{
+    QJsonObject responseObj;
+    responseObj["type"] = settings->response.type;
+    json["response"] = responseObj;
+}
+
+void V2RayConfigOutbound::fromJson(OutboundDNSConfigurationObject &settings, const QJsonObject &json)
+{
+    if (json.contains("network") && json["network"].isString()) {
+        settings.network = json["network"].toString();
+    } else {
+        settings.network = "tcp";
+    }
+    if (json.contains("address") && json["address"].isString()) {
+        settings.address = new QString(json["address"].toString());
+    } else {
+        settings.address = 0;
+    }
+    if (json.contains("port") && json["port"].isDouble()) {
+        settings.port = new int(json["port"].toInt());
+    } else {
+        settings.port = 0;
+    }
+}
+
+void V2RayConfigOutbound::toJson(OutboundDNSConfigurationObject *settings, QJsonObject &json)
+{
+    json["network"] = settings->network;
+    if (settings->address) {
+        json["address"] = *(settings->address);
+    }
+    if (settings->port) {
+        json["port"] = *(settings->port);
+    }
+}
+
+void V2RayConfigOutbound::fromJson(OutboundFreedomConfigurationObject &settings, const QJsonObject &json)
+{
+    if (json.contains("domainStrategy") && json["domainStrategy"].isString()) {
+        settings.domainStrategy = json["domainStrategy"].toString();
+    } else {
+        settings.domainStrategy = "AsIs";
+    }
+    if (json.contains("redirect") && json["redirect"].isString()) {
+        settings.redirect = new QString(json["redirect"].isString());
+    } else {
+        settings.redirect = 0;
+    }
+    if (json.contains("userLevel") && json["userLevel"].isDouble()) {
+        settings.userLevel = json["userLevel"].toInt();
+    } else {
+        settings.userLevel = 0;
+    }
+}
+
+void V2RayConfigOutbound::toJson(OutboundFreedomConfigurationObject *settings, QJsonObject &json)
+{
+    json["domainStrategy"] = settings->domainStrategy;
+    if (settings->redirect) {
+        json["redirect"] = *(settings->redirect);
+    }
+    json["userLevel"] = settings->userLevel;
+}
+
+void V2RayConfigOutbound::fromJson(OutboundHTTPConfigurationObject &settings, const QJsonObject &json)
+{
+    if (json.contains("servers") && json["servers"].isArray()) {
+        foreach(QJsonValue serverValue, json["servers"].toArray()) {
+            if (serverValue.isObject()) {
+                QJsonObject serverObj = serverValue.toObject();
+                HTTPServerObject server;
+                if (serverObj.contains("address") && serverObj["address"].isString()) {
+                    server.address = serverObj["address"].toString();
+                }
+                if (serverObj.contains("port") && serverObj["port"].isDouble()) {
+                    server.port = serverObj["port"].toInt();
+                }
+                if (serverObj.contains("users") && serverObj["users"].isArray()) {
+                    server.users = new QList<struct AccountObject>;
+                    foreach(QJsonValue userValue, serverObj["users"].toArray()) {
+                        if (userValue.isObject()) {
+                            QJsonObject userObj = userValue.toObject();
+                            AccountObject user;
+                            if (userObj.contains("user") && userObj["user"].isString()) {
+                                user.user = userObj["user"].toString();
+                            }
+                            if (userObj.contains("pass") && userObj["pass"].isString()) {
+                                user.pass = userObj["pass"].toString();
+                            }
+                            server.users->append(user);
+                        }
+                    }
+                } else {
+                    server.users = 0;
+                }
+                settings.servers.append(server);
+            }
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(OutboundHTTPConfigurationObject *settings, QJsonObject &json)
+{
+    QJsonArray serversArray;
+    foreach(const HTTPServerObject server, settings->servers) {
+        QJsonObject serverObj;
+        serverObj["address"] = server.address;
+        serverObj["port"] = server.port;
+        if (server.users) {
+            QJsonArray usersArray;
+            foreach (const AccountObject user, *(server.users)) {
+                QJsonObject userObj;
+                userObj["user"] = user.user;
+                userObj["pass"] = user.pass;
+                usersArray.append(userObj);
+            }
+            serverObj["users"] = usersArray;
+        }
+        serversArray.append(serverObj);
+    }
+    json["servers"] = serversArray;
+}
+
+void V2RayConfigOutbound::fromJson(OutboundMTProtoConfigurationObject __attribute__ ((unused)) &settings, const QJsonObject __attribute__ ((unused)) &json)
+{
+    // Nothing
+}
+
+void V2RayConfigOutbound::toJson(OutboundMTProtoConfigurationObject __attribute__ ((unused)) *settings, QJsonObject __attribute__ ((unused)) &json)
+{
+    // Nothing
+}
+
+void V2RayConfigOutbound::fromJson(OutboundShadowsocksConfigurationObject &settings, const QJsonObject &json)
+{
+    if (json.contains("servers") && json["servers"].isArray()) {
+        foreach(QJsonValue serverValue, json["servers"].toArray()) {
+            if (serverValue.isObject()) {
+                QJsonObject serverObj = serverValue.toObject();
+                ShadowsocksServerObject server;
+                if (serverObj.contains("email") && serverObj["email"].isString()) {
+                    server.email = serverObj["email"].toString();
+                }
+                if (serverObj.contains("address") && serverObj["address"].isString()) {
+                    server.address = serverObj["address"].toString();
+                }
+                if (serverObj.contains("port") && serverObj["port"].isDouble()) {
+                    server.port = serverObj["port"].toInt();
+                }
+                if (serverObj.contains("method") && serverObj["method"].isString()) {
+                    server.method = serverObj["method"].toString();
+                }
+                if (serverObj.contains("password") && serverObj["password"].isString()) {
+                    server.password = serverObj["password"].toString();
+                }
+                if (serverObj.contains("ota") && serverObj["ota"].isBool()) {
+                    server.ota = serverObj["ota"].toBool();
+                }
+                if (serverObj.contains("level") && serverObj["level"].isDouble()) {
+                    server.level = serverObj["level"].toInt();
+                }
+                settings.servers.append(server);
+            }
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(OutboundShadowsocksConfigurationObject *settings, QJsonObject &json)
+{
+    QJsonArray serversArray;
+    foreach(const ShadowsocksServerObject server, settings->servers) {
+        QJsonObject serverObj;
+        serverObj["email"] = server.email;
+        serverObj["address"] = server.address;
+        serverObj["port"] = server.port;
+        serverObj["method"] = server.method;
+        serverObj["password"] = server.password;
+        serverObj["ota"] = server.ota;
+        serverObj["level"] = server.level;
+        serversArray.append(serverObj);
+    }
+    json["servers"] = serversArray;
+}
+
+void V2RayConfigOutbound::fromJson(OutboundSocksConfigurationObject &settings, const QJsonObject &json)
+{
+    if (json.contains("servers") && json["servers"].isArray()) {
+        foreach(QJsonValue serverValue, json["servers"].toArray()) {
+            if (serverValue.isObject()) {
+                QJsonObject serverObj = serverValue.toObject();
+                SocksServerObject server;
+                if (serverObj.contains("address") && serverObj["address"].isString()) {
+                    server.address = serverObj["address"].toString();
+                }
+                if (serverObj.contains("port") && serverObj["port"].isDouble()) {
+                    server.port = serverObj["port"].toInt();
+                }
+                if (serverObj.contains("users") && serverObj["users"].isArray()) {
+                    server.users = new QList<struct AccountUserObject>;
+                    foreach(QJsonValue userValue, serverObj["users"].toArray()) {
+                        if (userValue.isObject()) {
+                            QJsonObject userObj = userValue.toObject();
+                            AccountUserObject user;
+                            if (userObj.contains("user") && userObj["user"].isString()) {
+                                user.user = userObj["user"].toString();
+                            }
+                            if (userObj.contains("pass") && userObj["pass"].isString()) {
+                                user.pass = userObj["pass"].toString();
+                            }
+                            if (userObj.contains("level") && userObj["level"].isDouble()) {
+                                user.level = userObj["level"].toInt();
+                            }
+                            server.users->append(user);
+                        }
+                    }
+                } else {
+                    server.users = 0;
+                }
+                settings.servers.append(server);
+            }
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(OutboundSocksConfigurationObject *settings, QJsonObject &json)
+{
+    QJsonArray serversArray;
+    foreach(const SocksServerObject server, settings->servers) {
+        QJsonObject serverObj;
+        serverObj["address"] = server.address;
+        serverObj["port"] = server.port;
+        if (server.users) {
+            QJsonArray usersArray;
+            foreach(const AccountUserObject user, *(server.users)) {
+                QJsonObject userObj;
+                userObj["user"] = user.user;
+                userObj["pass"] = user.pass;
+                userObj["level"] = user.level;
+                usersArray.append(userObj);
+            }
+            serverObj["users"] = usersArray;
+        }
+        serversArray.append(serverObj);
+    }
+    json["servers"] = serversArray;
+}
+
+void V2RayConfigOutbound::fromJson(OutboundVMessConfigurationObject &settings, const QJsonObject &json)
+{
+    if (json.contains("vnext") && json["vnext"].isArray()) {
+        foreach(QJsonValue serverValue, json["vnext"].toArray()) {
+            if (serverValue.isObject()) {
+                QJsonObject serverObj = serverValue.toObject();
+                VMessServerObject vnext;
+                if (serverObj.contains("address") && serverObj["address"].isString()) {
+                    vnext.address = serverObj["address"].toString();
+                }
+                if (serverObj.contains("port") && serverObj["port"].isDouble()) {
+                    vnext.port = serverObj["port"].toInt();
+                }
+
+                if (serverObj.contains("users") && serverObj["users"].isArray()) {
+                    vnext.users = new QList<struct UserObject>;
+                    foreach(QJsonValue userValue, serverObj["users"].toArray()) {
+                        if (userValue.isObject()) {
+                            QJsonObject userObj = userValue.toObject();
+                            UserObject user;
+                            if (userObj.contains("id") && userObj["id"].isString()) {
+                                user.id = userObj["id"].toString();
+                            }
+                            if (userObj.contains("alterId") && userObj["alterId"].isDouble()) {
+                                user.alterId = userObj["alterId"].toInt();
+                            }
+                            if (userObj.contains("security") && userObj["security"].isString()) {
+                                user.security = userObj["security"].toString();
+                            } else {
+                                user.security = "auto";
+                            }
+                            if (userObj.contains("level") && userObj["level"].isDouble()) {
+                                user.level = userObj["level"].toInt();
+                            }
+                            vnext.users->append(user);
+                        }
+                    }
+                } else {
+                    vnext.users = 0;
+                }
+                settings.vnext.append(vnext);
+            }
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(OutboundVMessConfigurationObject *settings, QJsonObject &json)
+{
+    QJsonArray vnextArray;
+    foreach (const VMessServerObject vnext, settings->vnext) {
+        QJsonObject vnextObj;
+        vnextObj["address"] = vnext.address;
+        vnextObj["port"] = vnext.port;
+        if (vnext.users) {
+            QJsonArray usersArray;
+            foreach (const UserObject user, *(vnext.users)) {
+                QJsonObject userObj;
+                userObj["id"] = user.id;
+                userObj["alterId"] = user.alterId;
+                userObj["level"] = user.level;
+                userObj["security"] = user.security;
+                usersArray.append(userObj);
+            }
+            vnextObj["users"] = usersArray;
+        }
+        vnextArray.append(vnextObj);
+    }
+    json["vnext"] = vnextArray;
+}
+
+void V2RayConfigOutbound::fromJson(StreamSettingsObject &settings, const QJsonObject &json)
+{
+    if (json.contains("network") && json["network"].isString()) {
+        settings.network = json["network"].toString();
+    } else {
+        settings.network = "ws";
+    }
+    if (json.contains("security") && json["security"].isString()) {
+        settings.security = json["security"].toString();
+    } else {
+        settings.security = "none";
+    }
+    if (json.contains("sockopt") && json["sockopt"].isObject()) {
+        settings.sockopt = new SockoptObject;
+        fromJson(*(settings.sockopt), json["sockopt"].toObject());
+    } else {
+        settings.sockopt = 0;
+    }
+    if (json.contains("tlsSettings") && json["tlsSettings"].isObject()) {
+        settings.tlsSettings = new TransportTlsObject;
+        fromJson(*(settings.tlsSettings), json["tlsSettings"].toObject());
+    } else {
+        settings.tlsSettings = 0;
+    }
+    if (json.contains("tcpSettings") && json["tcpSettings"].isObject()) {
+        settings.tcpSettings = new TransportTcpObject;
+        fromJson(*(settings.tcpSettings), json["tcpSettings"].toObject());
+    } else {
+        settings.tcpSettings = 0;
+    }
+    if (json.contains("kcpSettings") && json["kcpSettings"].isObject()) {
+        settings.kcpSettings = new TransportKcpObject;
+        fromJson(*(settings.kcpSettings), json["kcpSettings"].toObject());
+    } else {
+        settings.kcpSettings = 0;
+    }
+    if (json.contains("wsSettings") && json["wsSettings"].isObject()) {
+        settings.wsSettings = new TransportWebSocketObject;
+        fromJson(*(settings.wsSettings), json["wsSettings"].toObject());
+    } else {
+        settings.wsSettings = 0;
+    }
+    if (json.contains("httpSettings") && json["httpSettings"].isObject()) {
+        settings.httpSettings = new TransportHTTPObject;
+        fromJson(*(settings.httpSettings), json["httpSettings"].toObject());
+    } else {
+        settings.httpSettings = 0;
+    }
+    if (json.contains("dsSettings") && json["dsSettings"].isObject()) {
+        settings.dsSettings = new TransportDomainSocketObject;
+        fromJson(*(settings.dsSettings), json["dsSettings"].toObject());
+    } else {
+        settings.dsSettings = 0;
+    }
+    if (json.contains("quicSettings") && json["quicSettings"].isObject()) {
+        settings.quicSettings = new TransportQuicObject;
+        fromJson(*(settings.quicSettings), json["quicSettings"].toObject());
+    } else {
+        settings.quicSettings = 0;
+    }
+}
+
+void V2RayConfigOutbound::toJson(StreamSettingsObject *settings, QJsonObject &json)
+{
+    json["network"] = settings->network;
+    json["security"] = settings->security;
+
+    if (settings->sockopt) {
+        QJsonObject sockoptObj;
+        toJson(settings->sockopt, sockoptObj);
+        json["sockopt"] = sockoptObj;
+    }
+
+    if (settings->tlsSettings) {
+        QJsonObject settingsObj;
+        toJson(settings->tlsSettings, settingsObj);
+        json["tlsSettings"] = settingsObj;
+    } else {
+        json["tlsSettings"] = QJsonValue(QJsonValue::Null);
+    }
+
+    if (settings->tcpSettings) {
+        QJsonObject settingsObj;
+        toJson(settings->tcpSettings, settingsObj);
+        json["tcpSettings"] = settingsObj;
+    } else {
+        json["tcpSettings"] = QJsonValue(QJsonValue::Null);
+    }
+
+    if (settings->kcpSettings) {
+        QJsonObject settingsObj;
+        toJson(settings->kcpSettings, settingsObj);
+        json["kcpSettings"] = settingsObj;
+    } else {
+        json["kcpSettings"] = QJsonValue(QJsonValue::Null);
+    }
+
+    if (settings->wsSettings) {
+        QJsonObject settingsObj;
+        toJson(settings->wsSettings, settingsObj);
+        json["wsSettings"] = settingsObj;
+    } else {
+        json["wsSettings"] = QJsonValue(QJsonValue::Null);
+    }
+
+    if (settings->httpSettings) {
+        QJsonObject settingsObj;
+        toJson(settings->httpSettings, settingsObj);
+        json["httpSettings"] = settingsObj;
+    } else {
+        json["httpSettings"] = QJsonValue(QJsonValue::Null);
+    }
+
+    if (settings->dsSettings) {
+        QJsonObject settingsObj;
+        toJson(settings->dsSettings, settingsObj);
+        json["dsSettings"] = settingsObj;
+    } else {
+        json["dsSettings"] = QJsonValue(QJsonValue::Null);
+    }
+
+    if (settings->quicSettings) {
+        QJsonObject settingsObj;
+        toJson(settings->quicSettings, settingsObj);
+        json["quicSettings"] = settingsObj;
+    } else {
+        json["quicSettings"] = QJsonValue(QJsonValue::Null);
+    }
+}
+
+void V2RayConfigOutbound::fromJson(MuxObject &settings, const QJsonObject &json)
+{
+    if (json.contains("enabled") && json["enabled"].isBool()) {
+        settings.enabled = json["enabled"].toBool();
+    }
+    if (json.contains("concurrency") && json["concurrency"].isDouble()) {
+        settings.concurrency = json["concurrency"].toInt();
+    }
+}
+
+void V2RayConfigOutbound::toJson(MuxObject *settings, QJsonObject &json)
+{
+    json["enabled"] = settings->enabled;
+    json["concurrency"] = settings->concurrency;
+}
+
+void V2RayConfigOutbound::fromJson(SockoptObject &settings, const QJsonObject &json)
+{
+    if (json.contains("mark") && json["mark"].isDouble()) {
+        settings.mark = json["mark"].toInt();
+    }
+    if (json.contains("tcpFastOpen") && json["tcpFastOpen"].isBool()) {
+        settings.tcpFastOpen = json["tcpFastOpen"].toBool();
+    }
+    if (json.contains("tproxy") && json["tproxy"].isString()) {
+        settings.tproxy = json["tproxy"].toString();
+    }
+}
+
+void V2RayConfigOutbound::toJson(SockoptObject *settings, QJsonObject &json)
+{
+    json["mark"] = settings->mark;
+    json["tcpFastOpen"] = settings->tcpFastOpen;
+    json["tproxy"] = settings->tproxy;
+}
+
+void V2RayConfigOutbound::fromJson(TransportTlsObject &settings, const QJsonObject &json)
+{
+    if (json.contains("serverName") && json["serverName"].isString()) {
+        settings.serverName = json["serverName"].toString();
+    }
+    if (json.contains("allowInsecure") && json["allowInsecure"].isBool()) {
+        settings.allowInsecure = json["allowInsecure"].toBool();
+    }
+    if (json.contains("disableSystemRoot") && json["disableSystemRoot"].isBool()) {
+        settings.disableSystemRoot = json["disableSystemRoot"].toBool();
+    }
+    if (json.contains("alpn") && json["alpn"].isArray()) {
+        foreach (QJsonValue value, json["alpn"].toArray()) {
+            if (value.isString()) {
+                settings.alpn.append(value.toString());
+            }
+        }
+    }
+    if (json.contains("certificates") && json["certificates"].isArray()) {
+        foreach (QJsonValue value, json["certificates"].toArray()) {
+            if (value.isObject()) {
+                QJsonObject obj = value.toObject();
+                CertificateObject certificate;
+                if (obj.contains("usage") && obj["usage"].isString()) {
+                    certificate.usage = obj["usage"].toString();
+                }
+                if (obj.contains("certificateFile") && obj["certificateFile"].isString()) {
+                    certificate.certificateFile = obj["certificateFile"].toString();
+                }
+                if (obj.contains("keyFile") && obj["keyFile"].isString()) {
+                    certificate.keyFile = obj["keyFile"].toString();
+                }
+                if (obj.contains("certificate") && obj["certificate"].isArray()) {
+                    foreach (QJsonValue value, obj["certificate"].toArray()) {
+                        if (value.isString()) {
+                            certificate.certificate.append(value.toString());
+                        }
+                    }
+                }
+                if (obj.contains("key") && obj["key"].isArray()) {
+                    foreach (QJsonValue value, obj["key"].toArray()) {
+                        if (value.isString()) {
+                            certificate.key.append(value.toString());
+                        }
+                    }
+                }
+                settings.certificates.append(certificate);
+            }
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(TransportTlsObject *settings, QJsonObject &json)
+{
+    json["serverName"] = settings->serverName;
+    json["allowInsecure"] = settings->allowInsecure;
+    json["disableSystemRoot"] = settings->disableSystemRoot;
+    QJsonArray alpnArray;
+    foreach(const QString val, settings->alpn) {
+        alpnArray.append(val);
+    }
+    json["alpn"] = alpnArray;
+
+    QJsonArray certArray;
+    foreach(const CertificateObject cert, settings->certificates) {
+        QJsonObject certObj;
+        certObj["usage"] = cert.usage;
+        certObj["certificateFile"] = cert.certificateFile;
+        certObj["keyFile"] = cert.keyFile;
+        QJsonArray cerArray;
+        foreach(const QString val, cert.certificate) {
+            cerArray.append(val);
+        }
+        certObj["certificate"] = cerArray;
+
+        QJsonArray keyArray;
+        foreach(const QString val, cert.key) {
+            keyArray.append(val);
+        }
+        certObj["key"] = keyArray;
+        certArray.append(certObj);
+    }
+    json["certificates"] = certArray;
+}
+
+void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObject &json)
+{
+    if (json.contains("header") && json["header"].isObject()) {
+        QJsonObject headerObj = json["header"].toObject();
+        if (headerObj.contains("type") && headerObj["type"].isString()) {
+            settings.header.type = headerObj["type"].toString();
+        }
+        if (headerObj.contains("request") && headerObj["request"].isObject()) {
+            QJsonObject requestObj = headerObj["request"].toObject();
+            if (requestObj.contains("version") && requestObj["version"].isString()) {
+                settings.header.request.version = requestObj["version"].toString();
+            }
+            if (requestObj.contains("method") && requestObj["method"].isString()) {
+                settings.header.request.method = requestObj["method"].toString();
+            }
+            if (requestObj.contains("path") && requestObj["path"].isArray()) {
+                foreach (QJsonValue value, requestObj["path"].toArray()) {
+                    if (value.isString()) {
+                        settings.header.request.path.append(value.toString());
+                    }
+                }
+            }
+            if (requestObj.contains("headers") && requestObj["headers"].isObject()) {
+                QJsonObject headersObj = requestObj["headers"].toObject();
+                foreach(const QString& key, headersObj.keys()) {
+                    if (headersObj.value(key).isArray()) {
+                        QStringList list;
+                        foreach (QJsonValue value, headersObj.value(key).toArray()) {
+                            if (value.isString()) {
+                                list.append(value.toString());
+                            }
+                        }
+                        settings.header.request.headers.insert(key, list);
+                    }
+                }
+            }
+        }
+        if (headerObj.contains("response") && headerObj["response"].isObject()) {
+            QJsonObject responseObj = headerObj["response"].toObject();
+            if (responseObj.contains("version") && responseObj["version"].isString()) {
+                settings.header.response.version = responseObj["version"].toString();
+            }
+            if (responseObj.contains("status") && responseObj["status"].isString()) {
+                settings.header.response.status = responseObj["status"].toString();
+            }
+            if (responseObj.contains("reason") && responseObj["reason"].isString()) {
+                settings.header.response.reason = responseObj["reason"].toString();
+            }
+            if (responseObj.contains("headers") && responseObj["headers"].isObject()) {
+                QJsonObject headersObj = responseObj["headers"].toObject();
+                foreach(const QString& key, headersObj.keys()) {
+                    if (headersObj.value(key).isArray()) {
+                        QStringList list;
+                        foreach (QJsonValue value, headersObj.value(key).toArray()) {
+                            if (value.isString()) {
+                                list.append(value.toString());
+                            }
+                        }
+                        settings.header.response.headers.insert(key, list);
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(TransportTcpObject *settings, QJsonObject &json)
+{
+    QJsonObject headerObj;
+    HTTPHeaderObject header = settings->header;
+    headerObj["type"] = header.type;
+
+    // header request
+    QJsonObject requestObj;
+    HTTPRequestObject request = header.request;
+    requestObj["version"] = request.version;
+    requestObj["method"] = request.method;
+    QJsonArray pathArray;
+    foreach(const QString val, request.path) {
+        pathArray.append(val);
+    }
+    requestObj["path"] = pathArray;
+    QJsonObject reqHeaderObj;
+    QMapIterator<QString, QStringList> it(request.headers);
+    while (it.hasNext()) {
+        it.next();
+        QJsonArray reqHeaderValArray;
+        foreach(const QString val, it.value()) {
+            reqHeaderValArray.append(val);
+        }
+        reqHeaderObj[it.key()] = reqHeaderValArray;
+
+    }
+    requestObj["headers"] = reqHeaderObj;
+    headerObj["request"] = requestObj;
+
+    // header response
+    QJsonObject responseObj;
+    HTTPResponseObject response = header.response;
+    responseObj["version"] = response.version;
+    responseObj["status"] = response.status;
+    responseObj["reason"] = response.reason;
+    QJsonObject resHeaderObj;
+    QMapIterator<QString, QStringList> it2(response.headers);
+    while (it2.hasNext()) {
+        it2.next();
+        QJsonArray resHeaderValArray;
+        foreach(const QString val, it2.value()) {
+            resHeaderValArray.append(val);
+        }
+        resHeaderObj[it2.key()] = resHeaderValArray;
+
+    }
+    responseObj["headers"] = resHeaderObj;
+    headerObj["response"] = responseObj;
+
+    json["header"] = headerObj;
+}
+
+void V2RayConfigOutbound::fromJson(TransportKcpObject &settings, const QJsonObject &json)
+{
+    if (json.contains("mtu") && json["mtu"].isDouble()) {
+        settings.mtu = json["mtu"].toInt();
+    }
+    if (json.contains("tti") && json["tti"].isDouble()) {
+        settings.tti = json["tti"].toInt();
+    }
+    if (json.contains("uplinkCapacity") && json["uplinkCapacity"].isDouble()) {
+        settings.uplinkCapacity = json["uplinkCapacity"].toInt();
+    }
+    if (json.contains("downlinkCapacity") && json["downlinkCapacity"].isDouble()) {
+        settings.downlinkCapacity = json["downlinkCapacity"].toInt();
+    }
+    if (json.contains("congestion") && json["congestion"].isBool()) {
+        settings.congestion = json["congestion"].toBool();
+    }
+    if (json.contains("readBufferSize") && json["readBufferSize"].isDouble()) {
+        settings.readBufferSize = json["readBufferSize"].toInt();
+    }
+    if (json.contains("writeBufferSize") && json["writeBufferSize"].isDouble()) {
+        settings.writeBufferSize = json["writeBufferSize"].toInt();
+    }
+    if (json.contains("header") && json["header"].isObject()) {
+        QJsonObject headerObj = json["header"].toObject();
+        if (headerObj.contains("type") && headerObj["type"].isString()) {
+            settings.header.type = headerObj["type"].toString();
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(TransportKcpObject *settings, QJsonObject &json)
+{
+    json["mtu"] = settings->mtu;
+    json["tti"] = settings->tti;
+    json["uplinkCapacity"] = settings->uplinkCapacity;
+    json["downlinkCapacity"] = settings->downlinkCapacity;
+    json["congestion"] = settings->congestion;
+    json["readBufferSize"] = settings->readBufferSize;
+    json["writeBufferSize"] = settings->writeBufferSize;
+    QJsonObject headerObj;
+    headerObj["type"] = settings->header.type;
+    json["header"] = headerObj;
+}
+
+void V2RayConfigOutbound::fromJson(TransportWebSocketObject &settings, const QJsonObject &json)
+{
+    if (json.contains("path") && json["path"].isString()) {
+        settings.path = json["path"].toString();
+    }
+    if (json.contains("headers") && json["headers"].isObject()) {
+        QJsonObject headersObj = json["headers"].toObject();
+        foreach(const QString& key, headersObj.keys()) {
+            if (headersObj.value(key).isString()) {
+                settings.headers.insert(key, headersObj.value(key).toString());
+            }
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(TransportWebSocketObject *settings, QJsonObject &json)
+{
+    json["path"] = settings->path;
+    QJsonObject headersObj;
+    QMapIterator<QString, QString> it(settings->headers);
+    while (it.hasNext()) {
+        it.next();
+        headersObj[it.key()] = it.value();
+    }
+    json["headers"] = headersObj;
+}
+
+void V2RayConfigOutbound::fromJson(TransportHTTPObject &settings, const QJsonObject &json)
+{
+    if (json.contains("host") && json["host"].isArray()) {
+        foreach (QJsonValue value, json["host"].toArray()) {
+            if (value.isString()) {
+                settings.host.append(value.toString());
+            }
+        }
+    }
+    if (json.contains("path") && json["path"].isString()) {
+        settings.path = json["path"].toString();
+    }
+}
+
+void V2RayConfigOutbound::toJson(TransportHTTPObject *settings, QJsonObject &json)
+{
+    json["path"] = settings->path;
+    QJsonArray hostArray;
+    foreach (const QString path, settings->host) {
+        hostArray.append(path);
+    }
+    json["host"] = hostArray;
+}
+
+void V2RayConfigOutbound::fromJson(TransportDomainSocketObject &settings, const QJsonObject &json)
+{
+    if (json.contains("path") && json["path"].isString()) {
+        settings.path = json["path"].toString();
+    }
+}
+
+void V2RayConfigOutbound::toJson(TransportDomainSocketObject *settings, QJsonObject &json)
+{
+    json["path"] = settings->path;
+}
+
+void V2RayConfigOutbound::fromJson(TransportQuicObject &settings, const QJsonObject &json)
+{
+    if (json.contains("security") && json["security"].isString()) {
+        settings.security = json["security"].toString();
+    }
+    if (json.contains("key") && json["key"].isString()) {
+        settings.key = json["key"].toString();
+    }
+    if (json.contains("header") && json["header"].isObject()) {
+        QJsonObject headerObj = json["header"].toObject();
+        if (headerObj.contains("type") && headerObj["type"].isString()) {
+            settings.header.type = headerObj["type"].toString();
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(TransportQuicObject *settings, QJsonObject &json)
+{
+    json["security"] = settings->security;
+    json["key"] = settings->key;
+    QJsonObject headerObj;
+    headerObj["type"] = settings->header.type;
+    json["header"] = headerObj;
 }

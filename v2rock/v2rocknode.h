@@ -5,64 +5,66 @@
 #include <QString>
 #include <QTextStream>
 
+#include "v2rayconfigoutbound.h"
+
 class V2RockNode
 {
 public:
     V2RockNode();
 
+    QString getName() const;
+    void setName(const QString &value);
+
     QString getProtocol() const;
     void setProtocol(const QString &value);
 
-    QString getAddress() const;
-    void setAddress(const QString &value);
+    OutboundBlackholeConfigurationObject *getBlackholeSettings() const;
+    void setBlackholeSettings(OutboundBlackholeConfigurationObject *value);
 
-    int getPort() const;
-    void setPort(int value);
+    OutboundDNSConfigurationObject *getDNSSettings() const;
+    void setDNSSettings(OutboundDNSConfigurationObject *value);
 
-    QString getUserId() const;
-    void setUserId(const QString &value);
+    OutboundFreedomConfigurationObject *getFreedomSettings() const;
+    void setFreedomSettings(OutboundFreedomConfigurationObject *value);
 
-    int getUserAid() const;
-    void setUserAid(const int value);
+    OutboundHTTPConfigurationObject *getHTTPSettings() const;
+    void setHTTPSettings(OutboundHTTPConfigurationObject *value);
 
-    QString getUserEmail() const;
-    void setUserEmail(const QString &value);
+    OutboundMTProtoConfigurationObject *getMTProtoSettings() const;
+    void setMTProtoSettings(OutboundMTProtoConfigurationObject *mTProtoSettings);
 
-    QString getUserSecurity() const;
-    void setUserSecurity(const QString &value);
+    OutboundShadowsocksConfigurationObject *getShadowSocksSettings() const;
+    void setShadowSocksSettings(OutboundShadowsocksConfigurationObject *value);
 
-    QString getStreamNetwork() const;
-    void setStreamNetwork(const QString &value);
+    OutboundSocksConfigurationObject *getSocksSettings() const;
+    void setSocksSettings(OutboundSocksConfigurationObject *value);
 
-    QString getStreamWsPath() const;
-    void setStreamWsPath(const QString &value);
+    OutboundVMessConfigurationObject *getVMessSettings() const;
+    void setVMessSettings(OutboundVMessConfigurationObject *value);
 
-    QString getStreamWsHeaderHost() const;
-    void setStreamWsHeaderHost(const QString &value);
+    StreamSettingsObject *getStreamSettings() const;
+    void setStreamSettings(StreamSettingsObject *value);
 
-    QString getRemark() const;
-    void setRemark(const QString &value);
-
-    QString getPs() const;
-    void setPs(const QString &value);
+    MuxObject *getMux() const;
+    void setMux(MuxObject *value);
 
     void read(const QJsonObject &json);
     void write(QJsonObject &json) const;
     void print(int indentation = 0) const;
 
 private:
+    QString name;
     QString protocol;
-    QString address;
-    int port;
-    QString userId;
-    int userAid;
-    QString userEmail;
-    QString userSecurity;
-    QString streamNetwork;
-    QString streamWsPath;
-    QString streamWsHeaderHost;
-    QString remark;
-    QString ps;
+    OutboundBlackholeConfigurationObject *blackholeSettings;
+    OutboundDNSConfigurationObject *dNSSettings;
+    OutboundFreedomConfigurationObject *freedomSettings;
+    OutboundHTTPConfigurationObject *hTTPSettings;
+    OutboundMTProtoConfigurationObject *mTProtoSettings;
+    OutboundShadowsocksConfigurationObject *shadowSocksSettings;
+    OutboundSocksConfigurationObject *socksSettings;
+    OutboundVMessConfigurationObject *vMessSettings;
+    StreamSettingsObject *streamSettings;
+    MuxObject *mux;
 };
 
 #endif // V2ROCKNODE_H

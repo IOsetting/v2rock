@@ -1,9 +1,9 @@
-#include "bypassdomaintab.h"
-#include "ui_bypassdomaintab.h"
+#include "settingsbypassdomaintab.h"
+#include "ui_settingsbypassdomaintab.h"
 
-ByPassDomainTab::ByPassDomainTab(QWidget *parent) :
+SettingsBypassDomainTab::SettingsBypassDomainTab(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ByPassDomainTab)
+    ui(new Ui::SettingsBypassDomainTab)
 {
     ui->setupUi(this);
     this->bypassDomainsEdit = new QPlainTextEdit();
@@ -14,12 +14,12 @@ ByPassDomainTab::ByPassDomainTab(QWidget *parent) :
     setLayout(mainLayout);
 }
 
-ByPassDomainTab::~ByPassDomainTab()
+SettingsBypassDomainTab::~SettingsBypassDomainTab()
 {
     delete ui;
 }
 
-void ByPassDomainTab::init(V2RockConfig *v2rockConfig)
+void SettingsBypassDomainTab::init(V2RockConfig *v2rockConfig)
 {
     bypassDomainsEdit->clear();
     foreach (const QString domain, v2rockConfig->getBypassDomains()) {
@@ -27,7 +27,7 @@ void ByPassDomainTab::init(V2RockConfig *v2rockConfig)
     }
 }
 
-QList<QString> ByPassDomainTab::getBypassDomains() const
+QList<QString> SettingsBypassDomainTab::getBypassDomains() const
 {
     QString text = bypassDomainsEdit->toPlainText();
     QStringList lines = text.split("\n");

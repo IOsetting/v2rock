@@ -8,9 +8,9 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
-#include "generaltab.h"
-#include "bypassiptab.h"
-#include "bypassdomaintab.h"
+#include "settingsgeneraltab.h"
+#include "settingsbypassiptab.h"
+#include "settingsbypassdomaintab.h"
 #include "v2rockconfig.h"
 
 namespace Ui {
@@ -33,9 +33,9 @@ private:
 
     Ui::SettingsDialog *ui;
     QTabWidget *tabWidget;
-    GeneralTab *generalTab;
-    ByPassIpTab *byPassIpTab;
-    ByPassDomainTab * byPassDomainTab;
+    SettingsGeneralTab *generalTab;
+    SettingsBypassIpTab *bypassIpTab;
+    SettingsBypassDomainTab * bypassDomainTab;
     QDialogButtonBox *buttonBox;
 
 private slots:

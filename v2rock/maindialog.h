@@ -22,6 +22,7 @@
 #include "pingprocess.h"
 #include "v2rockconfig.h"
 #include "xinjieconfig.h"
+#include "nodeeditdialog.h"
 #include "settingsdialog.h"
 
 namespace Ui {
@@ -53,6 +54,7 @@ private:
 
     Ui::MainDialog *ui;
     SettingsDialog *dialogSettings;
+    NodeEditDialog *dialogNodeEdit;
     QPushButton *btnImport, *btnTest, *btnStart, *btnStop, *btnSettings, *btnQuit;
     QTreeWidget *tree;
     QPlainTextEdit *logEdit;
@@ -61,16 +63,18 @@ private:
     QMenu *trayIconMenu;
     QList<QIcon> *icons;
 
+    QAction *delAction;
+    QAction *editAction;
+    QAction *addAction;
     QAction *restoreAction;
     QAction *quitAction;
 
-    void createActions();
     void createTrayIcon();
     void setIcon(int index);
     void showEventHandler();
     void reloadTreeList();
     void selectTreeItem();
-    void addTreeItem(const QString id, const QString name, const QString host, int port);
+    void addTreeItem(const QString id, const QString name, const QString protocol, const QString host, int port);
     void updateBtnStatus(bool stopped);
 
 private slots:
@@ -79,6 +83,10 @@ private slots:
     void btnStartClickHandler();
     void btnStopClickHandler();
     void btnSettingsClickHandler();
+    void actDelHandler();
+    void actEditHandler();
+    void actAddHandler();
+    void contextMenu(const QPoint &point);
     void networkAccessManagerFinished(QNetworkReply *reply);
     void treeItemDoubleClicked(QTreeWidgetItem *item, int column);
     void processFinished(int exitCode, QProcess::ExitStatus exitStatus);

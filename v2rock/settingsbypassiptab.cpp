@@ -1,9 +1,9 @@
-#include "bypassiptab.h"
-#include "ui_bypassiptab.h"
+#include "settingsbypassiptab.h"
+#include "ui_settingsbypassiptab.h"
 
-ByPassIpTab::ByPassIpTab(QWidget *parent) :
+SettingsBypassIpTab::SettingsBypassIpTab(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ByPassIpTab)
+    ui(new Ui::SettingsBypassIpTab)
 {
     ui->setupUi(this);
     this->bypassIpsEdit = new QPlainTextEdit();
@@ -14,12 +14,12 @@ ByPassIpTab::ByPassIpTab(QWidget *parent) :
     setLayout(mainLayout);
 }
 
-ByPassIpTab::~ByPassIpTab()
+SettingsBypassIpTab::~SettingsBypassIpTab()
 {
     delete ui;
 }
 
-void ByPassIpTab::init(V2RockConfig *v2rockConfig)
+void SettingsBypassIpTab::init(V2RockConfig *v2rockConfig)
 {
     bypassIpsEdit->clear();
     foreach (const QString ip, v2rockConfig->getBypassIps()) {
@@ -27,7 +27,7 @@ void ByPassIpTab::init(V2RockConfig *v2rockConfig)
     }
 }
 
-QList<QString> ByPassIpTab::getBypassIps() const
+QList<QString> SettingsBypassIpTab::getBypassIps() const
 {
     QString text = bypassIpsEdit->toPlainText();
     QStringList lines = text.split("\n");

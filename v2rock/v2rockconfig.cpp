@@ -403,42 +403,21 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     V2RayConfigOutbound proxyOutbound;
     proxyOutbound.setTag("proxy");
     proxyOutbound.setProtocol(node.getProtocol());
-    if (proxyOutbound.getProtocol() == "vmess") {
-        OutboundVMessConfigurationObject *vmessSettings = new OutboundVMessConfigurationObject;
-        proxyOutbound.setVMessSettings(vmessSettings);
-        VMessServerObject vMessServer;
-        vMessServer.address = node.getAddress();
-        vMessServer.port = node.getPort();
-        vMessServer.users = new QList<struct UserObject>;
-        UserObject user;
-        user.id = node.getUserId();
-        user.alterId = node.getUserAid();
-        user.level = 0;
-        user.security = node.getUserSecurity();
-        vMessServer.users->append(user);
-        vmessSettings->vnext.append(vMessServer);
+    if (node.getProtocol() == "vmess") {
+        proxyOutbound.setVMessSettings(node.getVMessSettings());
+    } else if (node.getProtocol() == "shadowsocks") {
+        proxyOutbound.setShadowSocksSettings(node.getShadowSocksSettings());
+    } else if (node.getProtocol() == "http") {
+        proxyOutbound.setHTTPSettings(node.getHTTPSettings());
+    } else if (node.getProtocol() == "mtproto") {
+        proxyOutbound.setMTProtoSettings(node.getMTProtoSettings());
+    } else if (node.getProtocol() == "socks") {
+        proxyOutbound.setSocksSettings(node.getSocksSettings());
+    } else if (node.getProtocol() == "dns") {
+        proxyOutbound.setDNSSettings(node.getDNSSettings());
     }
-
-    StreamSettingsObject *streamSettings = new StreamSettingsObject;
-    proxyOutbound.setStreamSettings(streamSettings);
-    streamSettings->network = "ws";
-    streamSettings->security = "none";
-    streamSettings->sockopt = 0;
-    streamSettings->tlsSettings = 0;
-    streamSettings->tcpSettings = 0;
-    streamSettings->kcpSettings = 0;
-    streamSettings->httpSettings = 0;
-    streamSettings->dsSettings = 0;
-    streamSettings->quicSettings = 0;
-
-    streamSettings->wsSettings = new TransportWebSocketObject;
-    streamSettings->wsSettings->path = node.getStreamWsPath();
-    streamSettings->wsSettings->headers.insert("Host", "");
-
-    MuxObject *mux = new MuxObject;
-    proxyOutbound.setMux(mux);
-    mux->enabled = true;
-    mux->concurrency = 8;
+    proxyOutbound.setStreamSettings(node.getStreamSettings());
+    proxyOutbound.setMux(node.getMux());
 
     // direct outbound
     V2RayConfigOutbound directOutbound;
