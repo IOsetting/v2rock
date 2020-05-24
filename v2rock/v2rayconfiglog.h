@@ -13,17 +13,18 @@ public:
     QString getLoglevel() const;
     void setLoglevel(const QString &value);
 
-    QString *getAccess() const;
-    void setAccess(QString *value);
 
-    QString *getError() const;
-    void setError(QString *value);
+    QString getAccess() const;
+    void setAccess(const QString &value);
+
+    QString getError() const;
+    void setError(const QString &value);
 
 private:
     //LogLevel {debug, info, warning, error, none};
     QString loglevel;
-    QString *access;
-    QString *error;
+    QString access;
+    QString error;
 };
 
 #endif // V2RAYCONFIGLOG_H

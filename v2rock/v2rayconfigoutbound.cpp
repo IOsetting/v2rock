@@ -2,7 +2,7 @@
 
 V2RayConfigOutbound::V2RayConfigOutbound() :
     blackholeSettings(0), dNSSettings(0), freedomSettings(0), hTTPSettings(0), mTProtoSettings(0),
-    shadowSocksSettings(0), vMessSettings(0), streamSettings(0), mux(0)
+    shadowSocksSettings(0), socksSettings(0), vMessSettings(0), streamSettings(0), mux(0)
 {
 
 }
@@ -18,13 +18,6 @@ V2RayConfigOutbound::~V2RayConfigOutbound()
     delete shadowSocksSettings;
     delete socksSettings;
     delete vMessSettings;
-    delete streamSettings->tlsSettings;
-    delete streamSettings->tcpSettings;
-    delete streamSettings->kcpSettings;
-    delete streamSettings->wsSettings;
-    delete streamSettings->httpSettings;
-    delete streamSettings->dsSettings;
-    delete streamSettings->quicSettings;
     delete streamSettings;
     delete mux;
 }
@@ -56,7 +49,12 @@ OutboundBlackholeConfigurationObject *V2RayConfigOutbound::getBlackholeSettings(
 
 void V2RayConfigOutbound::setBlackholeSettings(OutboundBlackholeConfigurationObject *value)
 {
-    blackholeSettings = value;
+    delete blackholeSettings;
+    if (value) {
+        blackholeSettings = new OutboundBlackholeConfigurationObject(*value);
+    } else {
+        blackholeSettings = 0;
+    }
 }
 
 OutboundDNSConfigurationObject *V2RayConfigOutbound::getDNSSettings() const
@@ -66,7 +64,12 @@ OutboundDNSConfigurationObject *V2RayConfigOutbound::getDNSSettings() const
 
 void V2RayConfigOutbound::setDNSSettings(OutboundDNSConfigurationObject *value)
 {
-    dNSSettings = value;
+    delete dNSSettings;
+    if (value) {
+        dNSSettings = new OutboundDNSConfigurationObject(*value);
+    } else {
+        dNSSettings = 0;
+    }
 }
 
 OutboundFreedomConfigurationObject *V2RayConfigOutbound::getFreedomSettings() const
@@ -76,7 +79,12 @@ OutboundFreedomConfigurationObject *V2RayConfigOutbound::getFreedomSettings() co
 
 void V2RayConfigOutbound::setFreedomSettings(OutboundFreedomConfigurationObject *value)
 {
-    freedomSettings = value;
+    delete freedomSettings;
+    if (value) {
+        freedomSettings = new OutboundFreedomConfigurationObject(*value);
+    } else {
+        freedomSettings = 0;
+    }
 }
 
 OutboundHTTPConfigurationObject *V2RayConfigOutbound::getHTTPSettings() const
@@ -86,7 +94,12 @@ OutboundHTTPConfigurationObject *V2RayConfigOutbound::getHTTPSettings() const
 
 void V2RayConfigOutbound::setHTTPSettings(OutboundHTTPConfigurationObject *value)
 {
-    hTTPSettings = value;
+    delete hTTPSettings;
+    if (value) {
+        hTTPSettings = new OutboundHTTPConfigurationObject(*value);
+    } else {
+        hTTPSettings = 0;
+    }
 }
 
 OutboundMTProtoConfigurationObject *V2RayConfigOutbound::getMTProtoSettings() const
@@ -94,9 +107,14 @@ OutboundMTProtoConfigurationObject *V2RayConfigOutbound::getMTProtoSettings() co
     return mTProtoSettings;
 }
 
-void V2RayConfigOutbound::setMTProtoSettings(OutboundMTProtoConfigurationObject *mTProtoSettings)
+void V2RayConfigOutbound::setMTProtoSettings(OutboundMTProtoConfigurationObject *value)
 {
-    mTProtoSettings = mTProtoSettings;
+    delete mTProtoSettings;
+    if (value) {
+        mTProtoSettings = new OutboundMTProtoConfigurationObject(*value);
+    } else {
+        mTProtoSettings = 0;
+    }
 }
 
 OutboundShadowsocksConfigurationObject *V2RayConfigOutbound::getShadowSocksSettings() const
@@ -106,7 +124,12 @@ OutboundShadowsocksConfigurationObject *V2RayConfigOutbound::getShadowSocksSetti
 
 void V2RayConfigOutbound::setShadowSocksSettings(OutboundShadowsocksConfigurationObject *value)
 {
-    shadowSocksSettings = value;
+    delete shadowSocksSettings;
+    if (value) {
+        shadowSocksSettings = new OutboundShadowsocksConfigurationObject(*value);
+    } else {
+        shadowSocksSettings = 0;
+    }
 }
 
 OutboundSocksConfigurationObject *V2RayConfigOutbound::getSocksSettings() const
@@ -116,7 +139,12 @@ OutboundSocksConfigurationObject *V2RayConfigOutbound::getSocksSettings() const
 
 void V2RayConfigOutbound::setSocksSettings(OutboundSocksConfigurationObject *value)
 {
-    socksSettings = value;
+    delete socksSettings;
+    if (value) {
+        socksSettings = new OutboundSocksConfigurationObject(*value);
+    } else {
+        socksSettings = 0;
+    }
 }
 
 OutboundVMessConfigurationObject *V2RayConfigOutbound::getVMessSettings() const
@@ -126,7 +154,12 @@ OutboundVMessConfigurationObject *V2RayConfigOutbound::getVMessSettings() const
 
 void V2RayConfigOutbound::setVMessSettings(OutboundVMessConfigurationObject *value)
 {
-    vMessSettings = value;
+    delete vMessSettings;
+    if (value) {
+        vMessSettings = new OutboundVMessConfigurationObject(*value);
+    } else {
+        vMessSettings = 0;
+    }
 }
 
 StreamSettingsObject *V2RayConfigOutbound::getStreamSettings() const
@@ -136,7 +169,12 @@ StreamSettingsObject *V2RayConfigOutbound::getStreamSettings() const
 
 void V2RayConfigOutbound::setStreamSettings(StreamSettingsObject *value)
 {
-    streamSettings = value;
+    delete streamSettings;
+    if (value) {
+        streamSettings = new StreamSettingsObject(*value);
+    } else {
+        streamSettings = 0;
+    }
 }
 
 MuxObject *V2RayConfigOutbound::getMux() const

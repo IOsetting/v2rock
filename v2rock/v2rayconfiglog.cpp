@@ -1,6 +1,6 @@
 #include "v2rayconfiglog.h"
 
-V2RayConfigLog::V2RayConfigLog() : access(0), error(0)
+V2RayConfigLog::V2RayConfigLog()
 {
 
 }
@@ -15,22 +15,22 @@ void V2RayConfigLog::setLoglevel(const QString &value)
     loglevel = value;
 }
 
-QString *V2RayConfigLog::getAccess() const
+QString V2RayConfigLog::getAccess() const
 {
     return access;
 }
 
-void V2RayConfigLog::setAccess(QString *value)
+void V2RayConfigLog::setAccess(const QString &value)
 {
     access = value;
 }
 
-QString *V2RayConfigLog::getError() const
+QString V2RayConfigLog::getError() const
 {
     return error;
 }
 
-void V2RayConfigLog::setError(QString *value)
+void V2RayConfigLog::setError(const QString &value)
 {
     error = value;
 }
@@ -39,15 +39,15 @@ void V2RayConfigLog::toJson(QJsonObject &json) const
 {
     json["loglevel"] = loglevel;
 
-    if (access) {
-        json["access"] = *access;
-    } else {
+    if (access.isEmpty()) {
         json["access"] = QJsonValue(QJsonValue::Null);
+    } else {
+        json["access"] = access;
     }
 
-    if (error) {
-        json["error"] = *error;
-    } else {
+    if (error.isEmpty()) {
         json["error"] = QJsonValue(QJsonValue::Null);
+    } else {
+        json["error"] = error;
     }
 }

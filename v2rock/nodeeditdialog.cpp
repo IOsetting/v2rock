@@ -49,8 +49,22 @@ void NodeEditDialog::accept()
         OutboundVMessConfigurationObject *settings = new OutboundVMessConfigurationObject;
         generalTab->getVMessSettings(*settings);
         node->setVMessSettings(settings);
+    } else if (node->getProtocol() == "http") {
+        OutboundHTTPConfigurationObject *settings = new OutboundHTTPConfigurationObject;
+        generalTab->getHTTPSettings(*settings);
+        node->setHTTPSettings(settings);
+    } else if (node->getProtocol() == "mtproto") {
+        OutboundMTProtoConfigurationObject *settings = new OutboundMTProtoConfigurationObject;
+        node->setMTProtoSettings(settings);
+    } else if (node->getProtocol() == "shadowsocks") {
+        OutboundShadowsocksConfigurationObject *settings = new OutboundShadowsocksConfigurationObject;
+        generalTab->getShadowsocksSettings(*settings);
+        node->setShadowSocksSettings(settings);
+    } else if (node->getProtocol() == "socks") {
+        OutboundSocksConfigurationObject *settings = new OutboundSocksConfigurationObject;
+        generalTab->getSocksSettings(*settings);
+        node->setSocksSettings(settings);
     }
-    //v2rockConfig->getNodes().insert(index, node);
     QDialog::accept();
 }
 

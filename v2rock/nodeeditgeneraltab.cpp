@@ -329,7 +329,7 @@ void NodeEditGeneralTab::getVMessSettings(OutboundVMessConfigurationObject &sett
     settings.vnext.append(server);
 }
 
-OutboundSocksConfigurationObject *NodeEditGeneralTab::getSocksConfig() const
+void NodeEditGeneralTab::getSocksSettings(OutboundSocksConfigurationObject &settings) const
 {
     SocksServerObject *server = new SocksServerObject;
     server->address = socksAddressEdit->text();
@@ -339,12 +339,10 @@ OutboundSocksConfigurationObject *NodeEditGeneralTab::getSocksConfig() const
     user->pass = socksUserPassEdit->text();
     user->level = socksUserLevelEdit->text().toInt();
     server->users.append(user);
-    OutboundSocksConfigurationObject *socksConfig = new OutboundSocksConfigurationObject;
-    socksConfig->servers.append(server);
-    return socksConfig;
+    settings.servers.append(server);
 }
 
-OutboundShadowsocksConfigurationObject *NodeEditGeneralTab::getShadowsocksConfig() const
+void NodeEditGeneralTab::getShadowsocksSettings(OutboundShadowsocksConfigurationObject &settings) const
 {
     ShadowsocksServerObject *server = new ShadowsocksServerObject;
     server->address = shadowsocksAddressEdit->text();
@@ -354,12 +352,10 @@ OutboundShadowsocksConfigurationObject *NodeEditGeneralTab::getShadowsocksConfig
     server->method = shadowsocksMethodComb->currentText();
     server->ota = shadowsocksOtaCheckbox->isChecked();
     server->level = shadowsocksLevelEdit->text().toInt();
-    OutboundShadowsocksConfigurationObject *shadowsocksConfig = new OutboundShadowsocksConfigurationObject;
-    shadowsocksConfig->servers.append(server);
-    return shadowsocksConfig;
+    settings.servers.append(server);
 }
 
-OutboundHTTPConfigurationObject *NodeEditGeneralTab::getHTTPConfig() const
+void NodeEditGeneralTab::getHTTPSettings(OutboundHTTPConfigurationObject &settings) const
 {
     HTTPServerObject *server = new HTTPServerObject;
     server->address = httpAddressEdit->text();
@@ -368,9 +364,7 @@ OutboundHTTPConfigurationObject *NodeEditGeneralTab::getHTTPConfig() const
     user->user = httpUserUserEdit->text();
     user->pass = httpUserPassEdit->text();
     server->users.append(user);
-    OutboundHTTPConfigurationObject *httpConfig = new OutboundHTTPConfigurationObject;
-    httpConfig->servers.append(server);
-    return httpConfig;
+    settings.servers.append(server);
 }
 
 void NodeEditGeneralTab::protocolSwitch(const int index)

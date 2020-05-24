@@ -1,6 +1,7 @@
 #ifndef V2RAYCONFIG_H
 #define V2RAYCONFIG_H
 
+#include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QList>
@@ -15,6 +16,8 @@ class V2RayConfig
 {
 public:
     V2RayConfig();
+    ~V2RayConfig();
+
     void toJson(QJsonObject &json) const;
 
     PolicyObject *getPolicy() const;
@@ -35,8 +38,9 @@ public:
     QList<V2RayConfigInbound> getInbounds() const;
     void setInbounds(const QList<V2RayConfigInbound> &value);
 
-    QList<V2RayConfigOutbound> getOutbounds() const;
-    void setOutbounds(const QList<V2RayConfigOutbound> &value);
+    QList<V2RayConfigOutbound *> getOutbounds() const;
+    void appendOutbound(V2RayConfigOutbound *value);
+    void clearOutbounds();
 
     V2RayConfigRoute getRouting() const;
     void setRouting(const V2RayConfigRoute &value);
@@ -48,7 +52,7 @@ private:
     bool stats;
     V2RayConfigLog log;
     QList<V2RayConfigInbound> inbounds;
-    QList<V2RayConfigOutbound> outbounds;
+    QList<V2RayConfigOutbound *> outbounds;
     V2RayConfigRoute routing;
 };
 

@@ -27,9 +27,9 @@ public:
     QString getName() const;
     QString getProtocol() const;
     void getVMessSettings(OutboundVMessConfigurationObject &settings) const;
-    OutboundSocksConfigurationObject *getSocksConfig() const;
-    OutboundShadowsocksConfigurationObject *getShadowsocksConfig() const;
-    OutboundHTTPConfigurationObject *getHTTPConfig() const;
+    void getSocksSettings(OutboundSocksConfigurationObject &settings) const;
+    void getShadowsocksSettings(OutboundShadowsocksConfigurationObject &settings) const;
+    void getHTTPSettings(OutboundHTTPConfigurationObject &settings) const;
 
 private:
     Ui::NodeEditGeneralTab *ui;

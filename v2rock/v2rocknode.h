@@ -43,7 +43,6 @@ public:
 
     OutboundVMessConfigurationObject *getVMessSettings() const;
     void setVMessSettings(OutboundVMessConfigurationObject *value);
-    void delVMessSettings();
 
     StreamSettingsObject *getStreamSettings() const;
     void setStreamSettings(StreamSettingsObject *value);

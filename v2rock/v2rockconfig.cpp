@@ -386,8 +386,8 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     // log
     V2RayConfigLog v2rayConfigLog;
     v2rayConfigLog.setLoglevel("info");
-    v2rayConfigLog.setAccess(0);
-    v2rayConfigLog.setError(0);
+    v2rayConfigLog.setAccess("");
+    v2rayConfigLog.setError("");
     v2rayConfig.setLog(v2rayConfigLog);
 
     // inbounds
@@ -402,48 +402,47 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
 
     // outbounds
     // proxy outbound
-    V2RayConfigOutbound proxyOutbound;
-    proxyOutbound.setTag("proxy");
-    proxyOutbound.setProtocol(node->getProtocol());
+    V2RayConfigOutbound *proxyOutbound = new V2RayConfigOutbound;
+    proxyOutbound->setTag("proxy");
+    proxyOutbound->setProtocol(node->getProtocol());
     if (node->getProtocol() == "vmess") {
-        proxyOutbound.setVMessSettings(node->getVMessSettings());
+        proxyOutbound->setVMessSettings(node->getVMessSettings());
     } else if (node->getProtocol() == "shadowsocks") {
-        proxyOutbound.setShadowSocksSettings(node->getShadowSocksSettings());
+        proxyOutbound->setShadowSocksSettings(node->getShadowSocksSettings());
     } else if (node->getProtocol() == "http") {
-        proxyOutbound.setHTTPSettings(node->getHTTPSettings());
+        proxyOutbound->setHTTPSettings(node->getHTTPSettings());
     } else if (node->getProtocol() == "mtproto") {
-        proxyOutbound.setMTProtoSettings(node->getMTProtoSettings());
+        proxyOutbound->setMTProtoSettings(node->getMTProtoSettings());
     } else if (node->getProtocol() == "socks") {
-        proxyOutbound.setSocksSettings(node->getSocksSettings());
+        proxyOutbound->setSocksSettings(node->getSocksSettings());
     } else if (node->getProtocol() == "dns") {
-        proxyOutbound.setDNSSettings(node->getDNSSettings());
+        proxyOutbound->setDNSSettings(node->getDNSSettings());
     }
-    proxyOutbound.setStreamSettings(node->getStreamSettings());
-    proxyOutbound.setMux(node->getMux());
+    proxyOutbound->setStreamSettings(node->getStreamSettings());
+    proxyOutbound->setMux(node->getMux());
 
     // direct outbound
-    V2RayConfigOutbound directOutbound;
-    directOutbound.setTag("direct");
-    directOutbound.setProtocol("freedom");
+    V2RayConfigOutbound *directOutbound = new V2RayConfigOutbound;
+    directOutbound->setTag("direct");
+    directOutbound->setProtocol("freedom");
     OutboundFreedomConfigurationObject *freedomSettings = new OutboundFreedomConfigurationObject;
-    proxyOutbound.setFreedomSettings(freedomSettings);
     freedomSettings->domainStrategy = "AsIs";
     freedomSettings->redirect = "";
     freedomSettings->userLevel = 0;
+    directOutbound->setFreedomSettings(freedomSettings);
 
     // block outbound
-    V2RayConfigOutbound blockOutbound;
-    blockOutbound.setTag("block");
-    blockOutbound.setProtocol("blackhole");
+    V2RayConfigOutbound *blockOutbound = new V2RayConfigOutbound;
+    blockOutbound->setTag("block");
+    blockOutbound->setProtocol("blackhole");
     OutboundBlackholeConfigurationObject *blockSettings = new OutboundBlackholeConfigurationObject;
-    blockOutbound.setBlackholeSettings(blockSettings);
     blockSettings->response.type = "http";
+    blockOutbound->setBlackholeSettings(blockSettings);
 
-    QList<V2RayConfigOutbound> outbounds;
-    outbounds.append(proxyOutbound);
-    outbounds.append(directOutbound);
-    outbounds.append(blockOutbound);
-    v2rayConfig.setOutbounds(outbounds);
+    v2rayConfig.clearOutbounds();
+    v2rayConfig.appendOutbound(proxyOutbound);
+    v2rayConfig.appendOutbound(directOutbound);
+    v2rayConfig.appendOutbound(blockOutbound);
 
     // routing
     V2RayConfigRoute v2rayConfigRoute;

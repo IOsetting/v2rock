@@ -61,12 +61,20 @@ struct DNSObject {
 struct AccountObject {
     QString user;
     QString pass;
+
+    AccountObject(){}
+    AccountObject(const AccountObject& a) :
+        user(a.user), pass(a.pass) {}
 };
 
 struct AccountUserObject {
     QString user;
     QString pass;
     int level;
+
+    AccountUserObject(){}
+    AccountUserObject(const AccountUserObject& a) :
+        user(a.user), pass(a.pass), level(a.level) {}
 };
 
 struct UserObject {
@@ -75,6 +83,10 @@ struct UserObject {
     //  "aes-128-gcm" | "chacha20-poly1305" | "auto" | "none"
     QString security;
     int level;
+
+    UserObject(){}
+    UserObject(const UserObject& a) :
+        id(a.id), alterId(a.alterId), security(a.security), level(a.level) {}
 };
 
 struct MTProtoUserObject {
@@ -102,6 +114,9 @@ struct VMessDetourObject {
 struct MuxObject {
     bool enabled;
     int concurrency;
+
+    MuxObject(){}
+    MuxObject(const MuxObject& a) : enabled(a.enabled), concurrency(a.concurrency) {}
 };
 
 
@@ -164,6 +179,9 @@ struct InboundVMessConfigurationObject {
 struct ResponseObject {
     // "http" | "none"
     QString type;
+
+    ResponseObject(){}
+    ResponseObject(const ResponseObject& a) : type(a.type) {}
 };
 
 struct SniffingObject {
@@ -176,6 +194,15 @@ struct HTTPServerObject {
     QString address;
     int port;
     QList<struct AccountObject *> users;
+
+    HTTPServerObject(){}
+    HTTPServerObject(const HTTPServerObject& a) :
+        address(a.address), port(a.port) {
+        foreach (AccountObject * dummy, a.users) {
+            AccountObject *user = new AccountObject(*dummy);
+            users.append(user);
+        }
+    }
 };
 
 struct ShadowsocksServerObject {
@@ -187,18 +214,46 @@ struct ShadowsocksServerObject {
     QString password;
     bool ota;
     int level;
+
+    ShadowsocksServerObject(){}
+    ShadowsocksServerObject(const ShadowsocksServerObject& a) :
+    email(a.email), address(a.address), port(a.port), method(a.method), password(a.password),
+    ota(a.ota), level(a.level) {}
 };
 
 struct SocksServerObject {
     QString address;
     int port;
     QList<struct AccountUserObject *> users;
+
+    SocksServerObject(){}
+    SocksServerObject(const SocksServerObject& a) :
+        address(a.address), port(a.port) {
+        foreach (AccountUserObject * dummy, a.users) {
+            AccountUserObject *user = new AccountUserObject(*dummy);
+            users.append(user);
+        }
+    }
 };
 
 struct VMessServerObject {
     QString address;
     int port;
     QList<struct UserObject *> users;
+
+    VMessServerObject(){}
+    VMessServerObject(const VMessServerObject& a) :
+        address(a.address), port(a.port) {
+        foreach (UserObject * dummy, a.users) {
+            UserObject *user = new UserObject(*dummy);
+            users.append(user);
+        }
+    }
+    ~VMessServerObject() {
+        foreach (UserObject * user, users) {
+            delete user;
+        }
+    }
 };
 
 /*
@@ -207,6 +262,10 @@ struct VMessServerObject {
 struct OutboundBlackholeConfigurationObject
 {
     struct ResponseObject response;
+
+    OutboundBlackholeConfigurationObject(){}
+    OutboundBlackholeConfigurationObject(const OutboundBlackholeConfigurationObject& a) :
+        response(a.response) {}
 };
 
 struct OutboundDNSConfigurationObject {
@@ -214,6 +273,10 @@ struct OutboundDNSConfigurationObject {
     QString network;
     QString address;
     int port;
+
+    OutboundDNSConfigurationObject(){}
+    OutboundDNSConfigurationObject(const OutboundDNSConfigurationObject& a) :
+        network(a.network), address(a.address), port(a.port) {}
 };
 
 struct OutboundFreedomConfigurationObject {
@@ -221,10 +284,27 @@ struct OutboundFreedomConfigurationObject {
     QString domainStrategy;
     QString redirect;
     int userLevel;
+
+    OutboundFreedomConfigurationObject(){}
+    OutboundFreedomConfigurationObject(const OutboundFreedomConfigurationObject& a) :
+        domainStrategy(a.domainStrategy), redirect(a.redirect), userLevel(a.userLevel) {}
 };
 
 struct OutboundHTTPConfigurationObject {
     QList<HTTPServerObject *> servers;
+
+    OutboundHTTPConfigurationObject(){}
+    OutboundHTTPConfigurationObject(const OutboundHTTPConfigurationObject& a) {
+        foreach (HTTPServerObject *dummy, a.servers) {
+            HTTPServerObject *server = new HTTPServerObject(*dummy);
+            servers.append(server);
+        }
+    }
+    ~OutboundHTTPConfigurationObject() {
+        foreach (HTTPServerObject * server, servers) {
+            delete server;
+        }
+    }
 };
 
 struct OutboundMTProtoConfigurationObject {
@@ -233,15 +313,55 @@ struct OutboundMTProtoConfigurationObject {
 
 struct OutboundShadowsocksConfigurationObject {
     QList<ShadowsocksServerObject *> servers;
+
+    OutboundShadowsocksConfigurationObject(){}
+    OutboundShadowsocksConfigurationObject(const OutboundShadowsocksConfigurationObject& a) {
+        foreach (ShadowsocksServerObject *dummy, a.servers) {
+            ShadowsocksServerObject *server = new ShadowsocksServerObject(*dummy);
+            servers.append(server);
+        }
+    }
+    ~OutboundShadowsocksConfigurationObject() {
+        foreach (ShadowsocksServerObject * server, servers) {
+            delete server;
+        }
+    }
 };
 
 struct OutboundSocksConfigurationObject {
     QList<SocksServerObject *> servers;
+
+    OutboundSocksConfigurationObject(){}
+    OutboundSocksConfigurationObject(const OutboundSocksConfigurationObject& a) {
+        foreach (SocksServerObject *dummy, a.servers) {
+            SocksServerObject *server = new SocksServerObject(*dummy);
+            servers.append(server);
+        }
+    }
+    ~OutboundSocksConfigurationObject() {
+        foreach (SocksServerObject * server, servers) {
+            delete server;
+        }
+    }
 };
 
 struct OutboundVMessConfigurationObject {
     QList<VMessServerObject *> vnext;
+
+    OutboundVMessConfigurationObject(){}
+    OutboundVMessConfigurationObject(const OutboundVMessConfigurationObject& a) {
+        foreach (VMessServerObject *dummy, a.vnext) {
+            VMessServerObject *server = new VMessServerObject(*dummy);
+            vnext.append(server);
+        }
+    }
+    ~OutboundVMessConfigurationObject() {
+        foreach (VMessServerObject * server, vnext) {
+            delete server;
+        }
+    }
 };
+
 /*
     Outbound Settings End
 */
@@ -256,6 +376,10 @@ struct HTTPRequestObject {
     QStringList path;
     // "Host", "User-Agent", "Accept-Encoding", "Connection", "Pragma"
     QMap<QString, QStringList> headers;
+
+    HTTPRequestObject(){}
+    HTTPRequestObject(const HTTPRequestObject& a) :
+        version(a.version), method(a.method), path(a.path), headers(a.headers) {}
 };
 
 struct HTTPResponseObject {
@@ -267,17 +391,27 @@ struct HTTPResponseObject {
     QString reason;
     // "Content-Type", "Transfer-Encoding", "Connection", "Pragma"
     QMap<QString, QStringList> headers;
+
+    HTTPResponseObject(){}
+    HTTPResponseObject(const HTTPResponseObject& a) :
+        version(a.version), status(a.status), reason(a.reason), headers(a.headers) {}
 };
 
 struct HTTPHeaderObject {
     QString type;
     struct HTTPRequestObject request;
     struct HTTPResponseObject response;
+
+    HTTPHeaderObject(){}
+    HTTPHeaderObject(const HTTPHeaderObject& a) : type(a.type), request(a.request), response(a.response) {}
 };
 
 struct HeaderObject {
     // "none", "srtp", "utp", "wechat-video", "dtls", "wireguard"
     QString type;
+
+    HeaderObject(){}
+    HeaderObject(const HeaderObject& a) : type(a.type) {}
 };
 
 
@@ -286,11 +420,18 @@ struct HeaderObject {
 */
 struct TransportDomainSocketObject {
     QString path;
+
+    TransportDomainSocketObject(){}
+    TransportDomainSocketObject(const TransportDomainSocketObject& a) : path(a.path) {}
 };
 
 struct TransportHTTPObject {
     QStringList host;
     QString path;
+
+    TransportHTTPObject(){}
+    TransportHTTPObject(const TransportHTTPObject& a) :
+        host(a.host), path(a.path) {}
 };
 
 struct TransportKcpObject {
@@ -302,6 +443,12 @@ struct TransportKcpObject {
     int readBufferSize;
     int writeBufferSize;
     struct HeaderObject header;
+
+    TransportKcpObject(){}
+    TransportKcpObject(const TransportKcpObject& a) :
+        mtu(a.mtu), tti(a.tti), uplinkCapacity(a.uplinkCapacity), downlinkCapacity(a.downlinkCapacity),
+        congestion(a.congestion), readBufferSize(a.readBufferSize), writeBufferSize(a.writeBufferSize),
+        header(a.header) {}
 };
 
 struct TransportQuicObject {
@@ -309,16 +456,27 @@ struct TransportQuicObject {
     QString security;
     QString key;
     struct HeaderObject header;
+
+    TransportQuicObject() : security("none") {}
+    TransportQuicObject(const TransportQuicObject& a) :
+        security(a.security), key(a.key), header(a.header) {}
 };
 
 struct TransportTcpObject {
     struct HTTPHeaderObject header;
+
+    TransportTcpObject(){}
+    TransportTcpObject(const TransportTcpObject& a) : header(a.header) {}
 };
 
 struct TransportWebSocketObject {
     QString path;
     // "Host",
     QMap<QString, QString> headers;
+
+    TransportWebSocketObject(){}
+    TransportWebSocketObject(const TransportWebSocketObject& a) :
+        path(a.path), headers(a.headers){}
 };
 
 struct CertificateObject {
@@ -336,6 +494,11 @@ struct TransportTlsObject {
     QStringList alpn;
     QList<struct CertificateObject> certificates;
     bool disableSystemRoot;
+
+    TransportTlsObject(){}
+    TransportTlsObject(const TransportTlsObject& a) :
+        serverName(a.serverName), allowInsecure(a.allowInsecure), alpn(a.alpn),
+        certificates(a.certificates), disableSystemRoot(a.disableSystemRoot){}
 };
 
 struct SockoptObject {
@@ -343,6 +506,10 @@ struct SockoptObject {
     bool tcpFastOpen;
     // "redirect" | "tproxy" | "off"
     QString tproxy;
+
+    SockoptObject(){}
+    SockoptObject(const SockoptObject& a) :
+        mark(a.mark), tcpFastOpen(a.tcpFastOpen), tproxy(a.tproxy) {}
 };
 
 struct StreamSettingsObject {
@@ -358,6 +525,49 @@ struct StreamSettingsObject {
     struct TransportHTTPObject *httpSettings;
     struct TransportDomainSocketObject *dsSettings;
     struct TransportQuicObject *quicSettings;
+
+    StreamSettingsObject() : sockopt(0), tlsSettings(0), tcpSettings(0),
+        kcpSettings(0), wsSettings(0), httpSettings(0), dsSettings(0), quicSettings(0) {}
+
+    StreamSettingsObject(const StreamSettingsObject& a) :
+        network(a.network), security(a.security), sockopt(0), tlsSettings(0), tcpSettings(0),
+        kcpSettings(0), wsSettings(0), httpSettings(0), dsSettings(0), quicSettings(0) {
+        if (a.sockopt) {
+            sockopt = new SockoptObject(*(a.sockopt));
+        }
+        if (a.tlsSettings) {
+            tlsSettings = new TransportTlsObject(*(a.tlsSettings));
+        }
+        if (a.tcpSettings) {
+            tcpSettings = new TransportTcpObject(*(a.tcpSettings));
+        }
+        if (a.kcpSettings) {
+            kcpSettings = new TransportKcpObject(*(a.kcpSettings));
+        }
+        if (a.wsSettings) {
+            wsSettings = new TransportWebSocketObject(*(a.wsSettings));
+        }
+        if (a.httpSettings) {
+            httpSettings = new TransportHTTPObject(*(a.httpSettings));
+        }
+        if (a.dsSettings) {
+            dsSettings = new TransportDomainSocketObject(*(a.dsSettings));
+        }
+        if (a.quicSettings) {
+            quicSettings = new TransportQuicObject(*(a.quicSettings));
+        }
+    }
+
+    ~StreamSettingsObject() {
+        delete sockopt;
+        delete tlsSettings;
+        delete tcpSettings;
+        delete kcpSettings;
+        delete wsSettings;
+        delete httpSettings;
+        delete dsSettings;
+        delete quicSettings;
+    }
 };
 
 /*

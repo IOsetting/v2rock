@@ -124,7 +124,6 @@ MainDialog::~MainDialog()
     delete ui;
     delete networkAccessManager;
     delete pingProcess;
-    delete v2rockConfig;
 }
 
 void MainDialog::showEvent(QShowEvent *ev)
