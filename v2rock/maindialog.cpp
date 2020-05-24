@@ -166,7 +166,7 @@ void MainDialog::showEventHandler()
 void MainDialog::selectTreeItem()
 {
     int selected = this->v2rockConfig->getNodeIndex();
-    QList<V2RockNode> nodes = this->v2rockConfig->getNodes();
+    QList<V2RockNode *> nodes = this->v2rockConfig->getNodes();
     if (!nodes.isEmpty())
     {
         for (int i = 0; i < nodes.length(); i++)
@@ -185,34 +185,32 @@ void MainDialog::selectTreeItem()
 void MainDialog::reloadTreeList()
 {
     tree->clear();
-    QList<V2RockNode> nodes = this->v2rockConfig->getNodes();
-    if (!nodes.isEmpty())
-    {
-        for (int i = 0; i < nodes.length(); i++)
-        {
+    QList<V2RockNode *> nodes = this->v2rockConfig->getNodes();
+    if (!nodes.isEmpty()) {
+        for (int i = 0; i < nodes.length(); i++) {
             QString address;
-            int port;
-            if (nodes[i].getProtocol() == "vmess") {
-                address = nodes[i].getVMessSettings()->vnext.at(0).address;
-                port = nodes[i].getVMessSettings()->vnext.at(0).port;
-            } else if (nodes[i].getProtocol() == "socks") {
-                address = nodes[i].getSocksSettings()->servers.at(0).address;
-                port = nodes[i].getSocksSettings()->servers.at(0).port;
-            } else if (nodes[i].getProtocol() == "shadowsocks") {
-                address = nodes[i].getShadowSocksSettings()->servers.at(0).address;
-                port = nodes[i].getShadowSocksSettings()->servers.at(0).port;
-            } else if (nodes[i].getProtocol() == "http") {
-                address = nodes[i].getHTTPSettings()->servers.at(0).address;
-                port = nodes[i].getHTTPSettings()->servers.at(0).port;
-            } else if (nodes[i].getProtocol() == "dns") {
-                if (nodes[i].getDNSSettings()->address) {
-                    address = *(nodes[i].getDNSSettings()->address);
+            int port = 0;
+            if (nodes.at(i)->getProtocol() == "vmess") {
+                address = nodes.at(i)->getVMessSettings()->vnext.at(0).address;
+                port = nodes.at(i)->getVMessSettings()->vnext.at(0).port;
+            } else if (nodes.at(i)->getProtocol() == "socks") {
+                address = nodes.at(i)->getSocksSettings()->servers.at(0).address;
+                port = nodes.at(i)->getSocksSettings()->servers.at(0).port;
+            } else if (nodes.at(i)->getProtocol() == "shadowsocks") {
+                address = nodes.at(i)->getShadowSocksSettings()->servers.at(0).address;
+                port = nodes.at(i)->getShadowSocksSettings()->servers.at(0).port;
+            } else if (nodes.at(i)->getProtocol() == "http") {
+                address = nodes.at(i)->getHTTPSettings()->servers.at(0).address;
+                port = nodes.at(i)->getHTTPSettings()->servers.at(0).port;
+            } else if (nodes.at(i)->getProtocol() == "dns") {
+                if (nodes.at(i)->getDNSSettings()->address) {
+                    address = *(nodes.at(i)->getDNSSettings()->address);
                 }
-                if (nodes[i].getDNSSettings()->port) {
-                    port = *(nodes[i].getDNSSettings()->port);
+                if (nodes.at(i)->getDNSSettings()->port) {
+                    port = *(nodes.at(i)->getDNSSettings()->port);
                 }
             }
-            this->addTreeItem(QString::number(i), nodes[i].getName(), nodes[i].getProtocol(), address, port);
+            this->addTreeItem(QString::number(i), nodes.at(i)->getName(), nodes.at(i)->getProtocol(), address, port);
         }
         this->selectTreeItem();
     }
@@ -346,10 +344,13 @@ void MainDialog::actEditHandler()
     QVariant variant = act->data();
     QTreeWidgetItem *item = (QTreeWidgetItem *) variant.value<void *>();
     qDebug() << item->text(0);
+    int index = item->text(0).toInt();
+    dialogNodeEdit->init(v2rockConfig, index);
     if (dialogNodeEdit->exec() == QDialog::Accepted)
     {
         qDebug() << "Accepted";
         this->v2rockConfig->write();
+        this->reloadTreeList();
     }
 }
 
@@ -391,7 +392,7 @@ void MainDialog::networkAccessManagerFinished(QNetworkReply *reply)
     reply->deleteLater();
     response = QByteArray::fromBase64(response);
     QList<QByteArray> lines = response.split('\n');
-    QList<V2RockNode> nodes;
+    QList<V2RockNode *> nodes;
     for(const QByteArray& line : lines)
     {
         if(line.startsWith("vmess://"))
@@ -405,8 +406,8 @@ void MainDialog::networkAccessManagerFinished(QNetworkReply *reply)
                 XinjieConfig *xinjieConfig;
                 xinjieConfig = new XinjieConfig();
                 xinjieConfig->read(doc.object());
-                V2RockNode node;
-                xinjieConfig->write(node);
+                V2RockNode *node = new V2RockNode;
+                xinjieConfig->write(*node);
                 nodes.append(node);
             }
         }
@@ -415,7 +416,7 @@ void MainDialog::networkAccessManagerFinished(QNetworkReply *reply)
             qDebug() << "Skipped: " + line;
         }
     }
-    if (nodes.size() == 0) {
+    if (nodes.isEmpty()) {
         QMessageBox::critical(
                     this,
                     tr("Error"),

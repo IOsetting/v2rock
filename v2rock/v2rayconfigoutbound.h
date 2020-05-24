@@ -1,6 +1,7 @@
 #ifndef V2RAYCONFIGOUTBOUND_H
 #define V2RAYCONFIGOUTBOUND_H
 
+#include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QList>
@@ -13,6 +14,8 @@ class V2RayConfigOutbound
 {
 public:
     V2RayConfigOutbound();
+    ~V2RayConfigOutbound();
+
     void toJson(QJsonObject &json) const;
 
     static void fromJson(OutboundBlackholeConfigurationObject &settings, const QJsonObject &json);

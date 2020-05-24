@@ -7,11 +7,11 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     tabWidget = new QTabWidget;
-    generalTab = new SettingsGeneralTab();
+    generalTab = new SettingsGeneralTab(this);
     tabWidget->addTab(generalTab, tr("General"));
-    bypassIpTab = new SettingsBypassIpTab();
+    bypassIpTab = new SettingsBypassIpTab(this);
     tabWidget->addTab(bypassIpTab, tr("Bypass Ips"));
-    bypassDomainTab = new SettingsBypassDomainTab();
+    bypassDomainTab = new SettingsBypassDomainTab(this);
     tabWidget->addTab(bypassDomainTab, tr("Bypass Domains"));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);

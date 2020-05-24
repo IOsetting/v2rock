@@ -3,11 +3,12 @@
 
 #include <QCheckBox>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QJsonObject>
+#include <QIntValidator>
 #include <QLabel>
 #include <QLineEdit>
 #include <QWidget>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 
 #include "v2rockconfig.h"

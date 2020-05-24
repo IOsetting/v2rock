@@ -49,8 +49,8 @@ public:
     QList<QString> getBypassDomains() const;
     void setBypassDomains(const QList<QString> &value);
 
-    QList<V2RockNode> getNodes() const;
-    void setNodes(const QList<V2RockNode> &value);
+    QList<V2RockNode *> getNodes() const;
+    void setNodes(const QList<V2RockNode *> &value);
 
     int getNodeIndex() const;
     void setNodeIndex(int value);
@@ -74,7 +74,7 @@ private:
     V2RayConfigInbound *httpConfig;
     QList<QString> bypassIps;
     QList<QString> bypassDomains;
-    QList<V2RockNode> nodes;
+    QList<V2RockNode *> nodes;
     int nodeIndex;
 
     void fromJson(const QJsonObject &json);

@@ -182,6 +182,7 @@ struct ShadowsocksServerObject {
     QString email;
     QString address;
     int port;
+    // "aes-256-cfb" "aes-128-cfb" "chacha20" "chacha20-ietf" "aes-256-gcm" "aes-128-gcm" "chacha20-poly1305" 或 "chacha20-ietf-poly1305"
     QString method;
     QString password;
     bool ota;

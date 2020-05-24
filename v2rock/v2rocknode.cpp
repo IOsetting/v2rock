@@ -7,6 +7,29 @@ V2RockNode::V2RockNode() :
 
 }
 
+V2RockNode::~V2RockNode()
+{
+    qDebug() << "V2RockNode destruct";
+    delete blackholeSettings;
+    delete dNSSettings;
+    delete freedomSettings;
+    delete hTTPSettings;
+    delete mTProtoSettings;
+    delete shadowSocksSettings;
+    delete socksSettings;
+    delete vMessSettings;
+    delete streamSettings->sockopt;
+    delete streamSettings->tlsSettings;
+    delete streamSettings->tcpSettings;
+    delete streamSettings->kcpSettings;
+    delete streamSettings->wsSettings;
+    delete streamSettings->httpSettings;
+    delete streamSettings->dsSettings;
+    delete streamSettings->quicSettings;
+    delete streamSettings;
+    delete mux;
+}
+
 QString V2RockNode::getName() const
 {
     return name;

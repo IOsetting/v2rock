@@ -1,6 +1,7 @@
 #ifndef NODEEDITDIALOG_H
 #define NODEEDITDIALOG_H
 
+#include <QDebug>
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QTabWidget>
@@ -8,6 +9,7 @@
 
 #include "nodeeditgeneraltab.h"
 #include "nodeedittransporttab.h"
+#include "v2rockconfig.h"
 
 namespace Ui {
 class NodeEditDialog;
@@ -20,8 +22,12 @@ class NodeEditDialog : public QDialog
 public:
     explicit NodeEditDialog(QWidget *parent = 0);
     ~NodeEditDialog();
+    void init(V2RockConfig *v2rockConfig, int index);
 
 private:
+    V2RockConfig *v2rockConfig;
+    int index;
+
     Ui::NodeEditDialog *ui;
     QTabWidget *tabWidget;
     NodeEditGeneralTab *generalTab;

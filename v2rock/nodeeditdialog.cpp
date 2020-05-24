@@ -7,9 +7,9 @@ NodeEditDialog::NodeEditDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     tabWidget = new QTabWidget;
-    generalTab = new NodeEditGeneralTab();
+    generalTab = new NodeEditGeneralTab(this);
     tabWidget->addTab(generalTab, tr("General"));
-    transportTab = new NodeEditTransportTab();
+    transportTab = new NodeEditTransportTab(this);
     tabWidget->addTab(transportTab, tr("Transport"));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -32,9 +32,26 @@ NodeEditDialog::~NodeEditDialog()
     delete ui;
 }
 
+void NodeEditDialog::init(V2RockConfig *v2rockConfig, int index)
+{
+    this->v2rockConfig = v2rockConfig;
+    this->index = index;
+    generalTab->init(v2rockConfig, index);
+}
+
 void NodeEditDialog::accept()
 {
-
+    QList<V2RockNode *> nodes = v2rockConfig->getNodes();
+    V2RockNode *node = nodes.at(index);
+    node->setName(generalTab->getName());
+    node->setProtocol(generalTab->getProtocol());
+    if (node->getProtocol() == "vmess") {
+        OutboundVMessConfigurationObject *settings = new OutboundVMessConfigurationObject;
+        generalTab->getVMessSettings(*settings);
+        node->setVMessSettings(settings);
+    }
+    //v2rockConfig->getNodes().insert(index, node);
+    QDialog::accept();
 }
 
 void NodeEditDialog::reject()

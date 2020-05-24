@@ -1,6 +1,7 @@
 #ifndef V2ROCKNODE_H
 #define V2ROCKNODE_H
 
+#include <QDebug>
 #include <QJsonObject>
 #include <QString>
 #include <QTextStream>
@@ -11,6 +12,7 @@ class V2RockNode
 {
 public:
     V2RockNode();
+    ~V2RockNode();
 
     QString getName() const;
     void setName(const QString &value);

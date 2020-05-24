@@ -7,6 +7,28 @@ V2RayConfigOutbound::V2RayConfigOutbound() :
 
 }
 
+V2RayConfigOutbound::~V2RayConfigOutbound()
+{
+    qDebug() << "V2RayConfigOutbound destruct";
+    delete blackholeSettings;
+    delete dNSSettings;
+    delete freedomSettings;
+    delete hTTPSettings;
+    delete mTProtoSettings;
+    delete shadowSocksSettings;
+    delete socksSettings;
+    delete vMessSettings;
+    delete streamSettings->tlsSettings;
+    delete streamSettings->tcpSettings;
+    delete streamSettings->kcpSettings;
+    delete streamSettings->wsSettings;
+    delete streamSettings->httpSettings;
+    delete streamSettings->dsSettings;
+    delete streamSettings->quicSettings;
+    delete streamSettings;
+    delete mux;
+}
+
 QString V2RayConfigOutbound::getTag() const
 {
     return tag;
@@ -285,32 +307,32 @@ void V2RayConfigOutbound::fromJson(OutboundHTTPConfigurationObject &settings, co
         foreach(QJsonValue serverValue, json["servers"].toArray()) {
             if (serverValue.isObject()) {
                 QJsonObject serverObj = serverValue.toObject();
-                HTTPServerObject server;
+                HTTPServerObject *server = new HTTPServerObject;
                 if (serverObj.contains("address") && serverObj["address"].isString()) {
-                    server.address = serverObj["address"].toString();
+                    server->address = serverObj["address"].toString();
                 }
                 if (serverObj.contains("port") && serverObj["port"].isDouble()) {
-                    server.port = serverObj["port"].toInt();
+                    server->port = serverObj["port"].toInt();
                 }
                 if (serverObj.contains("users") && serverObj["users"].isArray()) {
-                    server.users = new QList<struct AccountObject>;
+                    server->users = new QList<struct AccountObject>;
                     foreach(QJsonValue userValue, serverObj["users"].toArray()) {
                         if (userValue.isObject()) {
                             QJsonObject userObj = userValue.toObject();
-                            AccountObject user;
+                            AccountObject *user = new AccountObject;
                             if (userObj.contains("user") && userObj["user"].isString()) {
-                                user.user = userObj["user"].toString();
+                                user->user = userObj["user"].toString();
                             }
                             if (userObj.contains("pass") && userObj["pass"].isString()) {
-                                user.pass = userObj["pass"].toString();
+                                user->pass = userObj["pass"].toString();
                             }
-                            server.users->append(user);
+                            server->users->append(*user);
                         }
                     }
                 } else {
-                    server.users = 0;
+                    server->users = 0;
                 }
-                settings.servers.append(server);
+                settings.servers.append(*server);
             }
         }
     }
@@ -354,29 +376,31 @@ void V2RayConfigOutbound::fromJson(OutboundShadowsocksConfigurationObject &setti
         foreach(QJsonValue serverValue, json["servers"].toArray()) {
             if (serverValue.isObject()) {
                 QJsonObject serverObj = serverValue.toObject();
-                ShadowsocksServerObject server;
+                ShadowsocksServerObject *server = new ShadowsocksServerObject;
                 if (serverObj.contains("email") && serverObj["email"].isString()) {
-                    server.email = serverObj["email"].toString();
+                    server->email = serverObj["email"].toString();
                 }
                 if (serverObj.contains("address") && serverObj["address"].isString()) {
-                    server.address = serverObj["address"].toString();
+                    server->address = serverObj["address"].toString();
                 }
                 if (serverObj.contains("port") && serverObj["port"].isDouble()) {
-                    server.port = serverObj["port"].toInt();
+                    server->port = serverObj["port"].toInt();
                 }
                 if (serverObj.contains("method") && serverObj["method"].isString()) {
-                    server.method = serverObj["method"].toString();
+                    server->method = serverObj["method"].toString();
                 }
                 if (serverObj.contains("password") && serverObj["password"].isString()) {
-                    server.password = serverObj["password"].toString();
+                    server->password = serverObj["password"].toString();
                 }
                 if (serverObj.contains("ota") && serverObj["ota"].isBool()) {
-                    server.ota = serverObj["ota"].toBool();
+                    server->ota = serverObj["ota"].toBool();
+                } else {
+                    server->ota = false;
                 }
                 if (serverObj.contains("level") && serverObj["level"].isDouble()) {
-                    server.level = serverObj["level"].toInt();
+                    server->level = serverObj["level"].toInt();
                 }
-                settings.servers.append(server);
+                settings.servers.append(*server);
             }
         }
     }
@@ -405,35 +429,35 @@ void V2RayConfigOutbound::fromJson(OutboundSocksConfigurationObject &settings, c
         foreach(QJsonValue serverValue, json["servers"].toArray()) {
             if (serverValue.isObject()) {
                 QJsonObject serverObj = serverValue.toObject();
-                SocksServerObject server;
+                SocksServerObject *server = new SocksServerObject;
                 if (serverObj.contains("address") && serverObj["address"].isString()) {
-                    server.address = serverObj["address"].toString();
+                    server->address = serverObj["address"].toString();
                 }
                 if (serverObj.contains("port") && serverObj["port"].isDouble()) {
-                    server.port = serverObj["port"].toInt();
+                    server->port = serverObj["port"].toInt();
                 }
                 if (serverObj.contains("users") && serverObj["users"].isArray()) {
-                    server.users = new QList<struct AccountUserObject>;
+                    server->users = new QList<struct AccountUserObject>;
                     foreach(QJsonValue userValue, serverObj["users"].toArray()) {
                         if (userValue.isObject()) {
                             QJsonObject userObj = userValue.toObject();
-                            AccountUserObject user;
+                            AccountUserObject *user = new AccountUserObject;
                             if (userObj.contains("user") && userObj["user"].isString()) {
-                                user.user = userObj["user"].toString();
+                                user->user = userObj["user"].toString();
                             }
                             if (userObj.contains("pass") && userObj["pass"].isString()) {
-                                user.pass = userObj["pass"].toString();
+                                user->pass = userObj["pass"].toString();
                             }
                             if (userObj.contains("level") && userObj["level"].isDouble()) {
-                                user.level = userObj["level"].toInt();
+                                user->level = userObj["level"].toInt();
                             }
-                            server.users->append(user);
+                            server->users->append(*user);
                         }
                     }
                 } else {
-                    server.users = 0;
+                    server->users = 0;
                 }
-                settings.servers.append(server);
+                settings.servers.append(*server);
             }
         }
     }
@@ -468,41 +492,41 @@ void V2RayConfigOutbound::fromJson(OutboundVMessConfigurationObject &settings, c
         foreach(QJsonValue serverValue, json["vnext"].toArray()) {
             if (serverValue.isObject()) {
                 QJsonObject serverObj = serverValue.toObject();
-                VMessServerObject vnext;
+                VMessServerObject *vnext = new VMessServerObject;
                 if (serverObj.contains("address") && serverObj["address"].isString()) {
-                    vnext.address = serverObj["address"].toString();
+                    vnext->address = serverObj["address"].toString();
                 }
                 if (serverObj.contains("port") && serverObj["port"].isDouble()) {
-                    vnext.port = serverObj["port"].toInt();
+                    vnext->port = serverObj["port"].toInt();
                 }
 
                 if (serverObj.contains("users") && serverObj["users"].isArray()) {
-                    vnext.users = new QList<struct UserObject>;
+                    vnext->users = new QList<struct UserObject>;
                     foreach(QJsonValue userValue, serverObj["users"].toArray()) {
                         if (userValue.isObject()) {
                             QJsonObject userObj = userValue.toObject();
-                            UserObject user;
+                            UserObject *user = new UserObject;
                             if (userObj.contains("id") && userObj["id"].isString()) {
-                                user.id = userObj["id"].toString();
+                                user->id = userObj["id"].toString();
                             }
                             if (userObj.contains("alterId") && userObj["alterId"].isDouble()) {
-                                user.alterId = userObj["alterId"].toInt();
+                                user->alterId = userObj["alterId"].toInt();
                             }
                             if (userObj.contains("security") && userObj["security"].isString()) {
-                                user.security = userObj["security"].toString();
+                                user->security = userObj["security"].toString();
                             } else {
-                                user.security = "auto";
+                                user->security = "auto";
                             }
                             if (userObj.contains("level") && userObj["level"].isDouble()) {
-                                user.level = userObj["level"].toInt();
+                                user->level = userObj["level"].toInt();
                             }
-                            vnext.users->append(user);
+                            vnext->users->append(*user);
                         }
                     }
                 } else {
-                    vnext.users = 0;
+                    vnext->users = 0;
                 }
-                settings.vnext.append(vnext);
+                settings.vnext.append(*vnext);
             }
         }
     }
@@ -720,31 +744,31 @@ void V2RayConfigOutbound::fromJson(TransportTlsObject &settings, const QJsonObje
         foreach (QJsonValue value, json["certificates"].toArray()) {
             if (value.isObject()) {
                 QJsonObject obj = value.toObject();
-                CertificateObject certificate;
+                CertificateObject *certificate = new CertificateObject;
                 if (obj.contains("usage") && obj["usage"].isString()) {
-                    certificate.usage = obj["usage"].toString();
+                    certificate->usage = obj["usage"].toString();
                 }
                 if (obj.contains("certificateFile") && obj["certificateFile"].isString()) {
-                    certificate.certificateFile = obj["certificateFile"].toString();
+                    certificate->certificateFile = obj["certificateFile"].toString();
                 }
                 if (obj.contains("keyFile") && obj["keyFile"].isString()) {
-                    certificate.keyFile = obj["keyFile"].toString();
+                    certificate->keyFile = obj["keyFile"].toString();
                 }
                 if (obj.contains("certificate") && obj["certificate"].isArray()) {
                     foreach (QJsonValue value, obj["certificate"].toArray()) {
                         if (value.isString()) {
-                            certificate.certificate.append(value.toString());
+                            certificate->certificate.append(value.toString());
                         }
                     }
                 }
                 if (obj.contains("key") && obj["key"].isArray()) {
                     foreach (QJsonValue value, obj["key"].toArray()) {
                         if (value.isString()) {
-                            certificate.key.append(value.toString());
+                            certificate->key.append(value.toString());
                         }
                     }
                 }
-                settings.certificates.append(certificate);
+                settings.certificates.append(*certificate);
             }
         }
     }
@@ -809,13 +833,13 @@ void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObje
                 QJsonObject headersObj = requestObj["headers"].toObject();
                 foreach(const QString& key, headersObj.keys()) {
                     if (headersObj.value(key).isArray()) {
-                        QStringList list;
+                        QStringList *list = new QStringList;
                         foreach (QJsonValue value, headersObj.value(key).toArray()) {
                             if (value.isString()) {
-                                list.append(value.toString());
+                                list->append(value.toString());
                             }
                         }
-                        settings.header.request.headers.insert(key, list);
+                        settings.header.request.headers.insert(key, *list);
                     }
                 }
             }
@@ -835,13 +859,13 @@ void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObje
                 QJsonObject headersObj = responseObj["headers"].toObject();
                 foreach(const QString& key, headersObj.keys()) {
                     if (headersObj.value(key).isArray()) {
-                        QStringList list;
+                        QStringList *list = new QStringList;
                         foreach (QJsonValue value, headersObj.value(key).toArray()) {
                             if (value.isString()) {
-                                list.append(value.toString());
+                                list->append(value.toString());
                             }
                         }
-                        settings.header.response.headers.insert(key, list);
+                        settings.header.response.headers.insert(key, *list);
                     }
                 }
             }

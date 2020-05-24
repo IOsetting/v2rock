@@ -14,8 +14,10 @@ SettingsGeneralTab::SettingsGeneralTab(QWidget *parent) :
 
     httpListenEdit = new QLineEdit(this);
     httpPortEdit = new QLineEdit(this);
+    httpPortEdit->setValidator(new QIntValidator(1024, 65535));
     socksListenEdit = new QLineEdit(this);
     socksPortEdit = new QLineEdit(this);
+    socksPortEdit->setValidator(new QIntValidator(1024, 65535));
 
     QHBoxLayout *checkBoxLayout = new QHBoxLayout;
     checkBoxLayout->addWidget(socksCheckBox);

@@ -22,6 +22,7 @@ V2RockConfig::~V2RockConfig()
 {
     bypassIps.clear();
     bypassDomains.clear();
+    qDeleteAll(nodes);
     nodes.clear();
 }
 
@@ -153,12 +154,12 @@ void V2RockConfig::setBypassDomains(const QList<QString> &value)
     bypassDomains = value;
 }
 
-QList<V2RockNode> V2RockConfig::getNodes() const
+QList<V2RockNode *> V2RockConfig::getNodes() const
 {
     return nodes;
 }
 
-void V2RockConfig::setNodes(const QList<V2RockNode> &value)
+void V2RockConfig::setNodes(const QList<V2RockNode *> &value)
 {
     nodes = value;
 }
@@ -293,12 +294,13 @@ void V2RockConfig::fromJson(const QJsonObject &json)
         }
     }
 
+    qDeleteAll(nodes);
     nodes.clear();
     QJsonArray jnodes = json["nodes"].toArray();
     for (int i = 0; i < jnodes.size(); ++i) {
         QJsonObject jnode = jnodes[i].toObject();
-        V2RockNode node;
-        node.read(jnode);
+        V2RockNode *node = new V2RockNode;
+        node->read(jnode);
         nodes.append(node);
     }
     // Make sure nodeIndex is valid
@@ -338,9 +340,9 @@ void V2RockConfig::toJson(QJsonObject &json) const
     }
 
     QJsonArray nodesArray;
-    foreach (const V2RockNode node, nodes) {
+    foreach (const V2RockNode *node, nodes) {
         QJsonObject jobject;
-        node.write(jobject);
+        node->write(jobject);
         nodesArray.append(jobject);
     }
     json["nodes"] = nodesArray;
@@ -361,8 +363,8 @@ void V2RockConfig::print(int indentation) const
         QTextStream(stdout) << indent << indent << domain << "\n";
     }
     QTextStream(stdout) << indent << "Nodes:\n";
-    for (const V2RockNode &node : nodes)
-        node.print(2);
+    for (const V2RockNode *node : nodes)
+        node->print(2);
 }
 
 QString *V2RockConfig::toV2RayJson(QJsonObject &json)
@@ -371,7 +373,7 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
         emit logReceived("Error: Invalid selection " + QString::number(nodeIndex));
         return 0;
     }
-    V2RockNode node = nodes.at(nodeIndex);
+    V2RockNode *node = nodes.at(nodeIndex);
 
     // Start to compose the V2Ray configs
     V2RayConfig v2rayConfig;
@@ -402,22 +404,22 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     // proxy outbound
     V2RayConfigOutbound proxyOutbound;
     proxyOutbound.setTag("proxy");
-    proxyOutbound.setProtocol(node.getProtocol());
-    if (node.getProtocol() == "vmess") {
-        proxyOutbound.setVMessSettings(node.getVMessSettings());
-    } else if (node.getProtocol() == "shadowsocks") {
-        proxyOutbound.setShadowSocksSettings(node.getShadowSocksSettings());
-    } else if (node.getProtocol() == "http") {
-        proxyOutbound.setHTTPSettings(node.getHTTPSettings());
-    } else if (node.getProtocol() == "mtproto") {
-        proxyOutbound.setMTProtoSettings(node.getMTProtoSettings());
-    } else if (node.getProtocol() == "socks") {
-        proxyOutbound.setSocksSettings(node.getSocksSettings());
-    } else if (node.getProtocol() == "dns") {
-        proxyOutbound.setDNSSettings(node.getDNSSettings());
+    proxyOutbound.setProtocol(node->getProtocol());
+    if (node->getProtocol() == "vmess") {
+        proxyOutbound.setVMessSettings(node->getVMessSettings());
+    } else if (node->getProtocol() == "shadowsocks") {
+        proxyOutbound.setShadowSocksSettings(node->getShadowSocksSettings());
+    } else if (node->getProtocol() == "http") {
+        proxyOutbound.setHTTPSettings(node->getHTTPSettings());
+    } else if (node->getProtocol() == "mtproto") {
+        proxyOutbound.setMTProtoSettings(node->getMTProtoSettings());
+    } else if (node->getProtocol() == "socks") {
+        proxyOutbound.setSocksSettings(node->getSocksSettings());
+    } else if (node->getProtocol() == "dns") {
+        proxyOutbound.setDNSSettings(node->getDNSSettings());
     }
-    proxyOutbound.setStreamSettings(node.getStreamSettings());
-    proxyOutbound.setMux(node.getMux());
+    proxyOutbound.setStreamSettings(node->getStreamSettings());
+    proxyOutbound.setMux(node->getMux());
 
     // direct outbound
     V2RayConfigOutbound directOutbound;
@@ -503,4 +505,3 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     emit logReceived("Configs have been saved.");
     return configFilePath;
 }
-
