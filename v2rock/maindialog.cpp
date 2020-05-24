@@ -191,23 +191,21 @@ void MainDialog::reloadTreeList()
             QString address;
             int port = 0;
             if (nodes.at(i)->getProtocol() == "vmess") {
-                address = nodes.at(i)->getVMessSettings()->vnext.at(0).address;
-                port = nodes.at(i)->getVMessSettings()->vnext.at(0).port;
+                address = nodes.at(i)->getVMessSettings()->vnext.at(0)->address;
+                port = nodes.at(i)->getVMessSettings()->vnext.at(0)->port;
             } else if (nodes.at(i)->getProtocol() == "socks") {
-                address = nodes.at(i)->getSocksSettings()->servers.at(0).address;
-                port = nodes.at(i)->getSocksSettings()->servers.at(0).port;
+                address = nodes.at(i)->getSocksSettings()->servers.at(0)->address;
+                port = nodes.at(i)->getSocksSettings()->servers.at(0)->port;
             } else if (nodes.at(i)->getProtocol() == "shadowsocks") {
-                address = nodes.at(i)->getShadowSocksSettings()->servers.at(0).address;
-                port = nodes.at(i)->getShadowSocksSettings()->servers.at(0).port;
+                address = nodes.at(i)->getShadowSocksSettings()->servers.at(0)->address;
+                port = nodes.at(i)->getShadowSocksSettings()->servers.at(0)->port;
             } else if (nodes.at(i)->getProtocol() == "http") {
-                address = nodes.at(i)->getHTTPSettings()->servers.at(0).address;
-                port = nodes.at(i)->getHTTPSettings()->servers.at(0).port;
+                address = nodes.at(i)->getHTTPSettings()->servers.at(0)->address;
+                port = nodes.at(i)->getHTTPSettings()->servers.at(0)->port;
             } else if (nodes.at(i)->getProtocol() == "dns") {
-                if (nodes.at(i)->getDNSSettings()->address) {
-                    address = *(nodes.at(i)->getDNSSettings()->address);
-                }
-                if (nodes.at(i)->getDNSSettings()->port) {
-                    port = *(nodes.at(i)->getDNSSettings()->port);
+                address = nodes.at(i)->getDNSSettings()->address;
+                if (nodes.at(i)->getDNSSettings()->port > 0) {
+                    port = nodes.at(i)->getDNSSettings()->port;
                 }
             }
             this->addTreeItem(QString::number(i), nodes.at(i)->getName(), nodes.at(i)->getProtocol(), address, port);

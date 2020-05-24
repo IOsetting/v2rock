@@ -251,12 +251,12 @@ void V2RayConfigOutbound::fromJson(OutboundDNSConfigurationObject &settings, con
         settings.network = "tcp";
     }
     if (json.contains("address") && json["address"].isString()) {
-        settings.address = new QString(json["address"].toString());
+        settings.address = json["address"].toString();
     } else {
-        settings.address = 0;
+        settings.address = "";
     }
     if (json.contains("port") && json["port"].isDouble()) {
-        settings.port = new int(json["port"].toInt());
+        settings.port = json["port"].toInt();
     } else {
         settings.port = 0;
     }
@@ -265,11 +265,11 @@ void V2RayConfigOutbound::fromJson(OutboundDNSConfigurationObject &settings, con
 void V2RayConfigOutbound::toJson(OutboundDNSConfigurationObject *settings, QJsonObject &json)
 {
     json["network"] = settings->network;
-    if (settings->address) {
-        json["address"] = *(settings->address);
+    if (!settings->address.isEmpty()) {
+        json["address"] = settings->address;
     }
-    if (settings->port) {
-        json["port"] = *(settings->port);
+    if (settings->port > 0) {
+        json["port"] = settings->port;
     }
 }
 
@@ -281,9 +281,9 @@ void V2RayConfigOutbound::fromJson(OutboundFreedomConfigurationObject &settings,
         settings.domainStrategy = "AsIs";
     }
     if (json.contains("redirect") && json["redirect"].isString()) {
-        settings.redirect = new QString(json["redirect"].isString());
+        settings.redirect = json["redirect"].isString();
     } else {
-        settings.redirect = 0;
+        settings.redirect = "";
     }
     if (json.contains("userLevel") && json["userLevel"].isDouble()) {
         settings.userLevel = json["userLevel"].toInt();
@@ -295,8 +295,8 @@ void V2RayConfigOutbound::fromJson(OutboundFreedomConfigurationObject &settings,
 void V2RayConfigOutbound::toJson(OutboundFreedomConfigurationObject *settings, QJsonObject &json)
 {
     json["domainStrategy"] = settings->domainStrategy;
-    if (settings->redirect) {
-        json["redirect"] = *(settings->redirect);
+    if (!settings->redirect.isEmpty()) {
+        json["redirect"] = settings->redirect;
     }
     json["userLevel"] = settings->userLevel;
 }
@@ -315,7 +315,6 @@ void V2RayConfigOutbound::fromJson(OutboundHTTPConfigurationObject &settings, co
                     server->port = serverObj["port"].toInt();
                 }
                 if (serverObj.contains("users") && serverObj["users"].isArray()) {
-                    server->users = new QList<struct AccountObject>;
                     foreach(QJsonValue userValue, serverObj["users"].toArray()) {
                         if (userValue.isObject()) {
                             QJsonObject userObj = userValue.toObject();
@@ -326,13 +325,11 @@ void V2RayConfigOutbound::fromJson(OutboundHTTPConfigurationObject &settings, co
                             if (userObj.contains("pass") && userObj["pass"].isString()) {
                                 user->pass = userObj["pass"].toString();
                             }
-                            server->users->append(*user);
+                            server->users.append(user);
                         }
                     }
-                } else {
-                    server->users = 0;
                 }
-                settings.servers.append(*server);
+                settings.servers.append(server);
             }
         }
     }
@@ -341,16 +338,16 @@ void V2RayConfigOutbound::fromJson(OutboundHTTPConfigurationObject &settings, co
 void V2RayConfigOutbound::toJson(OutboundHTTPConfigurationObject *settings, QJsonObject &json)
 {
     QJsonArray serversArray;
-    foreach(const HTTPServerObject server, settings->servers) {
+    foreach(const HTTPServerObject *server, settings->servers) {
         QJsonObject serverObj;
-        serverObj["address"] = server.address;
-        serverObj["port"] = server.port;
-        if (server.users) {
+        serverObj["address"] = server->address;
+        serverObj["port"] = server->port;
+        if (!server->users.isEmpty()) {
             QJsonArray usersArray;
-            foreach (const AccountObject user, *(server.users)) {
+            foreach (const AccountObject *user, server->users) {
                 QJsonObject userObj;
-                userObj["user"] = user.user;
-                userObj["pass"] = user.pass;
+                userObj["user"] = user->user;
+                userObj["pass"] = user->pass;
                 usersArray.append(userObj);
             }
             serverObj["users"] = usersArray;
@@ -400,7 +397,7 @@ void V2RayConfigOutbound::fromJson(OutboundShadowsocksConfigurationObject &setti
                 if (serverObj.contains("level") && serverObj["level"].isDouble()) {
                     server->level = serverObj["level"].toInt();
                 }
-                settings.servers.append(*server);
+                settings.servers.append(server);
             }
         }
     }
@@ -409,15 +406,15 @@ void V2RayConfigOutbound::fromJson(OutboundShadowsocksConfigurationObject &setti
 void V2RayConfigOutbound::toJson(OutboundShadowsocksConfigurationObject *settings, QJsonObject &json)
 {
     QJsonArray serversArray;
-    foreach(const ShadowsocksServerObject server, settings->servers) {
+    foreach(const ShadowsocksServerObject *server, settings->servers) {
         QJsonObject serverObj;
-        serverObj["email"] = server.email;
-        serverObj["address"] = server.address;
-        serverObj["port"] = server.port;
-        serverObj["method"] = server.method;
-        serverObj["password"] = server.password;
-        serverObj["ota"] = server.ota;
-        serverObj["level"] = server.level;
+        serverObj["email"] = server->email;
+        serverObj["address"] = server->address;
+        serverObj["port"] = server->port;
+        serverObj["method"] = server->method;
+        serverObj["password"] = server->password;
+        serverObj["ota"] = server->ota;
+        serverObj["level"] = server->level;
         serversArray.append(serverObj);
     }
     json["servers"] = serversArray;
@@ -437,7 +434,6 @@ void V2RayConfigOutbound::fromJson(OutboundSocksConfigurationObject &settings, c
                     server->port = serverObj["port"].toInt();
                 }
                 if (serverObj.contains("users") && serverObj["users"].isArray()) {
-                    server->users = new QList<struct AccountUserObject>;
                     foreach(QJsonValue userValue, serverObj["users"].toArray()) {
                         if (userValue.isObject()) {
                             QJsonObject userObj = userValue.toObject();
@@ -451,13 +447,11 @@ void V2RayConfigOutbound::fromJson(OutboundSocksConfigurationObject &settings, c
                             if (userObj.contains("level") && userObj["level"].isDouble()) {
                                 user->level = userObj["level"].toInt();
                             }
-                            server->users->append(*user);
+                            server->users.append(user);
                         }
                     }
-                } else {
-                    server->users = 0;
                 }
-                settings.servers.append(*server);
+                settings.servers.append(server);
             }
         }
     }
@@ -466,17 +460,17 @@ void V2RayConfigOutbound::fromJson(OutboundSocksConfigurationObject &settings, c
 void V2RayConfigOutbound::toJson(OutboundSocksConfigurationObject *settings, QJsonObject &json)
 {
     QJsonArray serversArray;
-    foreach(const SocksServerObject server, settings->servers) {
+    foreach(const SocksServerObject *server, settings->servers) {
         QJsonObject serverObj;
-        serverObj["address"] = server.address;
-        serverObj["port"] = server.port;
-        if (server.users) {
+        serverObj["address"] = server->address;
+        serverObj["port"] = server->port;
+        if (!server->users.isEmpty()) {
             QJsonArray usersArray;
-            foreach(const AccountUserObject user, *(server.users)) {
+            foreach(const AccountUserObject *user, server->users) {
                 QJsonObject userObj;
-                userObj["user"] = user.user;
-                userObj["pass"] = user.pass;
-                userObj["level"] = user.level;
+                userObj["user"] = user->user;
+                userObj["pass"] = user->pass;
+                userObj["level"] = user->level;
                 usersArray.append(userObj);
             }
             serverObj["users"] = usersArray;
@@ -501,7 +495,6 @@ void V2RayConfigOutbound::fromJson(OutboundVMessConfigurationObject &settings, c
                 }
 
                 if (serverObj.contains("users") && serverObj["users"].isArray()) {
-                    vnext->users = new QList<struct UserObject>;
                     foreach(QJsonValue userValue, serverObj["users"].toArray()) {
                         if (userValue.isObject()) {
                             QJsonObject userObj = userValue.toObject();
@@ -520,13 +513,11 @@ void V2RayConfigOutbound::fromJson(OutboundVMessConfigurationObject &settings, c
                             if (userObj.contains("level") && userObj["level"].isDouble()) {
                                 user->level = userObj["level"].toInt();
                             }
-                            vnext->users->append(*user);
+                            vnext->users.append(user);
                         }
                     }
-                } else {
-                    vnext->users = 0;
                 }
-                settings.vnext.append(*vnext);
+                settings.vnext.append(vnext);
             }
         }
     }
@@ -535,18 +526,18 @@ void V2RayConfigOutbound::fromJson(OutboundVMessConfigurationObject &settings, c
 void V2RayConfigOutbound::toJson(OutboundVMessConfigurationObject *settings, QJsonObject &json)
 {
     QJsonArray vnextArray;
-    foreach (const VMessServerObject vnext, settings->vnext) {
+    foreach (const VMessServerObject *vnext, settings->vnext) {
         QJsonObject vnextObj;
-        vnextObj["address"] = vnext.address;
-        vnextObj["port"] = vnext.port;
-        if (vnext.users) {
+        vnextObj["address"] = vnext->address;
+        vnextObj["port"] = vnext->port;
+        if (!vnext->users.isEmpty()) {
             QJsonArray usersArray;
-            foreach (const UserObject user, *(vnext.users)) {
+            foreach (const UserObject *user, vnext->users) {
                 QJsonObject userObj;
-                userObj["id"] = user.id;
-                userObj["alterId"] = user.alterId;
-                userObj["level"] = user.level;
-                userObj["security"] = user.security;
+                userObj["id"] = user->id;
+                userObj["alterId"] = user->alterId;
+                userObj["level"] = user->level;
+                userObj["security"] = user->security;
                 usersArray.append(userObj);
             }
             vnextObj["users"] = usersArray;

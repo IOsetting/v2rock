@@ -252,54 +252,54 @@ void NodeEditGeneralTab::init(V2RockConfig *v2rockConfig, int index)
     protocolSwitch(current);
 
     if (nodes.at(index)->getVMessSettings()) {
-        if (nodes.at(index)->getVMessSettings()->vnext.size() > 0) {
-            VMessServerObject server = nodes.at(index)->getVMessSettings()->vnext.at(0);
-            vmessAddressEdit->setText(server.address);
-            vmessPortEdit->setText(QString::number(server.port));
-            if (server.users && server.users->size() > 0) {
-                vmessUserIdEdit->setText(server.users->at(0).id);
-                vmessUserAidEdit->setText(QString::number(server.users->at(0).alterId));
-                vmessUserLevelEdit->setText(QString::number(server.users->at(0).level));
-                vmessUserSecurityComb->setCurrentText(server.users->at(0).security);
+        if (!nodes.at(index)->getVMessSettings()->vnext.isEmpty()) {
+            VMessServerObject *server = nodes.at(index)->getVMessSettings()->vnext.at(0);
+            vmessAddressEdit->setText(server->address);
+            vmessPortEdit->setText(QString::number(server->port));
+            if (!server->users.isEmpty()) {
+                vmessUserIdEdit->setText(server->users.at(0)->id);
+                vmessUserAidEdit->setText(QString::number(server->users.at(0)->alterId));
+                vmessUserLevelEdit->setText(QString::number(server->users.at(0)->level));
+                vmessUserSecurityComb->setCurrentText(server->users.at(0)->security);
             }
         }
     }
     if (nodes.at(index)->getSocksSettings()) {
-        if (nodes.at(index)->getSocksSettings()->servers.size() > 0) {
-            SocksServerObject server = nodes.at(index)->getSocksSettings()->servers.at(0);
-            socksAddressEdit->setText(server.address);
-            socksAddressEdit->setText(QString::number(server.port));
-            if (server.users && server.users->size() > 0) {
-                socksUserUserEdit->setText(server.users->at(0).user);
-                socksUserPassEdit->setText(server.users->at(0).pass);
-                socksUserLevelEdit->setText(QString::number(server.users->at(0).level));
+        if (!nodes.at(index)->getSocksSettings()->servers.isEmpty()) {
+            SocksServerObject *server = nodes.at(index)->getSocksSettings()->servers.at(0);
+            socksAddressEdit->setText(server->address);
+            socksAddressEdit->setText(QString::number(server->port));
+            if (!server->users.isEmpty()) {
+                socksUserUserEdit->setText(server->users.at(0)->user);
+                socksUserPassEdit->setText(server->users.at(0)->pass);
+                socksUserLevelEdit->setText(QString::number(server->users.at(0)->level));
             }
         }
     }
     if (nodes.at(index)->getShadowSocksSettings()) {
-        if (nodes.at(index)->getShadowSocksSettings()->servers.size() > 0) {
-            ShadowsocksServerObject server = nodes.at(index)->getShadowSocksSettings()->servers.at(0);
-            shadowsocksAddressEdit->setText(server.address);
-            shadowsocksPortEdit->setText(QString::number(server.port));
-            shadowsocksEmailEdit->setText(server.email);
-            shadowsocksMethodComb->setCurrentText(server.method);
-            shadowsocksPasswordEdit->setText(server.password);
-            if (server.ota) {
+        if (!nodes.at(index)->getShadowSocksSettings()->servers.isEmpty()) {
+            ShadowsocksServerObject *server = nodes.at(index)->getShadowSocksSettings()->servers.at(0);
+            shadowsocksAddressEdit->setText(server->address);
+            shadowsocksPortEdit->setText(QString::number(server->port));
+            shadowsocksEmailEdit->setText(server->email);
+            shadowsocksMethodComb->setCurrentText(server->method);
+            shadowsocksPasswordEdit->setText(server->password);
+            if (server->ota) {
                 shadowsocksOtaCheckbox->setChecked(true);
             } else {
                 shadowsocksOtaCheckbox->setChecked(false);
             }
-            shadowsocksLevelEdit->setText(QString::number(server.level));
+            shadowsocksLevelEdit->setText(QString::number(server->level));
         }
     }
     if (nodes.at(index)->getHTTPSettings()) {
-        if (nodes.at(index)->getHTTPSettings()->servers.size() > 0) {
-            HTTPServerObject server = nodes.at(index)->getHTTPSettings()->servers.at(0);
-            httpAddressEdit->setText(server.address);
-            httpPortEdit->setText(QString::number(server.port));
-            if (server.users && server.users->size() > 0) {
-                httpUserUserEdit->setText(server.users->at(0).user);
-                httpUserPassEdit->setText(server.users->at(0).pass);
+        if (!nodes.at(index)->getHTTPSettings()->servers.isEmpty()) {
+            HTTPServerObject *server = nodes.at(index)->getHTTPSettings()->servers.at(0);
+            httpAddressEdit->setText(server->address);
+            httpPortEdit->setText(QString::number(server->port));
+            if (!server->users.isEmpty()) {
+                httpUserUserEdit->setText(server->users.at(0)->user);
+                httpUserPassEdit->setText(server->users.at(0)->pass);
             }
         }
     }
@@ -317,30 +317,28 @@ QString NodeEditGeneralTab::getProtocol() const
 
 void NodeEditGeneralTab::getVMessSettings(OutboundVMessConfigurationObject &settings) const
 {
-    VMessServerObject server;
-    server.address = vmessAddressEdit->text();
-    server.port = vmessPortEdit->text().toInt();
-    server.users = new QList<struct UserObject>;
-    UserObject user;
-    user.id = vmessUserIdEdit->text();
-    user.alterId = vmessUserAidEdit->text().toInt();
-    user.level = vmessUserLevelEdit->text().toInt();
-    user.security = vmessUserSecurityComb->currentText();
-    server.users->append(user);
+    VMessServerObject *server = new VMessServerObject;
+    server->address = vmessAddressEdit->text();
+    server->port = vmessPortEdit->text().toInt();
+    UserObject *user = new UserObject;
+    user->id = vmessUserIdEdit->text();
+    user->alterId = vmessUserAidEdit->text().toInt();
+    user->level = vmessUserLevelEdit->text().toInt();
+    user->security = vmessUserSecurityComb->currentText();
+    server->users.append(user);
     settings.vnext.append(server);
 }
 
 OutboundSocksConfigurationObject *NodeEditGeneralTab::getSocksConfig() const
 {
-    SocksServerObject server;
-    server.address = socksAddressEdit->text();
-    server.port = socksPortEdit->text().toInt();
-    server.users = new QList<struct AccountUserObject>;
-    AccountUserObject user;
-    user.user = socksUserUserEdit->text();
-    user.pass = socksUserPassEdit->text();
-    user.level = socksUserLevelEdit->text().toInt();
-    server.users->append(user);
+    SocksServerObject *server = new SocksServerObject;
+    server->address = socksAddressEdit->text();
+    server->port = socksPortEdit->text().toInt();
+    AccountUserObject *user = new AccountUserObject;
+    user->user = socksUserUserEdit->text();
+    user->pass = socksUserPassEdit->text();
+    user->level = socksUserLevelEdit->text().toInt();
+    server->users.append(user);
     OutboundSocksConfigurationObject *socksConfig = new OutboundSocksConfigurationObject;
     socksConfig->servers.append(server);
     return socksConfig;
@@ -348,14 +346,14 @@ OutboundSocksConfigurationObject *NodeEditGeneralTab::getSocksConfig() const
 
 OutboundShadowsocksConfigurationObject *NodeEditGeneralTab::getShadowsocksConfig() const
 {
-    ShadowsocksServerObject server;
-    server.address = shadowsocksAddressEdit->text();
-    server.port = shadowsocksPortEdit->text().toInt();
-    server.email = shadowsocksEmailEdit->text();
-    server.password = shadowsocksPasswordEdit->text();
-    server.method = shadowsocksMethodComb->currentText();
-    server.ota = shadowsocksOtaCheckbox->isChecked();
-    server.level = shadowsocksLevelEdit->text().toInt();
+    ShadowsocksServerObject *server = new ShadowsocksServerObject;
+    server->address = shadowsocksAddressEdit->text();
+    server->port = shadowsocksPortEdit->text().toInt();
+    server->email = shadowsocksEmailEdit->text();
+    server->password = shadowsocksPasswordEdit->text();
+    server->method = shadowsocksMethodComb->currentText();
+    server->ota = shadowsocksOtaCheckbox->isChecked();
+    server->level = shadowsocksLevelEdit->text().toInt();
     OutboundShadowsocksConfigurationObject *shadowsocksConfig = new OutboundShadowsocksConfigurationObject;
     shadowsocksConfig->servers.append(server);
     return shadowsocksConfig;
@@ -363,14 +361,13 @@ OutboundShadowsocksConfigurationObject *NodeEditGeneralTab::getShadowsocksConfig
 
 OutboundHTTPConfigurationObject *NodeEditGeneralTab::getHTTPConfig() const
 {
-    HTTPServerObject server;
-    server.address = httpAddressEdit->text();
-    server.port = httpPortEdit->text().toInt();
-    server.users = new QList<struct AccountObject>;
-    AccountObject user;
-    user.user = httpUserUserEdit->text();
-    user.pass = httpUserPassEdit->text();
-    server.users->append(user);
+    HTTPServerObject *server = new HTTPServerObject;
+    server->address = httpAddressEdit->text();
+    server->port = httpPortEdit->text().toInt();
+    AccountObject *user = new AccountObject;
+    user->user = httpUserUserEdit->text();
+    user->pass = httpUserPassEdit->text();
+    server->users.append(user);
     OutboundHTTPConfigurationObject *httpConfig = new OutboundHTTPConfigurationObject;
     httpConfig->servers.append(server);
     return httpConfig;

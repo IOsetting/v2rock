@@ -428,7 +428,7 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     OutboundFreedomConfigurationObject *freedomSettings = new OutboundFreedomConfigurationObject;
     proxyOutbound.setFreedomSettings(freedomSettings);
     freedomSettings->domainStrategy = "AsIs";
-    freedomSettings->redirect = 0;
+    freedomSettings->redirect = "";
     freedomSettings->userLevel = 0;
 
     // block outbound

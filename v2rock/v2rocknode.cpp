@@ -17,7 +17,8 @@ V2RockNode::~V2RockNode()
     delete mTProtoSettings;
     delete shadowSocksSettings;
     delete socksSettings;
-    delete vMessSettings;
+    delVMessSettings();
+
     delete streamSettings->sockopt;
     delete streamSettings->tlsSettings;
     delete streamSettings->tcpSettings;
@@ -127,7 +128,22 @@ OutboundVMessConfigurationObject *V2RockNode::getVMessSettings() const
 
 void V2RockNode::setVMessSettings(OutboundVMessConfigurationObject *value)
 {
+    delVMessSettings();
     vMessSettings = value;
+}
+
+void V2RockNode::delVMessSettings()
+{
+    if (vMessSettings) {
+        qDebug() << "Delete vMessSettings";
+        if (!vMessSettings->vnext.isEmpty()) {
+            foreach (VMessServerObject const *server, vMessSettings->vnext) {
+                qDeleteAll(server->users);
+            }
+            qDeleteAll(vMessSettings->vnext);
+        }
+    }
+    delete vMessSettings;
 }
 
 StreamSettingsObject *V2RockNode::getStreamSettings() const

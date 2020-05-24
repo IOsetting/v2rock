@@ -175,7 +175,7 @@ struct SniffingObject {
 struct HTTPServerObject {
     QString address;
     int port;
-    QList<struct AccountObject> *users;
+    QList<struct AccountObject *> users;
 };
 
 struct ShadowsocksServerObject {
@@ -192,13 +192,13 @@ struct ShadowsocksServerObject {
 struct SocksServerObject {
     QString address;
     int port;
-    QList<struct AccountUserObject> *users;
+    QList<struct AccountUserObject *> users;
 };
 
 struct VMessServerObject {
     QString address;
     int port;
-    QList<struct UserObject> *users;
+    QList<struct UserObject *> users;
 };
 
 /*
@@ -212,19 +212,19 @@ struct OutboundBlackholeConfigurationObject
 struct OutboundDNSConfigurationObject {
     // "tcp" | "udp"
     QString network;
-    QString *address;
-    int *port;
+    QString address;
+    int port;
 };
 
 struct OutboundFreedomConfigurationObject {
     // "AsIs" | "UseIP" | "UseIPv4" | "UseIPv6"
     QString domainStrategy;
-    QString *redirect;
+    QString redirect;
     int userLevel;
 };
 
 struct OutboundHTTPConfigurationObject {
-    QList<HTTPServerObject> servers;
+    QList<HTTPServerObject *> servers;
 };
 
 struct OutboundMTProtoConfigurationObject {
@@ -232,15 +232,15 @@ struct OutboundMTProtoConfigurationObject {
 };
 
 struct OutboundShadowsocksConfigurationObject {
-    QList<ShadowsocksServerObject> servers;
+    QList<ShadowsocksServerObject *> servers;
 };
 
 struct OutboundSocksConfigurationObject {
-    QList<SocksServerObject> servers;
+    QList<SocksServerObject *> servers;
 };
 
 struct OutboundVMessConfigurationObject {
-    QList<VMessServerObject> vnext;
+    QList<VMessServerObject *> vnext;
 };
 /*
     Outbound Settings End

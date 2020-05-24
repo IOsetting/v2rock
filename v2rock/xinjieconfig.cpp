@@ -210,16 +210,15 @@ void XinjieConfig::write(V2RockNode &node) const
     node.setName(remark);
 
     OutboundVMessConfigurationObject *vMessConfig = new OutboundVMessConfigurationObject();
-    VMessServerObject vMessServerObject;
-    vMessServerObject.address = address;
-    vMessServerObject.port = port;
-    vMessServerObject.users = new QList<struct UserObject>;
-    UserObject userObject;
-    userObject.alterId = aid;
-    userObject.id = id;
-    userObject.level = 0;
-    userObject.security = "auto";
-    vMessServerObject.users->append(userObject);
+    VMessServerObject *vMessServerObject = new VMessServerObject;
+    vMessServerObject->address = address;
+    vMessServerObject->port = port;
+    UserObject *userObject = new UserObject;
+    userObject->alterId = aid;
+    userObject->id = id;
+    userObject->level = 0;
+    userObject->security = "auto";
+    vMessServerObject->users.append(userObject);
     vMessConfig->vnext.append(vMessServerObject);
     node.setVMessSettings(vMessConfig);
 
