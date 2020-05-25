@@ -20,6 +20,7 @@ V2RockConfig::V2RockConfig(QObject *parent) :
 
 V2RockConfig::~V2RockConfig()
 {
+    qDebug() << "Destruct V2RockConfig";
     bypassIps.clear();
     bypassDomains.clear();
     qDeleteAll(nodes);
@@ -79,7 +80,6 @@ void V2RockConfig::initSocksConfig(const QString &listen, const int port)
     socksConfig->setPort(port);
     socksConfig->setListen(listen);
     InboundSocksConfigurationObject *socksSettings = new InboundSocksConfigurationObject;
-    socksSettings->accounts = 0;
     socksSettings->auth = "noauth";
     socksSettings->ip = listen;
     socksSettings->udp = true;
@@ -116,7 +116,6 @@ void V2RockConfig::initHttpConfig(const QString &listen, const int port)
     httpConfig->setPort(port);
     httpConfig->setListen(listen);
     InboundHTTPConfigurationObject *httpSettings = new InboundHTTPConfigurationObject;
-    httpSettings->accounts = 0;
     httpSettings->allowTransparent = false;
     httpSettings->timeout = 60 * 1000;
     httpSettings->userLevel = 0;
@@ -391,14 +390,14 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     v2rayConfig.setLog(v2rayConfigLog);
 
     // inbounds
-    QList<V2RayConfigInbound> inbounds;
     if (socksConfig) {
-        inbounds.append(*socksConfig);
+        V2RayConfigInbound *inbound = new V2RayConfigInbound(*socksConfig);
+        v2rayConfig.appendInbound(inbound);
     }
     if (httpConfig) {
-        inbounds.append(*httpConfig);
+        V2RayConfigInbound *inbound = new V2RayConfigInbound(*httpConfig);
+        v2rayConfig.appendInbound(inbound);
     }
-    v2rayConfig.setInbounds(inbounds);
 
     // outbounds
     // proxy outbound

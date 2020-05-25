@@ -7,6 +7,45 @@ V2RayConfigInbound::V2RayConfigInbound() :
 
 }
 
+V2RayConfigInbound::V2RayConfigInbound(const V2RayConfigInbound &a) :
+    tag(a.tag), port(a.port), listen(a.listen), protocol(a.protocol),
+    sniffing(0), dokodemoDoorSettings(0), httpSettings(0), mTProtoSettings(0),
+    shadowsocksSettings(0), socksSettings(0), vMessSettings(0)
+{
+    if (a.sniffing) {
+        sniffing = new SniffingObject(*(a.sniffing));
+    }
+    if (a.dokodemoDoorSettings) {
+        dokodemoDoorSettings = new InboundDokodemoDoorConfigurationObject(*(a.dokodemoDoorSettings));
+    }
+    if (a.httpSettings) {
+        httpSettings = new InboundHTTPConfigurationObject(*(a.httpSettings));
+    }
+    if (a.mTProtoSettings) {
+        mTProtoSettings = new InboundMTProtoConfigurationObject(*(a.mTProtoSettings));
+    }
+    if (a.shadowsocksSettings) {
+        shadowsocksSettings = new InboundShadowsocksConfigurationObject(*(a.shadowsocksSettings));
+    }
+    if (a.socksSettings) {
+        socksSettings = new InboundSocksConfigurationObject(*(a.socksSettings));
+    }
+    if (a.vMessSettings) {
+        vMessSettings = new InboundVMessConfigurationObject(*(a.vMessSettings));
+    }
+}
+
+V2RayConfigInbound::~V2RayConfigInbound()
+{
+    if (sniffing) delete sniffing;
+    if (dokodemoDoorSettings) delete dokodemoDoorSettings;
+    if (httpSettings) delete httpSettings;
+    if (mTProtoSettings) delete mTProtoSettings;
+    if (shadowsocksSettings) delete shadowsocksSettings;
+    if (socksSettings) delete socksSettings;
+    if (vMessSettings) delete vMessSettings;
+}
+
 QString V2RayConfigInbound::getTag() const
 {
     return tag;
@@ -221,15 +260,12 @@ void V2RayConfigInbound::fromJson(InboundHTTPConfigurationObject &settings, cons
         settings.userLevel = 0;
     }
     if (json.contains("accounts") && json["accounts"].isArray()) {
-        settings.accounts = new QList<struct AccountObject>;
         QJsonArray accounts = json["accounts"].toArray();
         for (int i = 0; i < accounts.size(); ++i) {
-            AccountObject account;
-            fromJson(account, accounts[i].toObject());
-            settings.accounts->append(account);
+            AccountObject *account = new AccountObject;
+            fromJson(*account, accounts[i].toObject());
+            settings.accounts.append(account);
         }
-    } else {
-        settings.accounts = 0;
     }
 }
 
@@ -239,12 +275,12 @@ void V2RayConfigInbound::toJson(InboundHTTPConfigurationObject *settings, QJsonO
     json["allowTransparent"] = settings->allowTransparent;
     json["userLevel"] = settings->userLevel;
     // QList<struct AccountObject> *accounts;
-    if (settings->accounts) {
+    if (!settings->accounts.isEmpty()) {
         QJsonArray accountArray;
-        foreach (const struct AccountObject account, *(settings->accounts)) {
+        foreach (const struct AccountObject *account, settings->accounts) {
             QJsonObject accountObj;
-            accountObj["user"] = account.user;
-            accountObj["pass"] = account.pass;
+            accountObj["user"] = account->user;
+            accountObj["pass"] = account->pass;
             accountArray.append(accountObj);
         }
         json["accounts"] = accountArray;
@@ -269,15 +305,12 @@ void V2RayConfigInbound::fromJson(InboundSocksConfigurationObject &settings, con
         settings.udp = false;
     }
     if (json.contains("accounts") && json["accounts"].isArray()) {
-        settings.accounts = new QList<struct AccountObject>;
         QJsonArray accounts = json["accounts"].toArray();
         for (int i = 0; i < accounts.size(); ++i) {
-            AccountObject account;
-            fromJson(account, accounts[i].toObject());
-            settings.accounts->append(account);
+            AccountObject *account = new AccountObject;
+            fromJson(*account, accounts[i].toObject());
+            settings.accounts.append(account);
         }
-    } else {
-        settings.accounts = 0;
     }
 }
 
@@ -287,12 +320,12 @@ void V2RayConfigInbound::toJson(InboundSocksConfigurationObject *settings, QJson
     json["ip"] = settings->ip;
     json["udp"] = settings->udp;
     // QList<struct AccountObject> *accounts;
-    if (settings->accounts) {
+    if (!settings->accounts.isEmpty()) {
         QJsonArray accountArray;
-        foreach (const struct AccountObject account, *(settings->accounts)) {
+        foreach (const struct AccountObject *account, settings->accounts) {
             QJsonObject accountObj;
-            accountObj["user"] = account.user;
-            accountObj["pass"] = account.pass;
+            accountObj["user"] = account->user;
+            accountObj["pass"] = account->pass;
             accountArray.append(accountObj);
         }
         json["accounts"] = accountArray;

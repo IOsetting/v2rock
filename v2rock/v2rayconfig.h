@@ -35,8 +35,9 @@ public:
     V2RayConfigLog getLog() const;
     void setLog(const V2RayConfigLog &value);
 
-    QList<V2RayConfigInbound> getInbounds() const;
-    void setInbounds(const QList<V2RayConfigInbound> &value);
+    QList<V2RayConfigInbound *> getInbounds() const;
+    void appendInbound(V2RayConfigInbound *value);
+    void clearInbounds();
 
     QList<V2RayConfigOutbound *> getOutbounds() const;
     void appendOutbound(V2RayConfigOutbound *value);
@@ -51,7 +52,7 @@ private:
     DNSObject *dns;
     bool stats;
     V2RayConfigLog log;
-    QList<V2RayConfigInbound> inbounds;
+    QList<V2RayConfigInbound *> inbounds;
     QList<V2RayConfigOutbound *> outbounds;
     V2RayConfigRoute routing;
 };

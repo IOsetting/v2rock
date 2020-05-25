@@ -14,6 +14,9 @@ class V2RayConfigInbound
 {
 public:
     V2RayConfigInbound();
+    V2RayConfigInbound(const V2RayConfigInbound &a);
+    ~V2RayConfigInbound();
+
     void fromJson(const QJsonObject &json);
     void toJson(QJsonObject &json) const;
 

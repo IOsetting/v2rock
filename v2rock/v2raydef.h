@@ -93,6 +93,10 @@ struct MTProtoUserObject {
     QString email;
     int level;
     QString secret;
+
+    MTProtoUserObject(){}
+    MTProtoUserObject(const MTProtoUserObject& a) :
+        email(a.email), level(a.level), secret(a.secret) {}
 };
 
 struct VMessClientObject {
@@ -100,15 +104,26 @@ struct VMessClientObject {
     int level;
     int alterId;
     QString email;
+
+    VMessClientObject(){}
+    VMessClientObject(const VMessClientObject& a) :
+        id(a.id), level(a.level), alterId(a.alterId), email(a.email) {}
 };
 
 struct VMessDefaultObject {
     int level;
     int alterId;
+
+    VMessDefaultObject(){}
+    VMessDefaultObject(const VMessDefaultObject& a) :
+        level(a.level), alterId(a.alterId) {}
 };
 
 struct VMessDetourObject {
     QString to;
+
+    VMessDetourObject(){}
+    VMessDetourObject(const VMessDetourObject& a) : to(a.to) {}
 };
 
 struct MuxObject {
@@ -131,17 +146,49 @@ struct InboundDokodemoDoorConfigurationObject {
     int timeout;
     bool followRedirect;
     int userLevel;
+
+    InboundDokodemoDoorConfigurationObject(){}
+    InboundDokodemoDoorConfigurationObject(const InboundDokodemoDoorConfigurationObject& a) :
+        address(a.address), port(a.port), network(a.network), timeout(a.timeout),
+        followRedirect(a.followRedirect), userLevel(a.userLevel) {}
 };
 
 struct InboundHTTPConfigurationObject {
     int timeout;
-    QList<struct AccountObject> *accounts;
+    QList<struct AccountObject *> accounts;
     bool allowTransparent;
     int userLevel;
+
+    InboundHTTPConfigurationObject(){}
+    InboundHTTPConfigurationObject(const InboundHTTPConfigurationObject& a) :
+        timeout(a.timeout), allowTransparent(a.allowTransparent), userLevel(a.userLevel) {
+        foreach(AccountObject *dummy, a.accounts) {
+            AccountObject *account = new AccountObject(*dummy);
+            accounts.append(account);
+        }
+    }
+    ~InboundHTTPConfigurationObject() {
+        foreach(AccountObject *account, accounts) {
+            delete account;
+        }
+    }
 };
 
 struct InboundMTProtoConfigurationObject {
-    QList<struct MTProtoUserObject> *users;
+    QList<struct MTProtoUserObject *> users;
+
+    InboundMTProtoConfigurationObject(){}
+    InboundMTProtoConfigurationObject(const InboundMTProtoConfigurationObject& a) {
+        foreach(MTProtoUserObject *dummy, a.users) {
+            MTProtoUserObject *user = new MTProtoUserObject(*dummy);
+            users.append(user);
+        }
+    }
+    ~InboundMTProtoConfigurationObject() {
+        foreach (MTProtoUserObject *user, users) {
+            delete user;
+        }
+    }
 };
 
 struct InboundShadowsocksConfigurationObject {
@@ -154,22 +201,55 @@ struct InboundShadowsocksConfigurationObject {
     bool ota;
     //"tcp" | "udp" | "tcp,udp"
     QString network;
+
+    InboundShadowsocksConfigurationObject(){}
+    InboundShadowsocksConfigurationObject(const InboundShadowsocksConfigurationObject& a) :
+        email(a.email), method(a.method), password(a.password), level(a.level), ota(a.ota),
+        network(a.network) {}
 };
 
 struct InboundSocksConfigurationObject {
     // "noauth" | "password"
     QString auth;
-    QList<struct AccountObject> *accounts;
+    QList<struct AccountObject *> accounts;
     bool udp;
     QString ip;
     int userLevel;
+
+    InboundSocksConfigurationObject(){}
+    InboundSocksConfigurationObject(const InboundSocksConfigurationObject& a) :
+        auth(a.auth), udp(a.udp), ip(a.ip), userLevel(a.userLevel) {
+        foreach(AccountObject *dummy, a.accounts) {
+            AccountObject *account = new AccountObject(*dummy);
+            accounts.append(account);
+        }
+    }
+    ~InboundSocksConfigurationObject() {
+        foreach (AccountObject *account, accounts) {
+            delete account;
+        }
+    }
 };
 
 struct InboundVMessConfigurationObject {
-    QList<VMessClientObject> clients;
+    QList<VMessClientObject *> clients;
     VMessDefaultObject dephault;
     VMessDetourObject detour;
     bool disableInsecureEncryption;
+
+    InboundVMessConfigurationObject(){}
+    InboundVMessConfigurationObject(const InboundVMessConfigurationObject& a) :
+        dephault(a.dephault), detour(a.detour),disableInsecureEncryption(a.disableInsecureEncryption) {
+        foreach(VMessClientObject *dummy, a.clients) {
+            VMessClientObject *client = new VMessClientObject(*dummy);
+            clients.append(client);
+        }
+    }
+    ~InboundVMessConfigurationObject() {
+        foreach(VMessClientObject *client, clients) {
+            delete client;
+        }
+    }
 };
 /*
     Inbound Settings End
@@ -188,6 +268,9 @@ struct SniffingObject {
     bool enabled;
     // "http" | "tls"
     QStringList destOverride;
+
+    SniffingObject(){}
+    SniffingObject(const SniffingObject& a) : enabled(a.enabled), destOverride(a.destOverride) {}
 };
 
 struct HTTPServerObject {
@@ -559,14 +642,14 @@ struct StreamSettingsObject {
     }
 
     ~StreamSettingsObject() {
-        delete sockopt;
-        delete tlsSettings;
-        delete tcpSettings;
-        delete kcpSettings;
-        delete wsSettings;
-        delete httpSettings;
-        delete dsSettings;
-        delete quicSettings;
+        if (sockopt) delete sockopt;
+        if (tlsSettings) delete tlsSettings;
+        if (tcpSettings) delete tcpSettings;
+        if (kcpSettings) delete kcpSettings;
+        if (wsSettings) delete wsSettings;
+        if (httpSettings) delete httpSettings;
+        if (dsSettings) delete dsSettings;
+        if (quicSettings) delete quicSettings;
     }
 };
 

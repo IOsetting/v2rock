@@ -10,16 +10,16 @@ V2RayConfigOutbound::V2RayConfigOutbound() :
 V2RayConfigOutbound::~V2RayConfigOutbound()
 {
     qDebug() << "V2RayConfigOutbound destruct";
-    delete blackholeSettings;
-    delete dNSSettings;
-    delete freedomSettings;
-    delete hTTPSettings;
-    delete mTProtoSettings;
-    delete shadowSocksSettings;
-    delete socksSettings;
-    delete vMessSettings;
-    delete streamSettings;
-    delete mux;
+    if (blackholeSettings) delete blackholeSettings;
+    if (dNSSettings) delete dNSSettings;
+    if (freedomSettings) delete freedomSettings;
+    if (hTTPSettings) delete hTTPSettings;
+    if (mTProtoSettings) delete mTProtoSettings;
+    if (shadowSocksSettings) delete shadowSocksSettings;
+    if (socksSettings) delete socksSettings;
+    if (vMessSettings) delete vMessSettings;
+    if (streamSettings) delete streamSettings;
+    if (mux) delete mux;
 }
 
 QString V2RayConfigOutbound::getTag() const
@@ -184,7 +184,12 @@ MuxObject *V2RayConfigOutbound::getMux() const
 
 void V2RayConfigOutbound::setMux(MuxObject *value)
 {
-    mux = value;
+    delete mux;
+    if (value) {
+        mux = new MuxObject(*value);
+    } else {
+        mux = 0;
+    }
 }
 
 void V2RayConfigOutbound::toJson(QJsonObject &json) const

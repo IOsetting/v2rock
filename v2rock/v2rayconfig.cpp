@@ -8,14 +8,11 @@ V2RayConfig::V2RayConfig() : policy(0), api(0), dns(0), stats(false)
 V2RayConfig::~V2RayConfig()
 {
     qDebug() << "Delete v2rayConfig";
-    delete policy;
-    delete api;
-    delete dns;
+    if (policy) delete policy;
+    if (api) delete api;
+    if (dns) delete dns;
+    qDeleteAll(inbounds);
     qDeleteAll(outbounds);
-
-    /*
-    QList<V2RayConfigInbound> inbounds;
-    V2RayConfigRoute routing;*/
 }
 
 DNSObject *V2RayConfig::getDns() const
@@ -68,14 +65,20 @@ void V2RayConfig::setLog(const V2RayConfigLog &value)
     log = value;
 }
 
-QList<V2RayConfigInbound> V2RayConfig::getInbounds() const
+QList<V2RayConfigInbound *> V2RayConfig::getInbounds() const
 {
     return inbounds;
 }
 
-void V2RayConfig::setInbounds(const QList<V2RayConfigInbound> &value)
+void V2RayConfig::appendInbound(V2RayConfigInbound *value)
 {
-    inbounds = value;
+    inbounds.append(value);
+}
+
+void V2RayConfig::clearInbounds()
+{
+    qDeleteAll(inbounds);
+    inbounds.clear();
 }
 
 QList<V2RayConfigOutbound *> V2RayConfig::getOutbounds() const
@@ -207,9 +210,9 @@ void V2RayConfig::toJson(QJsonObject &json) const
 
     // QList<V2RayConfigInbound> inbounds;
     QJsonArray inboundArray;
-    foreach (const V2RayConfigInbound inbound, inbounds) {
+    foreach (const V2RayConfigInbound *inbound, inbounds) {
         QJsonObject inboundObj;
-        inbound.toJson(inboundObj);
+        inbound->toJson(inboundObj);
         inboundArray.append(inboundObj);
     }
     json["inbounds"] = inboundArray;
