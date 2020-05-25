@@ -24,7 +24,8 @@ SOURCES += \
     $$PWD/xinjieconfig.cpp \
     $$PWD/nodeeditdialog.cpp \
     $$PWD/nodeeditgeneraltab.cpp \
-    $$PWD/nodeedittransporttab.cpp \
+    $$PWD/nodeeditmisctab.cpp \
+    $$PWD/nodeeditnetworktab.cpp \
     $$PWD/pingprocess.cpp \
     $$PWD/v2rayconfig.cpp \
     $$PWD/v2rayconfigroute.cpp \
@@ -44,7 +45,8 @@ HEADERS += \
     $$PWD/xinjieconfig.h \
     $$PWD/nodeeditdialog.h \
     $$PWD/nodeeditgeneraltab.h \
-    $$PWD/nodeedittransporttab.h \
+    $$PWD/nodeeditmisctab.h \
+    $$PWD/nodeeditnetworktab.h \
     $$PWD/pingprocess.h \
     $$PWD/v2rayconfig.h \
     $$PWD/v2rayconfigroute.h \
@@ -61,8 +63,9 @@ FORMS += \
     $$PWD/settingsgeneraltab.ui \
     $$PWD/nodeeditdialog.ui \
     $$PWD/nodeeditgeneraltab.ui \
-    $$PWD/nodeedittransporttab.ui
+    $$PWD/nodeeditmisctab.ui \
+    $$PWD/nodeeditnetworktab.ui
 
-
+x
 RESOURCES += \
     $$PWD/res.qrc

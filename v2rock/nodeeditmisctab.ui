@@ -2,8 +2,8 @@
  <author/>
  <comment/>
  <exportmacro/>
- <class>NodeEditTransportTab</class>
- <widget name="NodeEditTransportTab" class="QWidget">
+ <class>NodeEditMiscTab</class>
+ <widget name="NodeEditMiscTab" class="QWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

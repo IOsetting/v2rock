@@ -850,16 +850,17 @@ void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObje
         }
         if (headerObj.contains("request") && headerObj["request"].isObject()) {
             QJsonObject requestObj = headerObj["request"].toObject();
+            settings.header.request = new HTTPRequestObject();
             if (requestObj.contains("version") && requestObj["version"].isString()) {
-                settings.header.request.version = requestObj["version"].toString();
+                settings.header.request->version = requestObj["version"].toString();
             }
             if (requestObj.contains("method") && requestObj["method"].isString()) {
-                settings.header.request.method = requestObj["method"].toString();
+                settings.header.request->method = requestObj["method"].toString();
             }
             if (requestObj.contains("path") && requestObj["path"].isArray()) {
                 foreach (QJsonValue value, requestObj["path"].toArray()) {
                     if (value.isString()) {
-                        settings.header.request.path.append(value.toString());
+                        settings.header.request->path.append(value.toString());
                     }
                 }
             }
@@ -873,21 +874,22 @@ void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObje
                                 list->append(value.toString());
                             }
                         }
-                        settings.header.request.headers.insert(key, *list);
+                        settings.header.request->headers.insert(key, *list);
                     }
                 }
             }
         }
         if (headerObj.contains("response") && headerObj["response"].isObject()) {
             QJsonObject responseObj = headerObj["response"].toObject();
+            settings.header.response = new HTTPResponseObject();
             if (responseObj.contains("version") && responseObj["version"].isString()) {
-                settings.header.response.version = responseObj["version"].toString();
+                settings.header.response->version = responseObj["version"].toString();
             }
             if (responseObj.contains("status") && responseObj["status"].isString()) {
-                settings.header.response.status = responseObj["status"].toString();
+                settings.header.response->status = responseObj["status"].toString();
             }
             if (responseObj.contains("reason") && responseObj["reason"].isString()) {
-                settings.header.response.reason = responseObj["reason"].toString();
+                settings.header.response->reason = responseObj["reason"].toString();
             }
             if (responseObj.contains("headers") && responseObj["headers"].isObject()) {
                 QJsonObject headersObj = responseObj["headers"].toObject();
@@ -899,7 +901,7 @@ void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObje
                                 list->append(value.toString());
                             }
                         }
-                        settings.header.response.headers.insert(key, *list);
+                        settings.header.response->headers.insert(key, *list);
                     }
                 }
             }
@@ -916,16 +918,16 @@ void V2RayConfigOutbound::toJson(TransportTcpObject *settings, QJsonObject &json
 
     // header request
     QJsonObject requestObj;
-    HTTPRequestObject request = header.request;
-    requestObj["version"] = request.version;
-    requestObj["method"] = request.method;
+    HTTPRequestObject *request = header.request;
+    requestObj["version"] = request->version;
+    requestObj["method"] = request->method;
     QJsonArray pathArray;
-    foreach(const QString val, request.path) {
+    foreach(const QString val, request->path) {
         pathArray.append(val);
     }
     requestObj["path"] = pathArray;
     QJsonObject reqHeaderObj;
-    QMapIterator<QString, QStringList> it(request.headers);
+    QMapIterator<QString, QStringList> it(request->headers);
     while (it.hasNext()) {
         it.next();
         QJsonArray reqHeaderValArray;
@@ -940,12 +942,12 @@ void V2RayConfigOutbound::toJson(TransportTcpObject *settings, QJsonObject &json
 
     // header response
     QJsonObject responseObj;
-    HTTPResponseObject response = header.response;
-    responseObj["version"] = response.version;
-    responseObj["status"] = response.status;
-    responseObj["reason"] = response.reason;
+    HTTPResponseObject *response = header.response;
+    responseObj["version"] = response->version;
+    responseObj["status"] = response->status;
+    responseObj["reason"] = response->reason;
     QJsonObject resHeaderObj;
-    QMapIterator<QString, QStringList> it2(response.headers);
+    QMapIterator<QString, QStringList> it2(response->headers);
     while (it2.hasNext()) {
         it2.next();
         QJsonArray resHeaderValArray;

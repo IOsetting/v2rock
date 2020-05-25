@@ -8,7 +8,8 @@
 #include <QVBoxLayout>
 
 #include "nodeeditgeneraltab.h"
-#include "nodeedittransporttab.h"
+#include "nodeeditmisctab.h"
+#include "nodeeditnetworktab.h"
 #include "v2rockconfig.h"
 
 namespace Ui {
@@ -31,7 +32,8 @@ private:
     Ui::NodeEditDialog *ui;
     QTabWidget *tabWidget;
     NodeEditGeneralTab *generalTab;
-    NodeEditTransportTab *transportTab;
+    NodeEditMiscTab *miscTab;
+    NodeEditNetworkTab *networkTab;
     QDialogButtonBox *buttonBox;
 
 private slots:

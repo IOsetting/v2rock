@@ -8,9 +8,11 @@ NodeEditDialog::NodeEditDialog(QWidget *parent) :
     ui->setupUi(this);
     tabWidget = new QTabWidget;
     generalTab = new NodeEditGeneralTab(this);
+    miscTab = new NodeEditMiscTab(this);
+    networkTab = new NodeEditNetworkTab(this);
     tabWidget->addTab(generalTab, tr("General"));
-    transportTab = new NodeEditTransportTab(this);
-    tabWidget->addTab(transportTab, tr("Transport"));
+    tabWidget->addTab(networkTab, tr("Network"));
+    tabWidget->addTab(miscTab, tr("Misc"));
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
@@ -26,7 +28,8 @@ NodeEditDialog::NodeEditDialog(QWidget *parent) :
 NodeEditDialog::~NodeEditDialog()
 {
     delete generalTab;
-    delete transportTab;
+    delete miscTab;
+    delete networkTab;
     delete tabWidget;
     delete buttonBox;
     delete ui;

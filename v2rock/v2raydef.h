@@ -482,11 +482,26 @@ struct HTTPResponseObject {
 
 struct HTTPHeaderObject {
     QString type;
-    struct HTTPRequestObject request;
-    struct HTTPResponseObject response;
+    struct HTTPRequestObject *request;
+    struct HTTPResponseObject *response;
 
     HTTPHeaderObject(){}
-    HTTPHeaderObject(const HTTPHeaderObject& a) : type(a.type), request(a.request), response(a.response) {}
+    HTTPHeaderObject(const HTTPHeaderObject& a) : type(a.type) {
+        if (a.request) {
+            request = new HTTPRequestObject(*(a.request));
+        } else {
+            request = 0;
+        }
+        if (a.response) {
+            response = new HTTPResponseObject(*(a.response));
+        } else {
+            response = 0;
+        }
+    }
+    ~HTTPHeaderObject() {
+        if (request) delete request;
+        if (response) delete response;
+    }
 };
 
 struct HeaderObject {
