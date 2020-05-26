@@ -1,3 +1,10 @@
+v2rock (0.1.2-1) precise; urgency=low
+
+  * New feature: Node management
+
+ -- IOsetting <iosetting@outlook.com>  Tue, 26 May 2020 23:30:21 +0800
+
+
 v2rock (0.1.1-1) precise; urgency=low
 
   * New feature: HTTP proxy configuration
