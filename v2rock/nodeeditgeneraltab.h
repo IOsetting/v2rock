@@ -72,6 +72,8 @@ private:
     QLineEdit *httpUserUserEdit;
     QLineEdit *httpUserPassEdit;
 
+    void clean();
+
 private slots:
     void protocolSwitch(const int index);
 };

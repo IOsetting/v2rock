@@ -51,6 +51,8 @@ public:
 
     QList<V2RockNode *> getNodes() const;
     void setNodes(const QList<V2RockNode *> &value);
+    void addNode(int index, V2RockNode *node);
+    void delNode(int index);
 
     int getNodeIndex() const;
     void setNodeIndex(int value);

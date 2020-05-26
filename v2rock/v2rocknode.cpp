@@ -1,10 +1,47 @@
 #include "v2rocknode.h"
 
-V2RockNode::V2RockNode() :
+V2RockNode::V2RockNode() : name(""), protocol("vmess"),
     blackholeSettings(0), dNSSettings(0), freedomSettings(0), hTTPSettings(0), mTProtoSettings(0),
     shadowSocksSettings(0), socksSettings(0), vMessSettings(0), streamSettings(0), mux(0)
 {
 
+}
+
+V2RockNode::V2RockNode(const V2RockNode &a) :
+    name(a.name), protocol(a.protocol),
+    blackholeSettings(0), dNSSettings(0), freedomSettings(0), hTTPSettings(0), mTProtoSettings(0),
+    shadowSocksSettings(0), socksSettings(0), vMessSettings(0), streamSettings(0), mux(0)
+{
+    if (a.getBlackholeSettings()) {
+        blackholeSettings = new OutboundBlackholeConfigurationObject(*(a.getBlackholeSettings()));
+    }
+    if (a.getDNSSettings()) {
+        dNSSettings = new OutboundDNSConfigurationObject(*(a.getDNSSettings()));
+    }
+    if (a.getFreedomSettings()) {
+        freedomSettings = new OutboundFreedomConfigurationObject(*(a.getFreedomSettings()));
+    }
+    if (a.getHTTPSettings()) {
+        hTTPSettings = new OutboundHTTPConfigurationObject(*(a.getHTTPSettings()));
+    }
+    if (a.getMTProtoSettings()) {
+        mTProtoSettings = new OutboundMTProtoConfigurationObject(*(a.getMTProtoSettings()));
+    }
+    if (a.getShadowSocksSettings()) {
+        shadowSocksSettings = new OutboundShadowsocksConfigurationObject(*(a.getShadowSocksSettings()));
+    }
+    if (a.getSocksSettings()) {
+        socksSettings = new OutboundSocksConfigurationObject(*(a.getSocksSettings()));
+    }
+    if (a.getVMessSettings()) {
+        vMessSettings = new OutboundVMessConfigurationObject(*(a.getVMessSettings()));
+    }
+    if (a.getStreamSettings()) {
+        streamSettings = new StreamSettingsObject(*(a.getStreamSettings()));
+    }
+    if (a.getMux()) {
+        mux = new MuxObject(*(a.getMux()));
+    }
 }
 
 V2RockNode::~V2RockNode()

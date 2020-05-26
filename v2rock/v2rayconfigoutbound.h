@@ -73,6 +73,9 @@ public:
     static void fromJson(TransportQuicObject &settings, const QJsonObject &json);
     static void toJson(TransportQuicObject *settings, QJsonObject &json);
 
+    static void fromJson(CertificateObject &settings, const QJsonObject &json);
+    static void toJson(CertificateObject *settings, QJsonObject &json);
+
     static void fromJson(QMap<QString, QStringList> &settings, const QJsonObject &json);
     static void toJson(QMap<QString, QStringList> *settings, QJsonObject &json);
 
@@ -80,6 +83,7 @@ public:
     static void toJson(QMap<QString, QString> *settings, QJsonObject &json);
 
     static QString toText(const QJsonObject &json);
+    static QString toText(const QJsonArray &json);
 
     QString getTag() const;
     void setTag(const QString &value);

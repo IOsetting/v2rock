@@ -12,6 +12,7 @@ class V2RockNode
 {
 public:
     V2RockNode();
+    V2RockNode(const V2RockNode& a);
     ~V2RockNode();
 
     QString getName() const;

@@ -779,29 +779,7 @@ void V2RayConfigOutbound::fromJson(TransportTlsObject &settings, const QJsonObje
             if (value.isObject()) {
                 QJsonObject obj = value.toObject();
                 CertificateObject *certificate = new CertificateObject;
-                if (obj.contains("usage") && obj["usage"].isString()) {
-                    certificate->usage = obj["usage"].toString();
-                }
-                if (obj.contains("certificateFile") && obj["certificateFile"].isString()) {
-                    certificate->certificateFile = obj["certificateFile"].toString();
-                }
-                if (obj.contains("keyFile") && obj["keyFile"].isString()) {
-                    certificate->keyFile = obj["keyFile"].toString();
-                }
-                if (obj.contains("certificate") && obj["certificate"].isArray()) {
-                    foreach (QJsonValue value, obj["certificate"].toArray()) {
-                        if (value.isString()) {
-                            certificate->certificate.append(value.toString());
-                        }
-                    }
-                }
-                if (obj.contains("key") && obj["key"].isArray()) {
-                    foreach (QJsonValue value, obj["key"].toArray()) {
-                        if (value.isString()) {
-                            certificate->key.append(value.toString());
-                        }
-                    }
-                }
+                fromJson(*certificate, obj);
                 settings.certificates.append(*certificate);
             }
         }
@@ -820,22 +798,9 @@ void V2RayConfigOutbound::toJson(TransportTlsObject *settings, QJsonObject &json
     json["alpn"] = alpnArray;
 
     QJsonArray certArray;
-    foreach(const CertificateObject cert, settings->certificates) {
+    foreach(CertificateObject cert, settings->certificates) {
         QJsonObject certObj;
-        certObj["usage"] = cert.usage;
-        certObj["certificateFile"] = cert.certificateFile;
-        certObj["keyFile"] = cert.keyFile;
-        QJsonArray cerArray;
-        foreach(const QString val, cert.certificate) {
-            cerArray.append(val);
-        }
-        certObj["certificate"] = cerArray;
-
-        QJsonArray keyArray;
-        foreach(const QString val, cert.key) {
-            keyArray.append(val);
-        }
-        certObj["key"] = keyArray;
+        toJson(&cert, certObj);
         certArray.append(certObj);
     }
     json["certificates"] = certArray;
@@ -896,30 +861,34 @@ void V2RayConfigOutbound::toJson(TransportTcpObject *settings, QJsonObject &json
     headerObj["type"] = header.type;
 
     // header request
-    QJsonObject requestObj;
-    HTTPRequestObject *request = header.request;
-    requestObj["version"] = request->version;
-    requestObj["method"] = request->method;
-    QJsonArray pathArray;
-    foreach(const QString val, request->path) {
-        pathArray.append(val);
+    if (header.request) {
+        HTTPRequestObject *request = header.request;
+        QJsonObject requestObj;
+        requestObj["version"] = request->version;
+        requestObj["method"] = request->method;
+        QJsonArray pathArray;
+        foreach(const QString val, request->path) {
+            pathArray.append(val);
+        }
+        requestObj["path"] = pathArray;
+        QJsonObject reqHeaderObj;
+        toJson(&(request->headers), reqHeaderObj);
+        requestObj["headers"] = reqHeaderObj;
+        headerObj["request"] = requestObj;
     }
-    requestObj["path"] = pathArray;
-    QJsonObject reqHeaderObj;
-    toJson(&(request->headers), reqHeaderObj);
-    requestObj["headers"] = reqHeaderObj;
-    headerObj["request"] = requestObj;
 
     // header response
-    QJsonObject responseObj;
-    HTTPResponseObject *response = header.response;
-    responseObj["version"] = response->version;
-    responseObj["status"] = response->status;
-    responseObj["reason"] = response->reason;
-    QJsonObject resHeaderObj;
-    toJson(&(response->headers), resHeaderObj);
-    responseObj["headers"] = resHeaderObj;
-    headerObj["response"] = responseObj;
+    if (header.response) {
+        QJsonObject responseObj;
+        HTTPResponseObject *response = header.response;
+        responseObj["version"] = response->version;
+        responseObj["status"] = response->status;
+        responseObj["reason"] = response->reason;
+        QJsonObject resHeaderObj;
+        toJson(&(response->headers), resHeaderObj);
+        responseObj["headers"] = resHeaderObj;
+        headerObj["response"] = responseObj;
+    }
 
     json["header"] = headerObj;
 }
@@ -1049,6 +1018,51 @@ void V2RayConfigOutbound::toJson(TransportQuicObject *settings, QJsonObject &jso
     json["header"] = headerObj;
 }
 
+void V2RayConfigOutbound::fromJson(CertificateObject &settings, const QJsonObject &json)
+{
+    if (json.contains("usage") && json["usage"].isString()) {
+        settings.usage = json["usage"].toString();
+    }
+    if (json.contains("certificateFile") && json["certificateFile"].isString()) {
+        settings.certificateFile = json["certificateFile"].toString();
+    }
+    if (json.contains("keyFile") && json["keyFile"].isString()) {
+        settings.keyFile = json["keyFile"].toString();
+    }
+    if (json.contains("certificate") && json["certificate"].isArray()) {
+        foreach (QJsonValue value, json["certificate"].toArray()) {
+            if (value.isString()) {
+                settings.certificate.append(value.toString());
+            }
+        }
+    }
+    if (json.contains("key") && json["key"].isArray()) {
+        foreach (QJsonValue value, json["key"].toArray()) {
+            if (value.isString()) {
+                settings.key.append(value.toString());
+            }
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(CertificateObject *settings, QJsonObject &json)
+{
+    json["usage"] = settings->usage;
+    json["certificateFile"] = settings->certificateFile;
+    json["keyFile"] = settings->keyFile;
+    QJsonArray cerArray;
+    foreach(const QString val, settings->certificate) {
+        cerArray.append(val);
+    }
+    json["certificate"] = cerArray;
+
+    QJsonArray keyArray;
+    foreach(const QString val, settings->key) {
+        keyArray.append(val);
+    }
+    json["key"] = keyArray;
+}
+
 void V2RayConfigOutbound::fromJson(QMap<QString, QStringList> &settings, const QJsonObject &json)
 {
     foreach(const QString& key, json.keys()) {
@@ -1100,6 +1114,12 @@ void V2RayConfigOutbound::toJson(QMap<QString, QString> *settings, QJsonObject &
 }
 
 QString V2RayConfigOutbound::toText(const QJsonObject &json)
+{
+    QJsonDocument doc(json);
+    return QString(doc.toJson(QJsonDocument::Indented));
+}
+
+QString V2RayConfigOutbound::toText(const QJsonArray &json)
 {
     QJsonDocument doc(json);
     return QString(doc.toJson(QJsonDocument::Indented));

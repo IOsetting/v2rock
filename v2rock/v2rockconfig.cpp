@@ -163,6 +163,26 @@ void V2RockConfig::setNodes(const QList<V2RockNode *> &value)
     nodes = value;
 }
 
+void V2RockConfig::addNode(int index, V2RockNode *node)
+{
+    if (index >= nodes.size() || index < 0) {
+        // append to the end
+        nodes.append(node);
+    } else {
+        nodes.insert(index, node);
+        if (nodeIndex >= index) nodeIndex++;
+    }
+}
+
+void V2RockConfig::delNode(int index)
+{
+    if (index >= nodes.size()) {
+        return;
+    }
+    nodes.removeAt(index);
+    if (nodeIndex >= index) nodeIndex--;
+}
+
 int V2RockConfig::getNodeIndex() const
 {
     return nodeIndex;

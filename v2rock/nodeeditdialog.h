@@ -23,11 +23,12 @@ class NodeEditDialog : public QDialog
 public:
     explicit NodeEditDialog(QWidget *parent = 0);
     ~NodeEditDialog();
-    void init(V2RockConfig *v2rockConfig, int index);
+    void init(V2RockConfig *v2rockConfig, int index, bool isNew=false);
 
 private:
     V2RockConfig *v2rockConfig;
     int index;
+    bool isNew;
 
     Ui::NodeEditDialog *ui;
     QTabWidget *tabWidget;

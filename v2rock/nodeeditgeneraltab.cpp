@@ -231,9 +231,9 @@ NodeEditGeneralTab::~NodeEditGeneralTab()
 
 void NodeEditGeneralTab::init(V2RockConfig *v2rockConfig, int index)
 {
-    if (index == -1) { // when adding a new node
-        return;
-    }
+    this->clean();
+    if (index == -1) return;
+
     QList<V2RockNode *> nodes = v2rockConfig->getNodes();
     nameEdit->setText(nodes.at(index)->getName());
     int current = 0;
@@ -365,6 +365,39 @@ void NodeEditGeneralTab::getHTTPSettings(OutboundHTTPConfigurationObject &settin
     user->pass = httpUserPassEdit->text();
     server->users.append(user);
     settings.servers.append(server);
+}
+
+void NodeEditGeneralTab::clean()
+{
+    nameEdit->clear();
+    protocolComb->setCurrentIndex(4);
+    protocolSwitch(4);
+    // vmess
+    vmessAddressEdit->clear();
+    vmessPortEdit->setText("1080");
+    vmessUserIdEdit->clear();
+    vmessUserAidEdit->setText("0");
+    vmessUserLevelEdit->setText("0");
+    vmessUserSecurityComb->setCurrentIndex(0);
+    // socks
+    socksAddressEdit->clear();
+    socksPortEdit->setText("1080");
+    socksUserUserEdit->clear();
+    socksUserPassEdit->clear();
+    socksUserLevelEdit->setText("0");
+    // shadowsocks
+    shadowsocksAddressEdit->clear();
+    shadowsocksPortEdit->setText("1080");
+    shadowsocksEmailEdit->clear();
+    shadowsocksPasswordEdit->clear();
+    shadowsocksOtaCheckbox->setChecked(false);
+    shadowsocksLevelEdit->setText("0");
+    shadowsocksMethodComb->setCurrentIndex(0);
+    // http
+    httpAddressEdit->clear();
+    httpPortEdit->setText("8080");
+    httpUserUserEdit->clear();
+    httpUserPassEdit->clear();
 }
 
 void NodeEditGeneralTab::protocolSwitch(const int index)

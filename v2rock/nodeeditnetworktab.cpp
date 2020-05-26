@@ -145,8 +145,9 @@ NodeEditNetworkTab::NodeEditNetworkTab(QWidget *parent) :
     vlay37->addWidget(new QLabel(tr("Header")));
     vlay37->addWidget(kcpHeaderTypeComb);
     QHBoxLayout *hlay32 = new QHBoxLayout;
-    hlay32->addLayout(vlay34);
     hlay32->addLayout(vlay37);
+    hlay32->addLayout(vlay34);
+    hlay32->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     QVBoxLayout *vlay38 = new QVBoxLayout;
     vlay38->addLayout(hlay30);
@@ -242,10 +243,8 @@ NodeEditNetworkTab::~NodeEditNetworkTab()
 
 void NodeEditNetworkTab::init(StreamSettingsObject *streamSettings)
 {
-    if (streamSettings == 0) { // when adding a new node
-        return;
-    }
     this->clean();
+    if (!streamSettings) return;
 
     networkComb->setCurrentText(streamSettings->network);
     networkSwitch(streamSettings->network);

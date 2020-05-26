@@ -333,7 +333,23 @@ void MainDialog::btnSettingsClickHandler()
 
 void MainDialog::actDelHandler()
 {
+    QAction *act = qobject_cast<QAction *>(sender());
+    QVariant variant = act->data();
+    QTreeWidgetItem *item = (QTreeWidgetItem *) variant.value<void *>();
+    int index = item->text(0).toInt();
+    QString nodeName = item->text(3);
 
+    QMessageBox::StandardButton reply = QMessageBox::question(
+                this,
+                "Conformation",
+                QString("Do you want to delete node %1?").arg(nodeName),
+                QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        this->v2rockConfig->delNode(index);
+        this->v2rockConfig->write();
+        this->appendLog(QString("Node %1 has been deleted").arg(nodeName));
+        this->reloadTreeList();
+    }
 }
 
 void MainDialog::actEditHandler()
@@ -343,18 +359,32 @@ void MainDialog::actEditHandler()
     QTreeWidgetItem *item = (QTreeWidgetItem *) variant.value<void *>();
     qDebug() << item->text(0);
     int index = item->text(0).toInt();
+    QString nodeName = item->text(3);
+
     dialogNodeEdit->init(v2rockConfig, index);
     if (dialogNodeEdit->exec() == QDialog::Accepted)
     {
-        qDebug() << "Accepted";
         this->v2rockConfig->write();
+        this->appendLog(QString("Node %1 has been updated").arg(nodeName));
         this->reloadTreeList();
     }
 }
 
 void MainDialog::actAddHandler()
 {
-
+    QAction *act = qobject_cast<QAction *>(sender());
+    QVariant variant = act->data();
+    QTreeWidgetItem *item = (QTreeWidgetItem *) variant.value<void *>();
+    int index(-1);
+    if (item) {
+        index = item->text(0).toInt();
+    }
+    dialogNodeEdit->init(v2rockConfig, index, true);
+    if (dialogNodeEdit->exec() == QDialog::Accepted)
+    {
+        this->v2rockConfig->write();
+        this->reloadTreeList();
+    }
 }
 
 void MainDialog::contextMenu(const QPoint &point)

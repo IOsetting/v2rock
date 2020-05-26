@@ -35,18 +35,33 @@ NodeEditDialog::~NodeEditDialog()
     delete ui;
 }
 
-void NodeEditDialog::init(V2RockConfig *v2rockConfig, int index)
+void NodeEditDialog::init(V2RockConfig *v2rockConfig, int index, bool isNew)
 {
     this->v2rockConfig = v2rockConfig;
     this->index = index;
-    generalTab->init(v2rockConfig, index);
-    networkTab->init(v2rockConfig->getNodes().at(index)->getStreamSettings());
+    this->isNew = (index == -1 ||isNew)? true : false;
+    if (this->isNew) {
+        generalTab->init(v2rockConfig, index);
+        networkTab->init(0);
+        miscTab->init(0);
+    } else {
+        generalTab->init(v2rockConfig, index);
+        networkTab->init(v2rockConfig->getNodes().at(index)->getStreamSettings());
+        miscTab->init(v2rockConfig->getNodes().at(index)->getStreamSettings());
+    }
+
 }
 
 void NodeEditDialog::accept()
 {
-    QList<V2RockNode *> nodes = v2rockConfig->getNodes();
-    V2RockNode *node = nodes.at(index);
+    V2RockNode *node;
+    if (isNew) {
+        node = new V2RockNode();
+    } else {
+        QList<V2RockNode *> nodes = v2rockConfig->getNodes();
+        node = nodes.at(index);
+    }
+
     // General Tab
     node->setName(generalTab->getName());
     node->setProtocol(generalTab->getProtocol());
@@ -94,7 +109,22 @@ void NodeEditDialog::accept()
         networkTab->getQuicSettings(*(streamSettings->quicSettings));
     }
 
+    // Misc Tab
+    if (miscTab->getSockopt() == "on") {
+        streamSettings->sockopt = new SockoptObject();
+        miscTab->getSockoptSettings(*(streamSettings->sockopt));
+    }
+    if (miscTab->getSecurity() == "tls") {
+        streamSettings->tlsSettings = new TransportTlsObject();
+        miscTab->getTlsSettings(*(streamSettings->tlsSettings));
+    }
+
     node->setStreamSettings(streamSettings);
+
+    if (isNew) {
+        this->v2rockConfig->addNode(index, node);
+    }
+
     QDialog::accept();
 }
 
