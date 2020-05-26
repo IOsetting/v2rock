@@ -40,12 +40,14 @@ void NodeEditDialog::init(V2RockConfig *v2rockConfig, int index)
     this->v2rockConfig = v2rockConfig;
     this->index = index;
     generalTab->init(v2rockConfig, index);
+    networkTab->init(v2rockConfig->getNodes().at(index)->getStreamSettings());
 }
 
 void NodeEditDialog::accept()
 {
     QList<V2RockNode *> nodes = v2rockConfig->getNodes();
     V2RockNode *node = nodes.at(index);
+    // General Tab
     node->setName(generalTab->getName());
     node->setProtocol(generalTab->getProtocol());
     if (node->getProtocol() == "vmess") {
@@ -68,6 +70,31 @@ void NodeEditDialog::accept()
         generalTab->getSocksSettings(*settings);
         node->setSocksSettings(settings);
     }
+
+    // Network Tab
+    StreamSettingsObject *streamSettings = new StreamSettingsObject();
+    streamSettings->network = networkTab->getNetwork();
+    if (streamSettings->network == "tcp") {
+        streamSettings->tcpSettings = new TransportTcpObject();
+        networkTab->getTcpSettings(*(streamSettings->tcpSettings));
+    } else if (streamSettings->network == "kcp") {
+        streamSettings->kcpSettings = new TransportKcpObject();
+        networkTab->getKcpSettings(*(streamSettings->kcpSettings));
+    } else if (streamSettings->network == "ws") {
+        streamSettings->wsSettings = new TransportWebSocketObject();
+        networkTab->getWsSettings(*(streamSettings->wsSettings));
+    } else if (streamSettings->network == "http") {
+        streamSettings->httpSettings = new TransportHTTPObject();
+        networkTab->getHttpSettings(*(streamSettings->httpSettings));
+    } else if (streamSettings->network == "domainsocket") {
+        streamSettings->dsSettings = new TransportDomainSocketObject();
+        networkTab->getDsSettings(*(streamSettings->dsSettings));
+    } else if (streamSettings->network == "quic") {
+        streamSettings->quicSettings = new TransportQuicObject();
+        networkTab->getQuicSettings(*(streamSettings->quicSettings));
+    }
+
+    node->setStreamSettings(streamSettings);
     QDialog::accept();
 }
 

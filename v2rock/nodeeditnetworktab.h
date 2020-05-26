@@ -3,15 +3,20 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDebug>
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonParseError>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include "v2raydef.h"
+#include "v2rayconfigoutbound.h"
 
 namespace Ui {
 class NodeEditNetworkTab;
@@ -24,13 +29,17 @@ class NodeEditNetworkTab : public QWidget
 public:
     explicit NodeEditNetworkTab(QWidget *parent = 0);
     ~NodeEditNetworkTab();
+    void init(StreamSettingsObject *streamSettings);
     QString getNetwork() const;
-    void getTcpSettings(TransportTcpObject &settings) const;
+    void getTcpSettings(TransportTcpObject &settings);
     void getKcpSettings(TransportKcpObject &settings) const;
-    void getWsSettings(TransportWebSocketObject &settings) const;
+    void getWsSettings(TransportWebSocketObject &settings);
     void getHttpSettings(TransportHTTPObject &settings) const;
     void getDsSettings(TransportDomainSocketObject &settings) const;
     void getQuicSettings(TransportQuicObject &settings) const;
+
+signals:
+    void logReceived(const QString&);
 
 private:
     Ui::NodeEditNetworkTab *ui;
@@ -56,7 +65,7 @@ private:
     QLineEdit *kcpTtiEdit;
     QLineEdit *kcpUplinkCapacityEdit;
     QLineEdit *kcpDownlinkCapacityEdit;
-    QLineEdit *kcpCongestionEdit;
+    QCheckBox *kcpCongestionCheckBox;
     QLineEdit *kcpReadBufferSizeEdit;
     QLineEdit *kcpWriteBufferSizeEdit;
     QComboBox *kcpHeaderTypeComb;
@@ -80,6 +89,8 @@ private:
     QComboBox *quicSecurityComb;
     QLineEdit *quicKeyEdit;
     QComboBox *quicHeaderTypeComb;
+
+    void clean();
 
 private slots:
     void networkSwitch(const QString& text);

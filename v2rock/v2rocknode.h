@@ -33,7 +33,7 @@ public:
     void setHTTPSettings(OutboundHTTPConfigurationObject *value);
 
     OutboundMTProtoConfigurationObject *getMTProtoSettings() const;
-    void setMTProtoSettings(OutboundMTProtoConfigurationObject *mTProtoSettings);
+    void setMTProtoSettings(OutboundMTProtoConfigurationObject *value);
 
     OutboundShadowsocksConfigurationObject *getShadowSocksSettings() const;
     void setShadowSocksSettings(OutboundShadowsocksConfigurationObject *value);

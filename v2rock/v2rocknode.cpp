@@ -79,7 +79,7 @@ OutboundHTTPConfigurationObject *V2RockNode::getHTTPSettings() const
 
 void V2RockNode::setHTTPSettings(OutboundHTTPConfigurationObject *value)
 {
-    delete hTTPSettings;
+    if (hTTPSettings) delete hTTPSettings;
     hTTPSettings = value;
 }
 
@@ -88,9 +88,10 @@ OutboundMTProtoConfigurationObject *V2RockNode::getMTProtoSettings() const
     return mTProtoSettings;
 }
 
-void V2RockNode::setMTProtoSettings(OutboundMTProtoConfigurationObject *mTProtoSettings)
+void V2RockNode::setMTProtoSettings(OutboundMTProtoConfigurationObject *value)
 {
-    mTProtoSettings = mTProtoSettings;
+    if (mTProtoSettings) delete mTProtoSettings;
+    mTProtoSettings = value;
 }
 
 OutboundShadowsocksConfigurationObject *V2RockNode::getShadowSocksSettings() const
@@ -100,7 +101,7 @@ OutboundShadowsocksConfigurationObject *V2RockNode::getShadowSocksSettings() con
 
 void V2RockNode::setShadowSocksSettings(OutboundShadowsocksConfigurationObject *value)
 {
-    delete shadowSocksSettings;
+    if (shadowSocksSettings) delete shadowSocksSettings;
     shadowSocksSettings = value;
 }
 
@@ -111,7 +112,7 @@ OutboundSocksConfigurationObject *V2RockNode::getSocksSettings() const
 
 void V2RockNode::setSocksSettings(OutboundSocksConfigurationObject *value)
 {
-    delete socksSettings;
+    if (socksSettings) delete socksSettings;
     socksSettings = value;
 }
 
@@ -122,7 +123,7 @@ OutboundVMessConfigurationObject *V2RockNode::getVMessSettings() const
 
 void V2RockNode::setVMessSettings(OutboundVMessConfigurationObject *value)
 {
-    delete vMessSettings;
+    if (vMessSettings) delete vMessSettings;
     vMessSettings = value;
 }
 
@@ -133,6 +134,7 @@ StreamSettingsObject *V2RockNode::getStreamSettings() const
 
 void V2RockNode::setStreamSettings(StreamSettingsObject *value)
 {
+    if (streamSettings) delete streamSettings;
     streamSettings = value;
 }
 
@@ -143,6 +145,7 @@ MuxObject *V2RockNode::getMux() const
 
 void V2RockNode::setMux(MuxObject *value)
 {
+    if (mux) delete mux;
     mux = value;
 }
 

@@ -86,18 +86,22 @@ NodeEditNetworkTab::NodeEditNetworkTab(QWidget *parent) :
     vlay20->addWidget(tcpHttpPanel);
     vlay20->setMargin(0);
     tcpPanel->setLayout(vlay20);
-    tcpHeaderTypeComb->setCurrentText("none");
-    tcpHttpPanelSwitch("none");
 
     // KCP
     kcpPanel = new QWidget();
     kcpMtuEdit = new QLineEdit();
+    kcpMtuEdit->setValidator(new QIntValidator(576, 1460));
     kcpTtiEdit = new QLineEdit();
+    kcpTtiEdit->setValidator(new QIntValidator(10, 100));
     kcpUplinkCapacityEdit = new QLineEdit();
+    kcpUplinkCapacityEdit->setValidator(new QIntValidator(0, 9999));
     kcpDownlinkCapacityEdit = new QLineEdit();
-    kcpCongestionEdit = new QLineEdit();
+    kcpDownlinkCapacityEdit->setValidator(new QIntValidator(0, 9999));
+    kcpCongestionCheckBox = new QCheckBox(tr("Enable"));
     kcpReadBufferSizeEdit = new QLineEdit();
+    kcpReadBufferSizeEdit->setValidator(new QIntValidator(0, 128));
     kcpWriteBufferSizeEdit = new QLineEdit();
+    kcpWriteBufferSizeEdit->setValidator(new QIntValidator(0, 128));
     kcpHeaderTypeComb = new QComboBox();
     kcpHeaderTypeComb->addItem("none");
     kcpHeaderTypeComb->addItem("srtp");
@@ -136,7 +140,7 @@ NodeEditNetworkTab::NodeEditNetworkTab(QWidget *parent) :
 
     QVBoxLayout *vlay34 = new QVBoxLayout;
     vlay34->addWidget(new QLabel(tr("Congestion")));
-    vlay34->addWidget(kcpCongestionEdit);
+    vlay34->addWidget(kcpCongestionCheckBox);
     QVBoxLayout *vlay37 = new QVBoxLayout;
     vlay37->addWidget(new QLabel(tr("Header")));
     vlay37->addWidget(kcpHeaderTypeComb);
@@ -229,8 +233,6 @@ NodeEditNetworkTab::NodeEditNetworkTab(QWidget *parent) :
     mainlay->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding));
     setLayout(mainlay);
 
-    networkComb->setCurrentText("tcp");
-    networkSwitch("tcp");
 }
 
 NodeEditNetworkTab::~NodeEditNetworkTab()
@@ -238,12 +240,74 @@ NodeEditNetworkTab::~NodeEditNetworkTab()
     delete ui;
 }
 
+void NodeEditNetworkTab::init(StreamSettingsObject *streamSettings)
+{
+    if (streamSettings == 0) { // when adding a new node
+        return;
+    }
+    this->clean();
+
+    networkComb->setCurrentText(streamSettings->network);
+    networkSwitch(streamSettings->network);
+    if (streamSettings->tcpSettings) {
+        tcpHeaderTypeComb->setCurrentText(streamSettings->tcpSettings->header.type);
+        tcpHttpPanelSwitch(streamSettings->tcpSettings->header.type);
+        if (streamSettings->tcpSettings->header.type == "http") {
+            if (streamSettings->tcpSettings->header.request) {
+                tcpHeaderRequestVersionEdit->setText(streamSettings->tcpSettings->header.request->version);
+                tcpHeaderRequestMethodComb->setCurrentText(streamSettings->tcpSettings->header.request->method);
+                tcpHeaderRequestPathEdit->setText(streamSettings->tcpSettings->header.request->path.join(","));
+                QJsonObject headerObj;
+                V2RayConfigOutbound::toJson(&(streamSettings->tcpSettings->header.request->headers), headerObj);
+                tcpHeaderRequestHeadersEdit->setPlainText(V2RayConfigOutbound::toText(headerObj));
+            }
+            if (streamSettings->tcpSettings->header.response) {
+                tcpHeaderResponseVersionEdit->setText(streamSettings->tcpSettings->header.response->version);
+                tcpHeaderResponseStatusComb->setCurrentText(streamSettings->tcpSettings->header.response->status);
+                tcpHeaderResponseReasonEdit->setText(streamSettings->tcpSettings->header.response->reason);
+                QJsonObject headerObj;
+                V2RayConfigOutbound::toJson(&(streamSettings->tcpSettings->header.response->headers), headerObj);
+                tcpHeaderResponseHeadersEdit->setPlainText(V2RayConfigOutbound::toText(headerObj));
+            }
+
+        }
+    }
+    if (streamSettings->kcpSettings) {
+        kcpMtuEdit->setText(QString::number(streamSettings->kcpSettings->mtu));
+        kcpTtiEdit->setText(QString::number(streamSettings->kcpSettings->tti));
+        kcpUplinkCapacityEdit->setText(QString::number(streamSettings->kcpSettings->uplinkCapacity));
+        kcpDownlinkCapacityEdit->setText(QString::number(streamSettings->kcpSettings->downlinkCapacity));
+        kcpCongestionCheckBox->setChecked(streamSettings->kcpSettings->congestion);
+        kcpReadBufferSizeEdit->setText(QString::number(streamSettings->kcpSettings->readBufferSize));
+        kcpWriteBufferSizeEdit->setText(QString::number(streamSettings->kcpSettings->writeBufferSize));
+        kcpHeaderTypeComb->setCurrentText(streamSettings->kcpSettings->header.type);
+    }
+    if (streamSettings->wsSettings) {
+        wsPathEdit->setText(streamSettings->wsSettings->path);
+        QJsonObject headersObj;
+        V2RayConfigOutbound::toJson(&(streamSettings->wsSettings->headers), headersObj);
+        wsHeadersEdit->setPlainText(V2RayConfigOutbound::toText(headersObj));
+    }
+    if (streamSettings->httpSettings) {
+        httpPathEdit->setText(streamSettings->httpSettings->path);
+        httpHostEdit->setPlainText(streamSettings->httpSettings->host.join("\n"));
+    }
+    if (streamSettings->dsSettings) {
+        dsPathEdit->setText(streamSettings->dsSettings->path);
+    }
+    if (streamSettings->quicSettings) {
+        quicKeyEdit->setText(streamSettings->quicSettings->key);
+        quicSecurityComb->setCurrentText(streamSettings->quicSettings->security);
+        quicHeaderTypeComb->setCurrentText(streamSettings->quicSettings->header.type);
+    }
+}
+
 QString NodeEditNetworkTab::getNetwork() const
 {
     return networkComb->currentText();
 }
 
-void NodeEditNetworkTab::getTcpSettings(TransportTcpObject &settings) const
+void NodeEditNetworkTab::getTcpSettings(TransportTcpObject &settings)
 {
     settings.header.type = tcpHeaderTypeComb->currentText();
     if (settings.header.type == "http") {
@@ -252,36 +316,117 @@ void NodeEditNetworkTab::getTcpSettings(TransportTcpObject &settings) const
         settings.header.request->version = tcpHeaderRequestVersionEdit->text();
         settings.header.request->method = tcpHeaderRequestMethodComb->currentText();
         settings.header.request->path = tcpHeaderRequestVersionEdit->text().split(",");
-
         settings.header.response->reason = tcpHeaderResponseReasonEdit->text();
         settings.header.response->status = tcpHeaderResponseStatusComb->currentText();
         settings.header.response->version = tcpHeaderResponseVersionEdit->text();
+        // request headers
+        QString jsonText = tcpHeaderRequestHeadersEdit->toPlainText();
+        QJsonParseError errorPtr;
+        QJsonDocument doc = QJsonDocument::fromJson(jsonText.toUtf8(), &errorPtr);
+        if (doc.isNull() || !doc.isObject()) {
+            qDebug() << "Request headers format is invalid." << errorPtr.errorString();
+            emit logReceived("Request headers format is invalid.");
+        } else {
+            QJsonObject obj = doc.object();
+            V2RayConfigOutbound::fromJson(settings.header.request->headers, obj);
+        }
+        // response headers
+        jsonText = tcpHeaderRequestHeadersEdit->toPlainText();
+        doc = QJsonDocument::fromJson(jsonText.toUtf8(), &errorPtr);
+        if (doc.isNull() || !doc.isObject()) {
+            qDebug() << "Response headers format is invalid." << errorPtr.errorString();
+            emit logReceived("Response headers format is invalid.");
+        } else {
+            QJsonObject obj = doc.object();
+            V2RayConfigOutbound::fromJson(settings.header.response->headers, obj);
+        }
+    } else {
+        settings.header.request = 0;
+        settings.header.response = 0;
     }
 }
 
 void NodeEditNetworkTab::getKcpSettings(TransportKcpObject &settings) const
 {
-
+    settings.mtu = kcpMtuEdit->text().toInt();
+    settings.tti = kcpTtiEdit->text().toInt();
+    settings.uplinkCapacity = kcpUplinkCapacityEdit->text().toInt();
+    settings.downlinkCapacity = kcpDownlinkCapacityEdit->text().toInt();
+    settings.congestion = kcpCongestionCheckBox->isChecked();
+    settings.readBufferSize = kcpReadBufferSizeEdit->text().toInt();
+    settings.writeBufferSize = kcpWriteBufferSizeEdit->text().toInt();
+    settings.header.type = kcpHeaderTypeComb->currentText();
 }
 
-void NodeEditNetworkTab::getWsSettings(TransportWebSocketObject &settings) const
+void NodeEditNetworkTab::getWsSettings(TransportWebSocketObject &settings)
 {
-
+    settings.path = wsPathEdit->text();
+    QString jsonText = wsHeadersEdit->toPlainText();
+    QJsonParseError errorPtr;
+    QJsonDocument doc = QJsonDocument::fromJson(jsonText.toUtf8(), &errorPtr);
+    if (doc.isNull() || !doc.isObject()) {
+        qDebug() << "Websock headers format is invalid." << errorPtr.errorString();
+        emit logReceived("Websock headers format is invalid.");
+    } else {
+        QJsonObject obj = doc.object();
+        V2RayConfigOutbound::fromJson(settings.headers, obj);
+    }
 }
 
 void NodeEditNetworkTab::getHttpSettings(TransportHTTPObject &settings) const
 {
-
+    settings.path = httpPathEdit->text();
+    settings.host = httpHostEdit->toPlainText().split("\n");
 }
 
 void NodeEditNetworkTab::getDsSettings(TransportDomainSocketObject &settings) const
 {
-
+    settings.path = dsPathEdit->text();
 }
 
 void NodeEditNetworkTab::getQuicSettings(TransportQuicObject &settings) const
 {
+    settings.key = quicKeyEdit->text();
+    settings.security = quicSecurityComb->currentText();
+    settings.header.type = quicHeaderTypeComb->currentText();
+}
 
+void NodeEditNetworkTab::clean()
+{
+    networkComb->setCurrentText("tcp");
+    networkSwitch("tcp");
+    // tcp
+    tcpHeaderTypeComb->setCurrentText("none");
+    tcpHttpPanelSwitch("none");
+    tcpHeaderRequestVersionEdit->setText("1.1");
+    tcpHeaderRequestMethodComb->setCurrentIndex(0);
+    tcpHeaderRequestPathEdit->setText("/");
+    tcpHeaderRequestHeadersEdit->setPlainText("{\n\n}");
+    tcpHeaderResponseVersionEdit->setText("1.1");
+    tcpHeaderResponseStatusComb->setCurrentIndex(0);
+    tcpHeaderResponseReasonEdit->setText("OK");
+    tcpHeaderResponseHeadersEdit->setPlainText("{\n\n}");
+    // kcp
+    kcpMtuEdit->setText("1350");
+    kcpTtiEdit->setText("50");
+    kcpUplinkCapacityEdit->setText("5");
+    kcpDownlinkCapacityEdit->setText("20");
+    kcpCongestionCheckBox->setChecked(false);
+    kcpReadBufferSizeEdit->setText("2");
+    kcpWriteBufferSizeEdit->setText("2");
+    kcpHeaderTypeComb->setCurrentIndex(0);
+    // ws
+    wsPathEdit->setText("/");
+    wsHeadersEdit->setPlainText("{\n\n}");
+    // HTTP
+    httpHostEdit->setPlainText("");
+    httpPathEdit->setText("/");
+    // DS
+    dsPathEdit->setText("/path/to/ds/file");
+    // QUIC
+    quicSecurityComb->setCurrentIndex(0);
+    quicKeyEdit->setText("");
+    quicHeaderTypeComb->setCurrentIndex(0);
 }
 
 void NodeEditNetworkTab::networkSwitch(const QString &text)

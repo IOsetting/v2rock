@@ -866,17 +866,7 @@ void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObje
             }
             if (requestObj.contains("headers") && requestObj["headers"].isObject()) {
                 QJsonObject headersObj = requestObj["headers"].toObject();
-                foreach(const QString& key, headersObj.keys()) {
-                    if (headersObj.value(key).isArray()) {
-                        QStringList *list = new QStringList;
-                        foreach (QJsonValue value, headersObj.value(key).toArray()) {
-                            if (value.isString()) {
-                                list->append(value.toString());
-                            }
-                        }
-                        settings.header.request->headers.insert(key, *list);
-                    }
-                }
+                fromJson(settings.header.request->headers, headersObj);
             }
         }
         if (headerObj.contains("response") && headerObj["response"].isObject()) {
@@ -893,19 +883,8 @@ void V2RayConfigOutbound::fromJson(TransportTcpObject &settings, const QJsonObje
             }
             if (responseObj.contains("headers") && responseObj["headers"].isObject()) {
                 QJsonObject headersObj = responseObj["headers"].toObject();
-                foreach(const QString& key, headersObj.keys()) {
-                    if (headersObj.value(key).isArray()) {
-                        QStringList *list = new QStringList;
-                        foreach (QJsonValue value, headersObj.value(key).toArray()) {
-                            if (value.isString()) {
-                                list->append(value.toString());
-                            }
-                        }
-                        settings.header.response->headers.insert(key, *list);
-                    }
-                }
+                fromJson(settings.header.response->headers, headersObj);
             }
-
         }
     }
 }
@@ -927,16 +906,7 @@ void V2RayConfigOutbound::toJson(TransportTcpObject *settings, QJsonObject &json
     }
     requestObj["path"] = pathArray;
     QJsonObject reqHeaderObj;
-    QMapIterator<QString, QStringList> it(request->headers);
-    while (it.hasNext()) {
-        it.next();
-        QJsonArray reqHeaderValArray;
-        foreach(const QString val, it.value()) {
-            reqHeaderValArray.append(val);
-        }
-        reqHeaderObj[it.key()] = reqHeaderValArray;
-
-    }
+    toJson(&(request->headers), reqHeaderObj);
     requestObj["headers"] = reqHeaderObj;
     headerObj["request"] = requestObj;
 
@@ -947,16 +917,7 @@ void V2RayConfigOutbound::toJson(TransportTcpObject *settings, QJsonObject &json
     responseObj["status"] = response->status;
     responseObj["reason"] = response->reason;
     QJsonObject resHeaderObj;
-    QMapIterator<QString, QStringList> it2(response->headers);
-    while (it2.hasNext()) {
-        it2.next();
-        QJsonArray resHeaderValArray;
-        foreach(const QString val, it2.value()) {
-            resHeaderValArray.append(val);
-        }
-        resHeaderObj[it2.key()] = resHeaderValArray;
-
-    }
+    toJson(&(response->headers), resHeaderObj);
     responseObj["headers"] = resHeaderObj;
     headerObj["response"] = responseObj;
 
@@ -1015,11 +976,7 @@ void V2RayConfigOutbound::fromJson(TransportWebSocketObject &settings, const QJs
     }
     if (json.contains("headers") && json["headers"].isObject()) {
         QJsonObject headersObj = json["headers"].toObject();
-        foreach(const QString& key, headersObj.keys()) {
-            if (headersObj.value(key).isString()) {
-                settings.headers.insert(key, headersObj.value(key).toString());
-            }
-        }
+        fromJson(settings.headers, headersObj);
     }
 }
 
@@ -1027,11 +984,7 @@ void V2RayConfigOutbound::toJson(TransportWebSocketObject *settings, QJsonObject
 {
     json["path"] = settings->path;
     QJsonObject headersObj;
-    QMapIterator<QString, QString> it(settings->headers);
-    while (it.hasNext()) {
-        it.next();
-        headersObj[it.key()] = it.value();
-    }
+    toJson(&(settings->headers), headersObj);
     json["headers"] = headersObj;
 }
 
@@ -1094,4 +1047,60 @@ void V2RayConfigOutbound::toJson(TransportQuicObject *settings, QJsonObject &jso
     QJsonObject headerObj;
     headerObj["type"] = settings->header.type;
     json["header"] = headerObj;
+}
+
+void V2RayConfigOutbound::fromJson(QMap<QString, QStringList> &settings, const QJsonObject &json)
+{
+    foreach(const QString& key, json.keys()) {
+        if (json.value(key).isArray()) {
+            QStringList *list = new QStringList;
+            foreach (QJsonValue value, json.value(key).toArray()) {
+                if (value.isString()) {
+                    list->append(value.toString());
+                }
+            }
+            settings.insert(key, *list);
+        } else if (json.value(key).isString()) {
+            QStringList *list = new QStringList;
+            list->append(json.value(key).toString());
+            settings.insert(key, *list);
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(QMap<QString, QStringList> *settings, QJsonObject &json)
+{
+    QMapIterator<QString, QStringList> it(*settings);
+    while (it.hasNext()) {
+        it.next();
+        QJsonArray reqHeaderValArray;
+        foreach(const QString val, it.value()) {
+            reqHeaderValArray.append(val);
+        }
+        json[it.key()] = reqHeaderValArray;
+    }
+}
+
+void V2RayConfigOutbound::fromJson(QMap<QString, QString> &settings, const QJsonObject &json)
+{
+    foreach(const QString& key, json.keys()) {
+        if (json.value(key).isString()) {
+            settings.insert(key, json.value(key).toString());
+        }
+    }
+}
+
+void V2RayConfigOutbound::toJson(QMap<QString, QString> *settings, QJsonObject &json)
+{
+    QMapIterator<QString, QString> it(*settings);
+    while (it.hasNext()) {
+        it.next();
+        json[it.key()] = it.value();
+    }
+}
+
+QString V2RayConfigOutbound::toText(const QJsonObject &json)
+{
+    QJsonDocument doc(json);
+    return QString(doc.toJson(QJsonDocument::Indented));
 }
