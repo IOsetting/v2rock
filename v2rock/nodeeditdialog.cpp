@@ -41,7 +41,7 @@ void NodeEditDialog::init(V2RockConfig *v2rockConfig, int index, bool isNew)
     this->index = index;
     this->isNew = (index == -1 ||isNew)? true : false;
     if (this->isNew) {
-        generalTab->init(v2rockConfig, index);
+        generalTab->init(v2rockConfig, -1);
         networkTab->init(0);
         miscTab->init(0);
     } else {
@@ -114,7 +114,8 @@ void NodeEditDialog::accept()
         streamSettings->sockopt = new SockoptObject();
         miscTab->getSockoptSettings(*(streamSettings->sockopt));
     }
-    if (miscTab->getSecurity() == "tls") {
+    streamSettings->security = miscTab->getSecurity();
+    if (streamSettings->security == "tls") {
         streamSettings->tlsSettings = new TransportTlsObject();
         miscTab->getTlsSettings(*(streamSettings->tlsSettings));
     }

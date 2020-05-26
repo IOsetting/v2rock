@@ -485,17 +485,13 @@ struct HTTPHeaderObject {
     struct HTTPRequestObject *request;
     struct HTTPResponseObject *response;
 
-    HTTPHeaderObject(){}
-    HTTPHeaderObject(const HTTPHeaderObject& a) : type(a.type) {
+    HTTPHeaderObject() : request(0), response(0) {}
+    HTTPHeaderObject(const HTTPHeaderObject& a) : type(a.type), request(0), response(0) {
         if (a.request) {
             request = new HTTPRequestObject(*(a.request));
-        } else {
-            request = 0;
         }
         if (a.response) {
             response = new HTTPResponseObject(*(a.response));
-        } else {
-            response = 0;
         }
     }
     ~HTTPHeaderObject() {
@@ -683,26 +679,26 @@ struct RoutingRuleObject {
     // Full domain: Begining with "full:" and the rest is a domain.
     // Pre-defined domain list: Begining with "geosite:" and the rest is a name, such as geosite:google or geosite:cn.
     // category-ads, category-ads-all, cn (geolocation-cn + tld-cn), google, facebook, geolocation-cn, geolocation-!cn, speedtest, tld-cn
-    QStringList *domain;
-    QStringList *ip;
+    QStringList domain;
+    QStringList ip;
     // "53,443,1000-2000"
-    QString *port;
+    QString port;
     // "tcp" | "udp" | "tcp,udp"
-    QString *network;
-    QStringList *source;
+    QString network;
+    QStringList source;
     // An array of email address
-    QStringList *user;
-    QStringList *inboundTag;
+    QStringList user;
+    QStringList inboundTag;
     // "http" | "tls" | "bittorrent"
-    QStringList *protocol;
+    QStringList protocol;
     //Detect HTTP GET: "attrs[':method'] == 'GET'"
     //Detect HTTP Path: "attrs[':path'].startswith('/test')"
     //Detect Content Type: "attrs['accept'].index('text/html') >= 0"
-    QString *attrs;
-    QString *outboundTag;
+    QString attrs;
+    QString outboundTag;
     // V2Ray will use the balancer to select an outbound. Either outboundTag or balancerTag must be specified.
     // When both are specified, outboundTag takes priority
-    QString *balancerTag;
+    QString balancerTag;
 };
 
 struct RoutingBalancerObject {

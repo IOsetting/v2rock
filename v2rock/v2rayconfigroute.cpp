@@ -1,6 +1,6 @@
 #include "v2rayconfigroute.h"
 
-V2RayConfigRoute::V2RayConfigRoute() : balancers(0)
+V2RayConfigRoute::V2RayConfigRoute()
 {
 
 }
@@ -25,12 +25,12 @@ void V2RayConfigRoute::setRules(const QList<RoutingRuleObject> &value)
     rules = value;
 }
 
-QList<RoutingBalancerObject> *V2RayConfigRoute::getBalancers() const
+QList<RoutingBalancerObject *> V2RayConfigRoute::getBalancers() const
 {
     return balancers;
 }
 
-void V2RayConfigRoute::setBalancers(QList<RoutingBalancerObject> *value)
+void V2RayConfigRoute::setBalancers(QList<RoutingBalancerObject *> &value)
 {
     balancers = value;
 }
@@ -43,75 +43,74 @@ void V2RayConfigRoute::toJson(QJsonObject &json) const
     foreach (const RoutingRuleObject rule, rules) {
         QJsonObject ruleObj;
         ruleObj["type"] = rule.type; // "field"
-        if (rule.port) {
-            ruleObj["port"] = *(rule.port);
+        if (!rule.port.isEmpty()) {
+            ruleObj["port"] = rule.port;
         }
-        if (rule.network) {
-            ruleObj["network"] = *(rule.network);
+        if (!rule.network.isEmpty()) {
+            ruleObj["network"] = rule.network;
         }
-        if (rule.attrs) {
-            ruleObj["attrs"] = *(rule.attrs);
+        if (!rule.attrs.isEmpty()) {
+            ruleObj["attrs"] = rule.attrs;
         }
-        if (rule.outboundTag) {
-            ruleObj["outboundTag"] = *(rule.outboundTag);
+        if (!rule.outboundTag.isEmpty()) {
+            ruleObj["outboundTag"] = rule.outboundTag;
         }
-        if (rule.balancerTag) {
-            ruleObj["balancerTag"] = *(rule.balancerTag);
+        if (!rule.balancerTag.isEmpty()) {
+            ruleObj["balancerTag"] = rule.balancerTag;
         }
-        if (rule.domain) {
+        if (!rule.domain.isEmpty()) {
             QJsonArray jArray;
-            foreach(const QString val, *(rule.domain)) {
+            foreach(const QString val, rule.domain) {
                 jArray.append(val);
             }
             ruleObj["domain"] = jArray;
         }
-        if (rule.ip) {
+        if (!rule.ip.isEmpty()) {
             QJsonArray jArray;
-            foreach(const QString val, *(rule.ip)) {
+            foreach(const QString val, rule.ip) {
                 jArray.append(val);
             }
             ruleObj["ip"] = jArray;
         }
-        if (rule.source) {
+        if (!rule.source.isEmpty()) {
             QJsonArray jArray;
-            foreach(const QString val, *(rule.source)) {
+            foreach(const QString val, rule.source) {
                 jArray.append(val);
             }
             ruleObj["source"] = jArray;
         }
-        if (rule.user) {
+        if (!rule.user.isEmpty()) {
             QJsonArray jArray;
-            foreach(const QString val, *(rule.user)) {
+            foreach(const QString val, rule.user) {
                 jArray.append(val);
             }
             ruleObj["user"] = jArray;
         }
-        if (rule.inboundTag) {
+        if (!rule.inboundTag.isEmpty()) {
             QJsonArray jArray;
-            foreach(const QString val, *(rule.inboundTag)) {
+            foreach(const QString val, rule.inboundTag) {
                 jArray.append(val);
             }
             ruleObj["inboundTag"] = jArray;
         }
-        if (rule.protocol) {
+        if (!rule.protocol.isEmpty()) {
             QJsonArray jArray;
-            foreach(const QString val, *(rule.protocol)) {
+            foreach(const QString val, rule.protocol) {
                 jArray.append(val);
             }
             ruleObj["protocol"] = jArray;
         }
-
         rulesArray.append(ruleObj);
     }
     json["rules"] = rulesArray;
 
-    if (balancers) {
+    if (!balancers.isEmpty()) {
         QJsonArray balancersArray;
-        foreach (const RoutingBalancerObject balancer, *balancers) {
+        foreach (const RoutingBalancerObject *balancer, balancers) {
             QJsonObject balancerObj;
-            balancerObj["tag"] = balancer.tag;
+            balancerObj["tag"] = balancer->tag;
             QJsonArray jArray;
-            foreach(const QString val, balancer.selector) {
+            foreach(const QString val, balancer->selector) {
                 jArray.append(val);
             }
             balancerObj["selector"] = jArray;

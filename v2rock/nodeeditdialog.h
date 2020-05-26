@@ -25,6 +25,9 @@ public:
     ~NodeEditDialog();
     void init(V2RockConfig *v2rockConfig, int index, bool isNew=false);
 
+signals:
+    void logReceived(const QString&);
+
 private:
     V2RockConfig *v2rockConfig;
     int index;

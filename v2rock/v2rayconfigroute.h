@@ -20,14 +20,14 @@ public:
     QList<RoutingRuleObject> getRules() const;
     void setRules(const QList<RoutingRuleObject> &value);
 
-    QList<RoutingBalancerObject> *getBalancers() const;
-    void setBalancers(QList<RoutingBalancerObject> *value);
+    QList<RoutingBalancerObject *> getBalancers() const;
+    void setBalancers(QList<RoutingBalancerObject *> &value);
 
 private:
     //  "AsIs" | "IPIfNonMatch" | "IPOnDemand"
     QString domainStrategy;
     QList<RoutingRuleObject> rules;
-    QList<RoutingBalancerObject> *balancers;
+    QList<RoutingBalancerObject *> balancers;
 };
 
 #endif // V2RAYCONFIGROUTE_H

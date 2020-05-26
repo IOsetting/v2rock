@@ -466,43 +466,20 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     // routing
     V2RayConfigRoute v2rayConfigRoute;
     v2rayConfigRoute.setDomainStrategy("IPIfNonMatch");
-    v2rayConfigRoute.setBalancers(0);
 
     RoutingRuleObject ipRule;
     ipRule.type = "field";
-    ipRule.domain = 0;
-    ipRule.port = 0;
-    ipRule.network = 0;
-    ipRule.source = 0;
-    ipRule.user = 0;
-    ipRule.inboundTag = 0;
-    ipRule.protocol = 0;
-    ipRule.attrs = 0;
-    ipRule.outboundTag = new QString("direct");
-    ipRule.balancerTag = 0;
-    QStringList *ips = new QStringList;
+    ipRule.outboundTag = "direct";
     foreach (const QString ip, bypassIps) {
-        ips->append(ip);
+        ipRule.ip.append(ip);
     }
-    ipRule.ip = ips;
 
     RoutingRuleObject domainRule;
     domainRule.type = "field";
-    domainRule.ip = 0;
-    domainRule.port = 0;
-    domainRule.network = 0;
-    domainRule.source = 0;
-    domainRule.user = 0;
-    domainRule.inboundTag = 0;
-    domainRule.protocol = 0;
-    domainRule.attrs = 0;
-    domainRule.outboundTag = new QString("direct");
-    domainRule.balancerTag = 0;
-    QStringList *domains = new QStringList;
+    domainRule.outboundTag = "direct";
     foreach (const QString domain, bypassDomains) {
-        domains->append(domain);
+        domainRule.domain.append(domain);
     }
-    domainRule.domain = domains;
 
     QList<RoutingRuleObject> rules;
     rules.append(ipRule);
