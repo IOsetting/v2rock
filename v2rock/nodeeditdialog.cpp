@@ -64,15 +64,24 @@ void NodeEditDialog::accept()
 
     // General Tab
     node->setName(generalTab->getName());
+    if (node->getName().isEmpty()) {
+        QMessageBox::critical(this, tr("Error"), tr("Node name is empty."), QMessageBox::Ok); return;
+    }
     node->setProtocol(generalTab->getProtocol());
     if (node->getProtocol() == "vmess") {
         OutboundVMessConfigurationObject *settings = new OutboundVMessConfigurationObject;
         generalTab->getVMessSettings(*settings);
         node->setVMessSettings(settings);
+        if (settings->vnext.at(0)->address.isEmpty()) {
+            QMessageBox::critical(this, tr("Error"), tr("Address is empty."), QMessageBox::Ok); return;
+        }
     } else if (node->getProtocol() == "http") {
         OutboundHTTPConfigurationObject *settings = new OutboundHTTPConfigurationObject;
         generalTab->getHTTPSettings(*settings);
         node->setHTTPSettings(settings);
+        if (settings->servers.at(0)->address.isEmpty()) {
+            QMessageBox::critical(this, tr("Error"), tr("Address is empty."), QMessageBox::Ok); return;
+        }
     } else if (node->getProtocol() == "mtproto") {
         OutboundMTProtoConfigurationObject *settings = new OutboundMTProtoConfigurationObject;
         node->setMTProtoSettings(settings);
@@ -80,10 +89,16 @@ void NodeEditDialog::accept()
         OutboundShadowsocksConfigurationObject *settings = new OutboundShadowsocksConfigurationObject;
         generalTab->getShadowsocksSettings(*settings);
         node->setShadowSocksSettings(settings);
+        if (settings->servers.at(0)->address.isEmpty()) {
+            QMessageBox::critical(this, tr("Error"), tr("Address is empty."), QMessageBox::Ok); return;
+        }
     } else if (node->getProtocol() == "socks") {
         OutboundSocksConfigurationObject *settings = new OutboundSocksConfigurationObject;
         generalTab->getSocksSettings(*settings);
         node->setSocksSettings(settings);
+        if (settings->servers.at(0)->address.isEmpty()) {
+            QMessageBox::critical(this, tr("Error"), tr("Address is empty."), QMessageBox::Ok); return;
+        }
     }
 
     // Network Tab
@@ -118,6 +133,9 @@ void NodeEditDialog::accept()
     if (streamSettings->security == "tls") {
         streamSettings->tlsSettings = new TransportTlsObject();
         miscTab->getTlsSettings(*(streamSettings->tlsSettings));
+        if (streamSettings->tlsSettings->serverName.isEmpty()) {
+            QMessageBox::critical(this, tr("Error"), tr("TLS server name is empty."), QMessageBox::Ok); return;
+        }
     }
 
     node->setStreamSettings(streamSettings);

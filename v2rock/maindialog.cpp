@@ -135,13 +135,12 @@ void MainDialog::showEvent(QShowEvent *ev)
 
 void MainDialog::keyPressEvent(QKeyEvent *e)
 {
-    if(e->key() != Qt::Key_Escape)
-    {
-        QDialog::keyPressEvent(e);
-    }
-    else
-    {
+    if(e->key() == Qt::Key_Escape) {
         qDebug() << "Ignored key:esc";
+    } else if(e->key() == Qt::Key_Q && e->modifiers() == Qt::ControlModifier) {
+        QApplication::quit();
+    } else {
+        QDialog::keyPressEvent(e);
     }
 }
 

@@ -400,11 +400,30 @@ void NodeEditNetworkTab::clean()
     tcpHeaderRequestVersionEdit->setText("1.1");
     tcpHeaderRequestMethodComb->setCurrentIndex(0);
     tcpHeaderRequestPathEdit->setText("/");
-    tcpHeaderRequestHeadersEdit->setPlainText("{\n\n}");
     tcpHeaderResponseVersionEdit->setText("1.1");
     tcpHeaderResponseStatusComb->setCurrentIndex(0);
     tcpHeaderResponseReasonEdit->setText("OK");
-    tcpHeaderResponseHeadersEdit->setPlainText("{\n\n}");
+    // Request headers
+    QJsonObject headerObj;
+    QMap<QString, QStringList> map;
+    map.insert("Host", QStringList({}));
+    map.insert("User-Agent", QStringList({}));
+    map.insert("Accept-Encoding", QStringList({}));
+    map.insert("Connection", QStringList({}));
+    map.insert("Pragma", QStringList({}));
+    V2RayConfigOutbound::toJson(&map, headerObj);
+    tcpHeaderRequestHeadersEdit->setPlainText(V2RayConfigOutbound::toText(headerObj));
+
+    // Response headers
+    QJsonObject headerObj2;
+    map.clear();
+    map.insert("Content-Type", QStringList({}));
+    map.insert("Transfer-Encoding", QStringList({}));
+    map.insert("Connection", QStringList({}));
+    map.insert("Pragma", QStringList({}));
+    V2RayConfigOutbound::toJson(&map, headerObj2);
+    tcpHeaderResponseHeadersEdit->setPlainText(V2RayConfigOutbound::toText(headerObj2));
+
     // kcp
     kcpMtuEdit->setText("1350");
     kcpTtiEdit->setText("50");
