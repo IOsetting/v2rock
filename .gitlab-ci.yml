@@ -28,13 +28,15 @@ build-ubuntu-2004-64:
     - cd v2rock
     - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - cd .. && mkdir build_focal
+    - for file in *.deb; do mv "$file" "${file/.deb/_focal.deb}"; done
+    - mv v2rock*.deb build_focal/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_focal/*
 
   tags:
     - ubuntu-2004-64
@@ -51,13 +53,15 @@ build-ubuntu-2004-64-dev:
     - cd v2rock
     - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - cd .. && mkdir build_focal
+    - for file in *.deb; do mv "$file" "${file/.deb/_focal.deb}"; done
+    - mv v2rock*.deb build_focal/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_focal/*
 
   tags:
     - ubuntu-2004-64
@@ -72,13 +76,15 @@ build-ubuntu-1804-64:
     - cd v2rock
     - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - cd .. && mkdir build_bionic
+    - for file in *.deb; do mv "$file" "${file/.deb/_bionic.deb}"; done
+    - mv v2rock*.deb build_bionic/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_bionic/*
 
   tags:
     - ubuntu-1804-64
@@ -95,13 +101,15 @@ build-ubuntu-1804-64-dev:
     - cd v2rock
     - echo "y" | debuild -- clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - cd .. && mkdir build_bionic
+    - for file in *.deb; do mv "$file" "${file/.deb/_bionic.deb}"; done
+    - mv v2rock*.deb build_bionic/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_bionic/*
 
   tags:
     - ubuntu-1804-64
@@ -118,13 +126,15 @@ build-ubuntu-1604-64:
     - cd v2rock
     - debuild clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - cd .. && mkdir build_xenial
+    - for file in *.deb; do mv "$file" "${file/.deb/_xenial.deb}"; done
+    - mv v2rock*.deb build_xenial/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_xenial/*
 
   tags:
     - ubuntu-1604-64
@@ -142,13 +152,15 @@ build-ubuntu-1604-64-dev:
     - cd v2rock
     - debuild clean
     - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - cd .. && mkdir build_xenial
+    - for file in *.deb; do mv "$file" "${file/.deb/_xenial.deb}"; done
+    - mv v2rock*.deb build_xenial/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_xenial/*
 
   tags:
     - ubuntu-1604-64
@@ -162,14 +174,16 @@ build-debian-10-64:
   script:
     - cd v2rock
     - echo "y" | debuild -- clean
-    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -eDEB_BUILD_OPTIONS="noddebs" -us -uc
+    - cd .. && mkdir build_buster
+    - for file in *.deb; do mv "$file" "${file/.deb/_buster.deb}"; done
+    - mv v2rock*.deb build_buster/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_buster/*
 
   tags:
     - debian-10-64
@@ -185,14 +199,16 @@ build-debian-10-64-dev:
   script:
     - cd v2rock
     - echo "y" | debuild -- clean
-    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -eDEB_BUILD_OPTIONS="noddebs" -us -uc
+    - cd .. && mkdir build_buster
+    - for file in *.deb; do mv "$file" "${file/.deb/_buster.deb}"; done
+    - mv v2rock*.deb build_buster/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_buster/*
 
   tags:
     - debian-10-64
@@ -206,14 +222,16 @@ build-debian-8-64:
   script:
     - cd v2rock
     - echo "y" | debuild -- clean
-    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -eDEB_BUILD_OPTIONS="noddebs" -us -uc
+    - cd .. && mkdir build_jessie
+    - for file in *.deb; do mv "$file" "${file/.deb/_jessie.deb}"; done
+    - mv v2rock*.deb build_jessie/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_jessie/*
 
   tags:
     - debian-8-64
@@ -229,14 +247,16 @@ build-debian-8-64-dev:
   script:
     - cd v2rock
     - echo "y" | debuild -- clean
-    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -us -uc
-    - cd .. && mkdir build
-    - mv v2rock*.deb build/
+    - echo "y" | debuild -eDEB_BUILD_OPTIONS="parallel=4" -eDEB_BUILD_OPTIONS="noddebs" -us -uc
+    - cd .. && mkdir build_jessie
+    - for file in *.deb; do mv "$file" "${file/.deb/_jessie.deb}"; done
+    - mv v2rock*.deb build_jessie/
 
   # The files which are to be made available in GitLab
   artifacts:
+    name: "$CI_JOB_NAME"
     paths:
-      - build/*
+      - build_jessie/*
 
   tags:
     - debian-8-64
