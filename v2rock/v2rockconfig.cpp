@@ -197,6 +197,7 @@ void V2RockConfig::init()
 {
     v2executablePath = "/usr/bin/v2ray/v2ray";
     subscribeUrl = "";
+    loglevel = "info";
 
     initSocksConfig("127.0.0.1", 1080);
     initHttpConfig("127.0.0.1", 1081);
@@ -268,6 +269,9 @@ void V2RockConfig::fromJson(const QJsonObject &json)
     if (json.contains("subscribeUrl") && json["subscribeUrl"].isString()) {
         subscribeUrl = json["subscribeUrl"].toString();
     }
+    if (json.contains("loglevel") && json["loglevel"].isString()) {
+        loglevel = json["loglevel"].toString();
+    }
 
     if (json.contains("nodeIndex")) {
         nodeIndex = json["nodeIndex"].toInt();
@@ -333,6 +337,7 @@ void V2RockConfig::toJson(QJsonObject &json) const
     json["v2executablePath"] = v2executablePath;
     json["subscribeUrl"] = subscribeUrl;
     json["nodeIndex"] = nodeIndex;
+    json["loglevel"] = loglevel;
 
     QJsonArray ipsArray;
     foreach (const QString ip, bypassIps) {
@@ -404,7 +409,7 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
 
     // log
     V2RayConfigLog v2rayConfigLog;
-    v2rayConfigLog.setLoglevel("info");
+    v2rayConfigLog.setLoglevel(loglevel);
     v2rayConfigLog.setAccess("");
     v2rayConfigLog.setError("");
     v2rayConfig.setLog(v2rayConfigLog);
@@ -499,4 +504,14 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     file.close();
     emit logReceived("Configs have been saved.");
     return configFilePath;
+}
+
+QString V2RockConfig::getLoglevel() const
+{
+    return loglevel;
+}
+
+void V2RockConfig::setLoglevel(const QString &value)
+{
+    loglevel = value;
 }

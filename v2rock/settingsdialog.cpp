@@ -53,12 +53,16 @@ void SettingsDialog::accept()
     QString v2executablePath = generalTab->getV2executablePath();
     v2rockConfig->setV2executablePath(v2executablePath);
 
+    /* log level */
+    v2rockConfig->setLoglevel(generalTab->getLoglevel());
+
     /* error check */
     if (!generalTab->isHttpChecked() && !generalTab->isSocksChecked()) {
         QMessageBox::critical(
                     this, tr("Error"), tr("HTTP and SOCKS cannot be both unchecked."), QMessageBox::Ok);
         return;
-    } else if (generalTab->getHttpPort() == generalTab->getSocksPort()) {
+    } else if (generalTab->isHttpChecked() && generalTab->isSocksChecked()
+               && generalTab->getHttpPort() == generalTab->getSocksPort()) {
         QMessageBox::critical(
                     this, tr("Error"), tr("HTTP and SOCKS ports cannot be the same."), QMessageBox::Ok);
         return;

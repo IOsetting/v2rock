@@ -33,6 +33,9 @@ public:
     QString getSubscribeUrl() const;
     void setSubscribeUrl(const QString &value);
 
+    QString getLoglevel() const;
+    void setLoglevel(const QString &value);
+
     V2RayConfigInbound *getSocksConfig() const;
     void setSocksConfig(V2RayConfigInbound *value);
     void initSocksConfig(const QString &listen, const int port);
@@ -72,6 +75,7 @@ private:
     QString workDir;
     QString v2executablePath;
     QString subscribeUrl;
+    QString loglevel;
     V2RayConfigInbound *socksConfig;
     V2RayConfigInbound *httpConfig;
     QList<QString> bypassIps;

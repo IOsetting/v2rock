@@ -2,6 +2,7 @@
 #define GENERALTAB_H
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QJsonObject>
@@ -27,6 +28,7 @@ public:
     void init(V2RockConfig *v2rockConfig);
     QString getSubscribeUrl() const;
     QString getV2executablePath() const;
+    QString getLoglevel() const;
 
     bool isSocksChecked() const;
     QString getSocksListen() const;
@@ -41,11 +43,15 @@ private:
     QLineEdit *subscribeUrlEdit;
     QLineEdit *v2executablePathEdit;
 
+    QComboBox *loglevelCombo;
+
     QCheckBox *httpCheckBox;
+    QWidget *httpProxyPanel;
     QLineEdit *httpListenEdit;
     QLineEdit *httpPortEdit;
 
     QCheckBox *socksCheckBox;
+    QWidget *socksProxyPanel;
     QLineEdit *socksListenEdit;
     QLineEdit *socksPortEdit;
 };
