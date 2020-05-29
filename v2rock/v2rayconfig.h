@@ -20,6 +20,12 @@ public:
 
     void toJson(QJsonObject &json) const;
 
+    static void fromJson(DNSObject &settings, const QJsonObject &json);
+    static void toJson(DNSObject *settings, QJsonObject &json);
+
+    static void fromJson(DNSServerObject &settings, const QJsonObject &json);
+    static void toJson(const DNSServerObject *settings, QJsonObject &json);
+
     PolicyObject *getPolicy() const;
     void setPolicy(PolicyObject *value);
 

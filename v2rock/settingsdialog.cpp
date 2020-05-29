@@ -9,6 +9,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     tabWidget = new QTabWidget;
     generalTab = new SettingsGeneralTab(this);
     tabWidget->addTab(generalTab, tr("General"));
+    dnsTab = new SettingsDnsTab(this);
+    tabWidget->addTab(dnsTab, tr("DNS"));
     bypassIpTab = new SettingsBypassIpTab(this);
     tabWidget->addTab(bypassIpTab, tr("Bypass Ips"));
     bypassDomainTab = new SettingsBypassDomainTab(this);
@@ -39,6 +41,7 @@ void SettingsDialog::setV2rockConfig(V2RockConfig *value)
 {
     v2rockConfig = value;
     this->generalTab->init(v2rockConfig);
+    this->dnsTab->init(v2rockConfig);
     this->bypassIpTab->init(v2rockConfig);
     this->bypassDomainTab->init(v2rockConfig);
 }
@@ -126,6 +129,16 @@ void SettingsDialog::accept()
         }
     } else {
         v2rockConfig->deleteHttpConfig();
+    }
+
+    if (dnsTab->isDnsChecked()) {
+        if (!v2rockConfig->getDnsConfig()) {
+            DNSObject *dnsConfig = new DNSObject;
+            v2rockConfig->setDnsConfig(dnsConfig);
+        }
+        dnsTab->getDnsSettings(*(v2rockConfig->getDnsConfig()));
+    } else {
+        v2rockConfig->deleteDnsConfig();
     }
 
     /* bypass ips */

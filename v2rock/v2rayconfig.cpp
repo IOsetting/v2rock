@@ -159,37 +159,7 @@ void V2RayConfig::toJson(QJsonObject &json) const
     // DNSObject *dns;
     if (dns) {
         QJsonObject dnsObj;
-        dnsObj["tag"] = dns->tag;
-        dnsObj["clientIp"] = dns->clientIp;
-
-        // QMap<QString, QString> hosts;
-        QJsonObject hostsObj;
-        QMapIterator<QString, QString> it(dns->hosts);
-        while (it.hasNext()) {
-            it.next();
-            hostsObj[it.key()] = it.value();
-        }
-        dnsObj["hosts"] = hostsObj;
-
-        // QStringList servers;
-        // QList<DNSServerObject> serverObjects;
-        QJsonArray serversArray;
-        foreach (const QString server, dns->servers) {
-            serversArray.append(server);
-        }
-        foreach (const DNSServerObject server, dns->serverObjects) {
-            QJsonObject serverObj;
-            serverObj["address"] = server.address;
-            QJsonArray domainsArray;
-            foreach (const QString domain, server.domains) {
-                domainsArray.append(domain);
-            }
-            serverObj["domains"] = domainsArray;
-            serverObj["port"] = server.port;
-            serversArray.append(serverObj);
-        }
-        dnsObj["servers"] = serversArray;
-
+        toJson(dns, dnsObj);
         json["dns"] = dnsObj;
     } else {
         json["dns"] = QJsonValue(QJsonValue::Null);
@@ -230,4 +200,108 @@ void V2RayConfig::toJson(QJsonObject &json) const
     QJsonObject routeObj;
     routing.toJson(routeObj);
     json["routing"] = routeObj;
+}
+
+void V2RayConfig::fromJson(DNSObject &settings, const QJsonObject &json)
+{
+    if (json.contains("tag") && json["tag"].isString()) {
+        settings.tag = json["tag"].toString();
+    } else {
+        settings.tag = "dns-inbound";
+    }
+    if (json.contains("clientIp") && json["clientIp"].isString()) {
+        settings.clientIp = json["clientIp"].toString();
+    }
+    if (json.contains("hosts") && json["hosts"].isObject()) {
+        QJsonObject hostsObj = json["hosts"].toObject();
+        foreach(const QString& key, hostsObj.keys()) {
+            if (hostsObj.value(key).isString()) {
+                settings.hosts.insert(key, hostsObj.value(key).toString());
+            }
+        }
+    }
+    if (json.contains("servers") && json["servers"].isArray()) {
+        foreach(const QJsonValue& serverVal, json["servers"].toArray()) {
+            if (serverVal.isString()) {
+                settings.servers.append(serverVal.toString());
+            } else if (serverVal.isObject()) {
+                QJsonObject serverObj = serverVal.toObject();
+                DNSServerObject *server = new DNSServerObject;
+                fromJson(*server, serverObj);
+                settings.serverObjects.append(server);
+            }
+        }
+    }
+}
+
+void V2RayConfig::toJson(DNSObject *settings, QJsonObject &json)
+{
+    json["tag"] = settings->tag;
+    json["clientIp"] = settings->clientIp;
+
+    // QMap<QString, QString> hosts;
+    QJsonObject hostsObj;
+    QMapIterator<QString, QString> it(settings->hosts);
+    while (it.hasNext()) {
+        it.next();
+        hostsObj[it.key()] = it.value();
+    }
+    json["hosts"] = hostsObj;
+
+    // QStringList servers;
+    // QList<DNSServerObject> serverObjects;
+    QJsonArray serversArray;
+    foreach (const QString server, settings->servers) {
+        serversArray.append(server);
+    }
+    foreach (const DNSServerObject *server, settings->serverObjects) {
+        QJsonObject serverObj;
+        toJson(server, serverObj);
+        serversArray.append(serverObj);
+    }
+    json["servers"] = serversArray;
+}
+
+void V2RayConfig::fromJson(DNSServerObject &settings, const QJsonObject &json)
+{
+    if (json.contains("address") && json["address"].isString()) {
+        settings.address = json["address"].toString();
+    }
+    if (json.contains("port") && json["port"].isDouble()) {
+        settings.port = json["port"].toInt();
+    }
+    if (json.contains("domains") && json["domains"].isArray()) {
+        foreach(const QJsonValue& domainVal, json["domains"].toArray()) {
+            if (domainVal.isString()) {
+                settings.domains.append(domainVal.toString());
+            }
+        }
+    }
+    if (json.contains("expectIPs") && json["expectIPs"].isArray()) {
+        foreach(const QJsonValue& ipVal, json["expectIPs"].toArray()) {
+            if (ipVal.isString()) {
+                settings.expectIPs.append(ipVal.toString());
+            }
+        }
+    }
+}
+
+void V2RayConfig::toJson(const DNSServerObject *settings, QJsonObject &json)
+{
+    json["address"] = settings->address;
+    if (!settings->domains.isEmpty()) {
+        QJsonArray domainsArray;
+        foreach (const QString domain, settings->domains) {
+            domainsArray.append(domain);
+        }
+        json["domains"] = domainsArray;
+    }
+    if (!settings->expectIPs.isEmpty()) {
+        QJsonArray ipsArray;
+        foreach (const QString ip, settings->expectIPs) {
+            ipsArray.append(ip);
+        }
+        json["expectIPs"] = ipsArray;
+    }
+    json["port"] = settings->port;
 }

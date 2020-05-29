@@ -19,6 +19,7 @@ SOURCES += \
     $$PWD/settingsgeneraltab.cpp \
     $$PWD/settingsbypassdomaintab.cpp \
     $$PWD/settingsbypassiptab.cpp \
+    $$PWD/settingsdnstab.cpp \
     $$PWD/v2rockconfig.cpp \
     $$PWD/v2rocknode.cpp \
     $$PWD/xinjieconfig.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     $$PWD/settingsgeneraltab.h \
     $$PWD/settingsbypassdomaintab.h \
     $$PWD/settingsbypassiptab.h \
+    $$PWD/settingsdnstab.h \
     $$PWD/v2rockconfig.h \
     $$PWD/v2rocknode.h \
     $$PWD/xinjieconfig.h \
@@ -61,11 +63,11 @@ FORMS += \
     $$PWD/settingsbypassiptab.ui \
     $$PWD/settingsdialog.ui \
     $$PWD/settingsgeneraltab.ui \
+    $$PWD/settingsdnstab.ui \
     $$PWD/nodeeditdialog.ui \
     $$PWD/nodeeditgeneraltab.ui \
     $$PWD/nodeeditmisctab.ui \
     $$PWD/nodeeditnetworktab.ui
 
-x
 RESOURCES += \
     $$PWD/res.qrc

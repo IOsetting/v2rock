@@ -2,7 +2,7 @@
 #include "config.h"
 
 V2RockConfig::V2RockConfig(QObject *parent) :
-    QObject(parent), empty(true), socksConfig(0), httpConfig(0)
+    QObject(parent), empty(true), dnsConfig(0), socksConfig(0), httpConfig(0)
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     if (path.isEmpty())
@@ -60,6 +60,32 @@ QString V2RockConfig::getSubscribeUrl() const
 void V2RockConfig::setSubscribeUrl(const QString &value)
 {
     subscribeUrl = value;
+}
+
+QString V2RockConfig::getLoglevel() const
+{
+    return loglevel;
+}
+
+void V2RockConfig::setLoglevel(const QString &value)
+{
+    loglevel = value;
+}
+
+DNSObject *V2RockConfig::getDnsConfig() const
+{
+    return dnsConfig;
+}
+
+void V2RockConfig::setDnsConfig(DNSObject *value)
+{
+    dnsConfig = value;
+}
+
+void V2RockConfig::deleteDnsConfig()
+{
+    delete dnsConfig;
+    dnsConfig = 0;
 }
 
 V2RayConfigInbound *V2RockConfig::getSocksConfig() const
@@ -277,6 +303,16 @@ void V2RockConfig::fromJson(const QJsonObject &json)
         nodeIndex = json["nodeIndex"].toInt();
     }
 
+    if (dnsConfig) {
+        delete dnsConfig;
+        dnsConfig = 0;
+    }
+    if (json.contains("dns")) {
+        QJsonObject dnsObj = json["dns"].toObject();
+        dnsConfig = new DNSObject;
+        V2RayConfig::fromJson(*dnsConfig, dnsObj);
+    }
+
     // Read httpConfig, delete the old one before reading
     if (httpConfig) {
         delete httpConfig;
@@ -350,6 +386,12 @@ void V2RockConfig::toJson(QJsonObject &json) const
         domainsArray.append(domain);
     }
     json["bypassDomains"] = domainsArray;
+
+    if (dnsConfig) {
+        QJsonObject dnsObj;
+        V2RayConfig::toJson(dnsConfig, dnsObj);
+        json["dns"] = dnsObj;
+    }
 
     if (socksConfig) {
         QJsonObject socksConfigObj;
@@ -504,14 +546,4 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     file.close();
     emit logReceived("Configs have been saved.");
     return configFilePath;
-}
-
-QString V2RockConfig::getLoglevel() const
-{
-    return loglevel;
-}
-
-void V2RockConfig::setLoglevel(const QString &value)
-{
-    loglevel = value;
 }

@@ -44,6 +44,10 @@ struct DNSServerObject {
     QString address;
     int port;
     QStringList domains;
+    QStringList expectIPs;
+
+    DNSServerObject(){}
+    DNSServerObject(const DNSServerObject& a) : address(a.address), port(a.port), domains(a.domains), expectIPs(a.expectIPs) {}
 };
 
 struct DNSObject {
@@ -51,7 +55,20 @@ struct DNSObject {
     QString clientIp;
     QMap<QString, QString> hosts;
     QStringList servers;
-    QList<DNSServerObject> serverObjects;
+    QList<DNSServerObject *> serverObjects;
+
+    DNSObject() {}
+    DNSObject(const DNSObject& a) : tag(a.tag), clientIp(a.clientIp), hosts(a.hosts), servers(a.servers) {
+        foreach (DNSServerObject *dummy, a.serverObjects) {
+            DNSServerObject *server = new DNSServerObject(*dummy);
+            serverObjects.append(server);
+        }
+    }
+    ~DNSObject() {
+        foreach (DNSServerObject *server, serverObjects) {
+            if (server) delete server;
+        }
+    }
 };
 /*
     DNS Objects End

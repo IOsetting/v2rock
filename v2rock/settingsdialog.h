@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QVBoxLayout>
 
+#include "settingsdnstab.h"
 #include "settingsgeneraltab.h"
 #include "settingsbypassiptab.h"
 #include "settingsbypassdomaintab.h"
@@ -34,6 +35,7 @@ private:
     Ui::SettingsDialog *ui;
     QTabWidget *tabWidget;
     SettingsGeneralTab *generalTab;
+    SettingsDnsTab *dnsTab;
     SettingsBypassIpTab *bypassIpTab;
     SettingsBypassDomainTab * bypassDomainTab;
     QDialogButtonBox *buttonBox;
