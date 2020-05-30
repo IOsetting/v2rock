@@ -8,6 +8,8 @@ class V2RayConfigLog
 {
 public:
     V2RayConfigLog();
+    V2RayConfigLog(const V2RayConfigLog& a);
+
     void toJson(QJsonObject &json) const;
 
     QString getLoglevel() const;

@@ -5,6 +5,9 @@ V2RayConfigLog::V2RayConfigLog()
 
 }
 
+V2RayConfigLog::V2RayConfigLog(const V2RayConfigLog &a) :
+    loglevel(a.loglevel), access(a.access), error(a.error) {}
+
 QString V2RayConfigLog::getLoglevel() const
 {
     return loglevel;

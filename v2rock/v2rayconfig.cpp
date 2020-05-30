@@ -22,6 +22,7 @@ DNSObject *V2RayConfig::getDns() const
 
 void V2RayConfig::setDns(DNSObject *value)
 {
+    if (dns) delete dns;
     dns = value;
 }
 

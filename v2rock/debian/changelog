@@ -1,3 +1,10 @@
+v2rock (0.1.3-1) precise; urgency=low
+
+  * New feature: DNS and log options
+
+ -- IOsetting <iosetting@outlook.com>  Sat, 30 May 2020 13:50:21 +0800
+
+
 v2rock (0.1.2-1) precise; urgency=low
 
   * New feature: Node management

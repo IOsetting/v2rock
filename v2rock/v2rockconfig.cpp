@@ -447,7 +447,6 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     v2rayConfig.setPolicy(0);
     v2rayConfig.setStats(false);
     v2rayConfig.setApi(0);
-    v2rayConfig.setDns(0);
 
     // log
     V2RayConfigLog v2rayConfigLog;
@@ -455,6 +454,12 @@ QString *V2RockConfig::toV2RayJson(QJsonObject &json)
     v2rayConfigLog.setAccess("");
     v2rayConfigLog.setError("");
     v2rayConfig.setLog(v2rayConfigLog);
+
+    // dns
+    if (dnsConfig) {
+        DNSObject *dns = new DNSObject(*dnsConfig);
+        v2rayConfig.setDns(dns);
+    }
 
     // inbounds
     if (socksConfig) {
