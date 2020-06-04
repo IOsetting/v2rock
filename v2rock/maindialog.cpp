@@ -251,11 +251,11 @@ void MainDialog::processFinished(int __attribute__ ((unused)) exitCode, QProcess
 
 void MainDialog::btnImportClickHandler()
 {
-    if (btnImport->text() == "Import")
+    if (btnImport->text() == tr("Import"))
     {
         this->appendLog("Import nodes from: " + v2rockConfig->getSubscribeUrl());
         networkReply = networkAccessManager->get(QNetworkRequest(QUrl(v2rockConfig->getSubscribeUrl())));
-        btnImport->setText("Cancel");
+        btnImport->setText(tr("Cancel"));
         QApplication::setOverrideCursor(Qt::WaitCursor);
     }
     else
@@ -264,7 +264,7 @@ void MainDialog::btnImportClickHandler()
         {
             networkReply->abort();
         }
-        btnImport->setText("Import");
+        btnImport->setText(tr("Import"));
         QApplication::restoreOverrideCursor();
     }
 
@@ -341,12 +341,12 @@ void MainDialog::actDelHandler()
     QMessageBox::StandardButton reply = QMessageBox::question(
                 this,
                 "Conformation",
-                QString("Do you want to delete node %1?").arg(nodeName),
+                QString(tr("Do you want to delete node %1?")).arg(nodeName),
                 QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         this->v2rockConfig->delNode(index);
         this->v2rockConfig->write();
-        this->appendLog(QString("Node %1 has been deleted").arg(nodeName));
+        this->appendLog(QString(tr("Node %1 has been deleted")).arg(nodeName));
         this->reloadTreeList();
     }
 }
@@ -364,7 +364,7 @@ void MainDialog::actEditHandler()
     if (dialogNodeEdit->exec() == QDialog::Accepted)
     {
         this->v2rockConfig->write();
-        this->appendLog(QString("Node %1 has been updated").arg(nodeName));
+        this->appendLog(QString(tr("Node %1 has been updated")).arg(nodeName));
         this->reloadTreeList();
     }
 }
@@ -409,7 +409,7 @@ void MainDialog::contextMenu(const QPoint &point)
 
 void MainDialog::networkAccessManagerFinished(QNetworkReply *reply)
 {
-    btnImport->setText("Import");
+    btnImport->setText(tr("Import"));
     QApplication::restoreOverrideCursor();
     if (reply->error()) {
         this->appendLog("Import failed: " + reply->errorString());
@@ -447,7 +447,7 @@ void MainDialog::networkAccessManagerFinished(QNetworkReply *reply)
         QMessageBox::critical(
                     this,
                     tr("Error"),
-                    "No valid nodes in subscription. Nothing has been imported.",
+                    tr("No valid nodes in subscription. Nothing has been imported."),
                     QMessageBox::Ok);
         return;
     }

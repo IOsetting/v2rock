@@ -22,8 +22,8 @@ SettingsGeneralTab::SettingsGeneralTab(QWidget *parent) :
     hlay10->addLayout(vlay10, 3);
     hlay10->addLayout(vlay11, 1);
 
-    httpCheckBox = new QCheckBox("HTTP Proxy", this);
-    socksCheckBox = new QCheckBox("SOCKS5 Proxy", this);
+    httpCheckBox = new QCheckBox(tr("HTTP Proxy"), this);
+    socksCheckBox = new QCheckBox(tr("SOCKS5 Proxy"), this);
     QHBoxLayout *hlay20 = new QHBoxLayout;
     hlay20->addWidget(socksCheckBox);
     hlay20->addWidget(httpCheckBox);
@@ -38,7 +38,7 @@ SettingsGeneralTab::SettingsGeneralTab(QWidget *parent) :
     vlay30->addWidget(new QLabel(tr("SOCKS5 listen")));
     vlay30->addWidget(socksListenEdit);
     QVBoxLayout *vlay31 = new QVBoxLayout;
-    vlay31->addWidget(new QLabel(tr("SOCKS5 port:")));
+    vlay31->addWidget(new QLabel(tr("SOCKS5 port")));
     vlay31->addWidget(socksPortEdit);
     QHBoxLayout *hlay30 = new QHBoxLayout;
     hlay30->addLayout(vlay30, 3);
@@ -65,7 +65,7 @@ SettingsGeneralTab::SettingsGeneralTab(QWidget *parent) :
     httpProxyPanel->setLayout(hlay40);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addWidget(new QLabel(tr("Subscribe URL:")));
+    mainLayout->addWidget(new QLabel(tr("Subscribe URL")));
     mainLayout->addWidget(subscribeUrlEdit);
     mainLayout->addLayout(hlay10);
     mainLayout->addLayout(hlay20);

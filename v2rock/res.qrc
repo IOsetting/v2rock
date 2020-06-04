@@ -4,5 +4,6 @@
     <file>images/v2rock-on.png</file>
     <file>images/v2rock-on-active.png</file>
     <file>images/v2rock-off.png</file>
+    <file>languages/v2rock_zh_CN.qm</file>
 </qresource>
 </RCC>

@@ -142,7 +142,7 @@ NodeEditNetworkTab::NodeEditNetworkTab(QWidget *parent) :
     vlay34->addWidget(new QLabel(tr("Congestion")));
     vlay34->addWidget(kcpCongestionCheckBox);
     QVBoxLayout *vlay37 = new QVBoxLayout;
-    vlay37->addWidget(new QLabel(tr("Header")));
+    vlay37->addWidget(new QLabel(tr("Header Type")));
     vlay37->addWidget(kcpHeaderTypeComb);
     QHBoxLayout *hlay32 = new QHBoxLayout;
     hlay32->addLayout(vlay37);

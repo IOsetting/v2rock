@@ -10,7 +10,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = v2rock
 TEMPLATE = app
-DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += \
+    QT_DEPRECATED_WARNINGS \
+    QT_NO_DEBUG_OUTPUT
 
 SOURCES += \
     $$PWD/main.cpp \
@@ -71,3 +73,6 @@ FORMS += \
 
 RESOURCES += \
     $$PWD/res.qrc
+
+TRANSLATIONS += \
+    $$PWD/languages/v2rock_zh_CN.ts

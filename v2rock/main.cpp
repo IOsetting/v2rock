@@ -1,4 +1,6 @@
 #include <QApplication>
+#include <QLibraryInfo>
+#include <QTranslator>
 
 #include "config.h"
 #include "maindialog.h"
@@ -41,6 +43,17 @@ int main(int argc, char *argv[])
                     QMessageBox::Ok);
         exit(0);
     }
+
+    QTranslator qtTranslator;
+    qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    a.installTranslator(&qtTranslator);
+
+    QTranslator v2rockTranslator;
+    bool bret = v2rockTranslator.load("v2rock_" + QLocale::system().name(), ":/languages");
+    if(!bret) {
+       qWarning() << QString("No language file: v2rock_%1.qm").arg(QLocale::system().name());
+    }
+    a.installTranslator(&v2rockTranslator);
 
     MainDialog w;
     w.show();
