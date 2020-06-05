@@ -1,3 +1,10 @@
+v2rock (0.1.4-1) precise; urgency=low
+
+  * New feature: Internationalization and high DPI support
+
+ -- IOsetting <iosetting@outlook.com>  Fri, 5 Jun 2020 14:02:21 +0800
+
+
 v2rock (0.1.3-1) precise; urgency=low
 
   * New feature: DNS and log options
