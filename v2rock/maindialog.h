@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QMessageBox>
 #include <QMenu>
 #include <QNetworkReply>

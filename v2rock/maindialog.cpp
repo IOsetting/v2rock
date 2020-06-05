@@ -46,6 +46,7 @@ MainDialog::MainDialog(QWidget *parent) :
     QStringList columnNames;
     columnNames << tr("ID") << "" << tr("Protocol") << tr("Name") << tr("Host") << tr("Port");
     tree->setHeaderLabels(columnNames);
+    tree->header()->setMinimumSectionSize(20);
     // Remove left white spaces
     tree->setRootIsDecorated(false);
     tree->setColumnWidth(0, 30);
@@ -391,7 +392,7 @@ void MainDialog::contextMenu(const QPoint &point)
     QMenu menu(this);
     QTreeWidgetItem *item = tree->itemAt(point);
     if (item) {
-        QVariant variant = qVariantFromValue((void *)item);
+        QVariant variant = QVariant::fromValue((void *)item);
         addAction->setData(variant);
         editAction->setData(variant);
         delAction->setData(variant);
@@ -400,7 +401,7 @@ void MainDialog::contextMenu(const QPoint &point)
         menu.addAction(delAction);
         menu.exec(QCursor::pos());
     } else {
-        QVariant variant = qVariantFromValue((void *)0);
+        QVariant variant = QVariant::fromValue((void *)0);
         addAction->setData(variant);
         menu.addAction(addAction);
         menu.exec(QCursor::pos());

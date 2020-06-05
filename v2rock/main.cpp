@@ -30,9 +30,12 @@ bool isRunningAlready()
 
 int main(int argc, char *argv[])
 {
+    // Qt::AA_EnableHighDpiScaling must be set before QCoreApplication is created.
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication a(argc, argv);
     QApplication::setApplicationName(v2rock_config::name);
     QApplication::setApplicationVersion(v2rock_config::version);
+
     a.setQuitOnLastWindowClosed(false);
 
     if(isRunningAlready()) {
@@ -51,7 +54,7 @@ int main(int argc, char *argv[])
     QTranslator v2rockTranslator;
     bool bret = v2rockTranslator.load("v2rock_" + QLocale::system().name(), ":/languages");
     if(!bret) {
-       qWarning() << QString("No language file: v2rock_%1.qm").arg(QLocale::system().name());
+       qDebug() << QString("No language file: v2rock_%1.qm").arg(QLocale::system().name());
     }
     a.installTranslator(&v2rockTranslator);
 
