@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QtGlobal>
 #include <QLibraryInfo>
 #include <QTranslator>
 
@@ -31,7 +32,9 @@ bool isRunningAlready()
 int main(int argc, char *argv[])
 {
     // Qt::AA_EnableHighDpiScaling must be set before QCoreApplication is created.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
     QApplication a(argc, argv);
     QApplication::setApplicationName(v2rock_config::name);
     QApplication::setApplicationVersion(v2rock_config::version);
