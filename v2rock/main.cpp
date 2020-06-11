@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QtGlobal>
 #include <QLibraryInfo>
+#include <QScreen>
 #include <QTranslator>
 
 #include "config.h"
@@ -33,7 +34,13 @@ int main(int argc, char *argv[])
 {
     // Qt::AA_EnableHighDpiScaling must be set before QCoreApplication is created.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    bool EnableHighDpiScaling = false;
+    {
+        // This is a hack to avoid double-size-window issue on Qt under 5.12
+        QApplication a(argc, argv);
+        if ( a.screens().at(0)->geometry().width() > 1920) EnableHighDpiScaling = true;
+    }
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, EnableHighDpiScaling);
 #endif
     QApplication a(argc, argv);
     QApplication::setApplicationName(v2rock_config::name);
