@@ -40,6 +40,11 @@ void NodeEditDialog::init(V2RockConfig *v2rockConfig, int index, bool isNew)
     this->v2rockConfig = v2rockConfig;
     this->index = index;
     this->isNew = (index == -1 ||isNew)? true : false;
+    if (index == -1 || isNew) {
+        this->nodeType = 0;
+    } else {
+        this->nodeType = v2rockConfig->getNodes().at(index)->getType();
+    }
     if (this->isNew) {
         generalTab->init(v2rockConfig, -1);
         networkTab->init(0);
@@ -49,7 +54,6 @@ void NodeEditDialog::init(V2RockConfig *v2rockConfig, int index, bool isNew)
         networkTab->init(v2rockConfig->getNodes().at(index)->getStreamSettings());
         miscTab->init(v2rockConfig->getNodes().at(index)->getStreamSettings());
     }
-
 }
 
 void NodeEditDialog::accept()
@@ -61,6 +65,7 @@ void NodeEditDialog::accept()
         QList<V2RockNode *> nodes = v2rockConfig->getNodes();
         node = nodes.at(index);
     }
+    node->setType(nodeType);
 
     // General Tab
     node->setName(generalTab->getName());

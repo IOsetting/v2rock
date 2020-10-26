@@ -21,6 +21,9 @@ public:
     QString getProtocol() const;
     void setProtocol(const QString &value);
 
+    int getType() const;
+    void setType(int value);
+
     OutboundBlackholeConfigurationObject *getBlackholeSettings() const;
     void setBlackholeSettings(OutboundBlackholeConfigurationObject *value);
 
@@ -58,6 +61,7 @@ public:
 private:
     QString name;
     QString protocol;
+    int type;
     OutboundBlackholeConfigurationObject *blackholeSettings;
     OutboundDNSConfigurationObject *dNSSettings;
     OutboundFreedomConfigurationObject *freedomSettings;

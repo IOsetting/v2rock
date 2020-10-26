@@ -452,7 +452,7 @@ void MainDialog::networkAccessManagerFinished(QNetworkReply *reply)
                     QMessageBox::Ok);
         return;
     }
-    this->v2rockConfig->setNodes(nodes);
+    this->v2rockConfig->resetAutoNodes(nodes);
     QString msg = tr("%1 nodes have been imported").arg(nodes.size());
     this->appendLog(msg);
     this->v2rockConfig->write();

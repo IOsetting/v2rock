@@ -208,6 +208,7 @@ void XinjieConfig::write(V2RockNode &node) const
 {
     node.setProtocol("vmess");
     node.setName(remark);
+    node.setType(1);
 
     OutboundVMessConfigurationObject *vMessConfig = new OutboundVMessConfigurationObject();
     VMessServerObject *vMessServerObject = new VMessServerObject;

@@ -42,8 +42,8 @@ public slots:
     void appendLog(const QString &text);
 
 protected:
-    void showEvent(QShowEvent *ev);
-    void keyPressEvent(QKeyEvent *e);
+    void showEvent(QShowEvent *ev) override;
+    void keyPressEvent(QKeyEvent *e) override;
     void closeEvent(QCloseEvent *event) override;
 
 private:

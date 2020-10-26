@@ -32,6 +32,7 @@ private:
     V2RockConfig *v2rockConfig;
     int index;
     bool isNew;
+    int nodeType;
 
     Ui::NodeEditDialog *ui;
     QTabWidget *tabWidget;

@@ -191,6 +191,9 @@ void V2RockNode::read(const QJsonObject &json)
     if (json.contains("name") && json["name"].isString()) {
         name = json["name"].toString();
     }
+    if (json.contains("type") && json["type"].isDouble()) {
+        type = json["type"].toInt();
+    }
     if (json.contains("protocol") && json["protocol"].isString()) {
         protocol = json["protocol"].toString();
     }
@@ -259,6 +262,7 @@ void V2RockNode::read(const QJsonObject &json)
 void V2RockNode::write(QJsonObject &json) const
 {
     json["name"] = name;
+    json["type"] = type;
     json["protocol"] = protocol;
     if (blackholeSettings) {
         QJsonObject jsonObj;
@@ -317,4 +321,14 @@ void V2RockNode::print(int indentation) const
     const QString indent(indentation * 2, ' ');
     QTextStream(stdout) << indent << "protocol:\t" << protocol << "\n";
     QTextStream(stdout) << indent << "name:\t" << name << "\n";
+}
+
+int V2RockNode::getType() const
+{
+    return type;
+}
+
+void V2RockNode::setType(int value)
+{
+    type = value;
 }

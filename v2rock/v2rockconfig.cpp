@@ -186,14 +186,29 @@ QList<V2RockNode *> V2RockConfig::getNodes() const
 
 void V2RockConfig::setNodes(const QList<V2RockNode *> &value)
 {
+    qDeleteAll(nodes);
     nodes = value;
+}
+
+void V2RockConfig::resetAutoNodes(const QList<V2RockNode *> &value)
+{
+    foreach (V2RockNode *node, nodes) {
+        if (node->getType() == 1) {
+            nodes.removeOne(node);
+            delete node;
+        }
+    }
+    foreach (V2RockNode *node, value) {
+        nodes.append(node);
+    }
+    if (nodeIndex >= nodes.size()) nodeIndex = 0;
 }
 
 void V2RockConfig::addNode(int index, V2RockNode *node)
 {
     if (index >= nodes.size() || index < 0) {
         // append to the end
-        nodes.append(node);
+
     } else {
         nodes.insert(index, node);
         if (nodeIndex >= index) nodeIndex++;
