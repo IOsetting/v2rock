@@ -91,6 +91,7 @@ private slots:
     void networkAccessManagerFinished(QNetworkReply *reply);
     void treeItemDoubleClicked(QTreeWidgetItem *item, int column);
     void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void showAndActive();
 };
 
 #endif // MAINDIALOG_H

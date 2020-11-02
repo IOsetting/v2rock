@@ -85,7 +85,7 @@ MainDialog::MainDialog(QWidget *parent) :
     connect(addAction, SIGNAL(triggered()), this, SLOT(actAddHandler()));
 
     restoreAction = new QAction(tr("&Restore"), this);
-    connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+    connect(restoreAction, SIGNAL(triggered()), this, SLOT(showAndActive()));
 
     quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
@@ -248,6 +248,12 @@ void MainDialog::updateBtnStatus(bool stopped)
 void MainDialog::processFinished(int __attribute__ ((unused)) exitCode, QProcess::ExitStatus __attribute__ ((unused)) exitStatus)
 {
     this->updateBtnStatus(true);
+}
+
+void MainDialog::showAndActive()
+{
+    this->show();
+    this->activateWindow();
 }
 
 void MainDialog::btnImportClickHandler()
